@@ -700,6 +700,14 @@ catch( Exception e )
 	}
 }
 //--------------------------------------------------------------------------------
+public static void main( String[] args )
+throws Exception
+{
+Set s = new HashSet();
+s.addAll( pt2Function );
+p( s );
+}
+//--------------------------------------------------------------------------------
 private static boolean isSQLiImpl( final String input )
 throws Exception
 {
@@ -712,9 +720,10 @@ protected static void p( Object o )
 System.out.println( o );
 }
 //--------------------------------------------------------------------------------
-protected static String parse_word( String input )
+protected static String parse_word( String input, int[] lengthBuf )
 {
 String word = Util.getMatch( "^[a-zA-Z0-9_\\.$]+", input ).toUpperCase();
+lengthBuf[ 0 ] = word.length();
 String value = ( String )sqlKeywords.get( word );
 if( value == null )
 	{
@@ -726,21 +735,64 @@ else
 	}
 }
 //--------------------------------------------------------------------------------
-protected static String inputToPattern( final String input )
+protected static int parse_string( String input, char delim )
 {
-if( input.length() == 0 )
+for( int i = 0; i < input.length(); ++i )
 	{
-	return null;
+	if( input.charAt( i ) == delim )
+		{
+		if( i == 0 )
+			{
+			//ignore
+			}
+		else
+			{
+			if( input.charAt( i - 1 ) == '\\' )
+				{
+				//ignroe
+				}
+			else
+				{
+				return i;
+				}
+			}
+		}
 	}
-char firstChar = input.charAt( 0 );
-int i = ( int )( ( byte )firstChar );
-String functionName = ( String )pt2Function.get( i );
-if( functionName.equals( "parse_word" ) )
+return input.length() -1;
+}
+//--------------------------------------------------------------------------------
+protected static String inputToPattern( String input )
+{
+//[parse_string, parse_number, parse_other, parse_operator2, parse_operator1, parse_word, 
+//parse_dash, parse_eol_comment, parse_var, parse_white, parse_slash, parse_char, parse_backslash]
+StringBuffer patternBuf = new StringBuffer();
+while( true )
 	{
-	return parse_word( input );
+	p( input );
+	if( input.length() == 0 )
+		{
+		break;
+		}
+	char firstChar = input.charAt( 0 );
+	int i = ( int )( ( byte )firstChar );
+	String functionName = ( String )pt2Function.get( i );
+	int[] lengthBuf = new int[ 1 ];
+	if( functionName.equals( "parse_word" ) )
+		{
+		patternBuf.append( parse_word( input, lengthBuf ) );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_white" ) )
+		{
+		input = input.substring( 1 );
+		}
+	else if( functionName.equals( "parse_string" ) )
+		{
+		int strLen = parse_string( input, firstChar );
+		}
 	}
 
-return null;
+return patternBuf.toString();
 }
 //--------------------------------------------------------------------------------
 }
