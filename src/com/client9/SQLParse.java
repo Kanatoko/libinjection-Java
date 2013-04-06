@@ -722,7 +722,7 @@ System.out.println( o );
 //--------------------------------------------------------------------------------
 protected static String parse_word( String input, int[] lengthBuf )
 {
-String word = Util.getMatch( "^[a-zA-Z0-9_\\.$]+", input ).toUpperCase();
+String word = Util.getMatch( "^[A-Z0-9_\\.$]+", input );
 lengthBuf[ 0 ] = word.length();
 String value = ( String )sqlKeywords.get( word );
 if( value == null )
@@ -735,8 +735,16 @@ else
 	}
 }
 //--------------------------------------------------------------------------------
-protected static int parse_string( String input, char delim )
+protected static String parse_string( String input, char delim )
 {
+if( input.length() == 1 )
+	{
+	return "";
+	}
+else if( input.equals( "\"\"" ) || input.equals( "''" ) )
+	{
+	return "";
+	}
 for( int i = 0; i < input.length(); ++i )
 	{
 	if( input.charAt( i ) == delim )
@@ -753,18 +761,73 @@ for( int i = 0; i < input.length(); ++i )
 				}
 			else
 				{
-				return i;
+				return input.substring( i + 1 );
 				}
 			}
 		}
 	}
-return input.length() -1;
+return "";
+}
+//--------------------------------------------------------------------------------
+protected static String parse_number( String input, int[] lengthBuf )
+{
+if( input.startsWith( "0X" ) )
+	{
+	String match = Util.getMatch( "^0X[0-9A-F]*", input );
+	if( match.length() == 2 )
+		{
+		lengthBuf[ 0 ] = 2;
+		return "n";
+		}
+	else
+		{
+		lengthBuf[ 0 ] = match.length();
+		return "1";
+		}
+	}
+else if( input.equals( "." ) )
+	{
+	lengthBuf[ 0 ] = 1;
+	return "n";
+	}
+else if( input.matches( "^\\.[^0-9]+.*" ) ) // .A or .
+	{
+	lengthBuf[ 0 ] = 1;
+	return "n";
+	}
+else
+	{
+	String match = Util.getMatch( "^[0-9\\.]+", input );
+	String rest = input.substring( match.length() );
+	if( rest.startsWith( "E+" )
+	 || rest.startsWith( "E-" )
+	  )
+		{
+		rest = Util.getMatch( "^(E.[0-9]+)", rest );
+		lengthBuf[ 0 ] = match.length() + rest.length();
+		return "1";
+		}
+	else if( rest.matches( "^[A-Z]+.*" ) ) //oh no!
+		{
+		String restAlNum = Util.getMatch( "^([A-Z0-9]+)", rest );
+		lengthBuf[ 0 ] = match.length() + restAlNum.length();
+		return "n";
+		}
+	else
+		{
+		lengthBuf[ 0 ] = match.length();
+		return "1";
+		}
+	}
 }
 //--------------------------------------------------------------------------------
 protected static String inputToPattern( String input )
 {
-//[parse_string, parse_number, parse_other, parse_operator2, parse_operator1, parse_word, 
-//parse_dash, parse_eol_comment, parse_var, parse_white, parse_slash, parse_char, parse_backslash]
+//[parse_string, parse_word,  parse_white,
+//parse_number, parse_other, parse_operator2, parse_operator1,
+//parse_dash, parse_eol_comment, parse_var, parse_slash, parse_char, parse_backslash]
+
+input = input.toUpperCase();
 StringBuffer patternBuf = new StringBuffer();
 while( true )
 	{
@@ -788,7 +851,13 @@ while( true )
 		}
 	else if( functionName.equals( "parse_string" ) )
 		{
-		int strLen = parse_string( input, firstChar );
+		patternBuf.append( "s" );
+		input = parse_string( input, firstChar );
+		}
+	else if( functionName.equals( "parse_number" ) )
+		{
+		patternBuf.append( parse_number( input, lengthBuf ) );
+		input = input.substring( lengthBuf[ 0 ] );
 		}
 	}
 
