@@ -14,11 +14,6 @@ test1();
 p( "OK." );
 }
 //--------------------------------------------------------------------------------
-private static void p( Object o )
-{
-System.out.println( o );
-}
-//--------------------------------------------------------------------------------
 private static void ex()
 throws Exception
 {
@@ -28,7 +23,24 @@ throw new Exception();
 private static void test1()
 throws Exception
 {
-if( !tokenize( "or" ).equals( "&" ) ) { ex(); }
+testParseWord( "a", "n" );
+testParseWord( "ab", "n" );
+testParseWord( "abs", "f" );
+
+//if( !inputToPattern( "abs add" ).equals( "fk" ) ) { ex(); }
+}
+//--------------------------------------------------------------------------------
+private static void testParseWord( String input, String pattern )
+throws Exception
+{
+if( parse_word( input ).equals( pattern ) )
+	{
+	//OK
+	}
+else
+	{
+	ex();
+	}
 }
 //--------------------------------------------------------------------------------
 }
