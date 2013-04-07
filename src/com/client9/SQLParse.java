@@ -744,7 +744,7 @@ p( s );
 private static boolean isSQLiImpl( final String input )
 throws Exception
 {
-String pattern = parseToken( input );
+String pattern = sqli_tokenize( input );
 return false;
 }
 //--------------------------------------------------------------------------------
@@ -768,15 +768,17 @@ else
 	}
 }
 //--------------------------------------------------------------------------------
-protected static String parse_string( String input, char delim )
+protected static void parse_string( String input, char delim, int[] lengthBuf )
 {
 if( input.length() == 1 )
 	{
-	return "";
+	lengthBuf[ 0 ] = 1;
+	return;
 	}
 else if( input.equals( "\"\"" ) || input.equals( "''" ) )
 	{
-	return "";
+	lengthBuf[ 0 ] = 2;
+	return;
 	}
 for( int i = 0; i < input.length(); ++i )
 	{
@@ -794,12 +796,14 @@ for( int i = 0; i < input.length(); ++i )
 				}
 			else
 				{
-				return input.substring( i + 1 );
+				lengthBuf[ 0 ] = i + 1;
+				return;
 				}
 			}
 		}
 	}
-return "";
+lengthBuf[ 0 ] = input.length();
+return;
 }
 //--------------------------------------------------------------------------------
 protected static String parse_number( String input, int[] lengthBuf )
@@ -1053,19 +1057,32 @@ else
 	}
 }
 //--------------------------------------------------------------------------------
-protected static String parseToken( String input )
+// 'や"の内部にいるときは終わりまでパースしてtrueで抜ける
+// ch < 0 || ch > 127 の文字は全部無視してループする
+// 最後にたどり着いてしまったらfalseで抜ける
+// 何かしらtypeを取得できたらtrueで抜ける
+protected static boolean parse_token( String input, char delim, int[] lengthBuf, String[] typeBuf )
 {
-input = input.toUpperCase();
-StringBuffer patternBuf = new StringBuffer();
-boolean[] inCommentBuf = new boolean[ 1 ];
-inCommentBuf[ 0 ] = false;
+	//initialize
+lengthBuf[ 0 ] = 0;
+typeBuf[ 0 ] = "";
+
+if( input.length() == 0 )
+	{
+	return false;
+	}
+
+if( delim == '\'' || delim == '"' )
+	{
+		//TODO implement
+	return true;
+	}
 
 while( true )
 	{
-	//p( input );
 	if( input.length() == 0 )
 		{
-		break;
+		return false;
 		}
 	char firstChar = input.charAt( 0 );
 	int i = ( int )( ( byte )firstChar );
@@ -1076,22 +1093,23 @@ while( true )
 		}
 	
 	String functionName = ( String )pt2Function.get( i );
-
-	int[] lengthBuf = new int[ 1 ];
+	
 	if( functionName.equals( "parse_word" ) )
 		{
-		patternBuf.append( parse_word( input, lengthBuf ) );
-		input = input.substring( lengthBuf[ 0 ] );
+		typeBuf[ 0 ] = parse_word( input, lengthBuf );
+		//input = input.substring( lengthBuf[ 0 ] );
 		}
 	else if( functionName.equals( "parse_white" ) )
 		{
 		input = input.substring( 1 );
+		continue;
 		}
 	else if( functionName.equals( "parse_string" ) )
 		{
-		patternBuf.append( "s" );
-		input = parse_string( input, firstChar );
+		typeBuf[ 0 ] = "s";
+		parse_string( input, firstChar, lengthBuf );
 		}
+	/*
 	else if( functionName.equals( "parse_number" ) )
 		{
 		patternBuf.append( parse_number( input, lengthBuf ) );
@@ -1142,9 +1160,23 @@ while( true )
 		patternBuf.append( parse_slash( input, lengthBuf, inCommentBuf ) );
 		input = input.substring( lengthBuf[ 0 ] );		
 		}
+	*/
+	return true;
 	}
+}
+//--------------------------------------------------------------------------------
+protected static String sqli_tokenize( String input )
+{
+input = input.toUpperCase();
+StringBuffer patternBuf = new StringBuffer();
+boolean[] inCommentBuf = new boolean[ 1 ];
+inCommentBuf[ 0 ] = false;
 
-return patternBuf.toString();
+String lastType;
+String currentType;
+
+
+return null;
 }
 //--------------------------------------------------------------------------------
 }
