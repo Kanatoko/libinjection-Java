@@ -33,6 +33,9 @@ testParseWord( "ABSA", "n" );
 private static void test2()
 throws Exception
 {
+testParseOperator2( "*/", "", 2, true );
+testParseOperator2( "*/a", "", 2, true );
+
 testParseOperator2( "<=>", "o", 3 );
 testParseOperator2( "*=", "o", 2 );
 testParseOperator2( "!!", "o", 2 );
@@ -144,6 +147,19 @@ testInputToPattern( "1.2E+1A", "1n" );
 testInputToPattern( "1.2E+12", "1" );
 testInputToPattern( "12345X", "n" );
 
+	//parse_slash + mysql
+testInputToPattern( "/", "o" );
+testInputToPattern( "/a", "on" );
+testInputToPattern( "//", "oo" );
+testInputToPattern( "/*", "c" );
+testInputToPattern( "/*a", "c" );
+testInputToPattern( "/*abc*/", "c" );
+testInputToPattern( "/*abc*/a", "cn" ); //TODO: reader returns 'n'
+testInputToPattern( "/*! 123", "1" );
+testInputToPattern( "/*! 123 abs", "1f" );
+testInputToPattern( "/*! 123 abs */", "1f" );
+testInputToPattern( "/*! 123 abs */4", "1f1" );
+
 testParseString( "'HOGE'", '\'', "" );
 testParseString( "'HOGE'A", '\'', "A" );
 testParseString( "'HOGE'AA", '\'', "AA" );
@@ -183,8 +199,16 @@ if( !parse_var( input, lengthBuf ).equals( result ) )
 private static void testParseOperator2( String input, String result, int length )
 throws Exception
 {
+testParseOperator2( input, result, length, false );
+}
+//--------------------------------------------------------------------------------
+private static void testParseOperator2( String input, String result, int length, boolean inComment )
+throws Exception
+{
 int[] lengthBuf = new int[ 1 ];
-if( !parse_operator2( input, lengthBuf ).equals( result ) )
+boolean inCommentBuf[] = new boolean[ 1 ];
+inCommentBuf[ 0 ] = inComment;
+if( !parse_operator2( input, lengthBuf, inCommentBuf ).equals( result ) )
 	{
 	ex( input + " " + result + " " + length );
 	}

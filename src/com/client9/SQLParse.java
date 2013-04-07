@@ -856,8 +856,9 @@ else
 // コメント内の場合、*/を単にスキップする
 // && || を&として消化
 // is_operator2で2文字のオペレータかどうかしらべ、その場合はoとして消化する
+// MySQLのコメント内の場合は */ をスルーする
 //--------------------------------------------------------------------------------
-protected static String parse_operator2( String input, int[] lengthBuf )
+protected static String parse_operator2( String input, int[] lengthBuf, boolean[] inCommentBuf )
 {
 if( input.startsWith( "<=>" ) )
 	{
@@ -876,6 +877,11 @@ else
 		{
 		lengthBuf[ 0 ] = 2;
 		return "&";
+		}
+	else if( inCommentBuf[ 0 ] == true && twoByteStr.equals( "*/" ) )
+		{
+		lengthBuf[ 0 ] = 2;
+		return "";
 		}
 	else
 		{
@@ -947,27 +953,56 @@ lengthBuf[ 0 ] = match.length();
 return "v";
 }
 //--------------------------------------------------------------------------------
-protected static String parse_slash( String input, int[] lengthBuf )
+protected static String parse_slash( String input, int[] lengthBuf, boolean[] inCommentBuf )
 {
-if( input.length() == 2 )
+if( !input.startsWith( "/*" ) )
 	{
-	if( input.charAt( 1 ) != '*' )
-		{
-		lengthBuf[ 0 ] = 1;
-		return "o";
-		}
+	lengthBuf[ 0 ] = 1;
+	return "o";
 	}
 
-return "";
+	//starts with /*
+else if( input.length() == 2 )
+	{
+	//input is '/*'
+	lengthBuf[ 0 ] = 2;
+	return "c";
+	}
+
+//length > 2
+
+int mysqlResult = is_mysql_comment( input );
+if( mysqlResult == 0 )
+	{
+	int index = input.indexOf( "*/", 2 );
+	if( index == -1 )
+		{
+		lengthBuf[ 0 ] = input.length();
+		return "c";
+		}
+	else
+		{
+		lengthBuf[ 0 ] = index + 2;
+		return "c";
+		}
+	}
+else
+	{
+	//MySQL Comment
+	inCommentBuf[ 0 ] = true;
+	lengthBuf[ 0 ] = mysqlResult;
+	return "";
+	}
 }
+//--------------------------------------------------------------------------------
+protected static int is_mysql_comment( String input )
+{
 //戻り値は 0, 3, 4, 8のどれか
 // 8 -> /*!12345 が見つかった場合
 // 0 -> 見つからない場合
 // 3 -> /*!  だけ見つかった場合
 // 4 -> /*!1 まで見つかった場合
-//--------------------------------------------------------------------------------
-protected static int is_mysql_comment( String input )
-{
+
 	// input starts with /*
 if( input.length() <= 2 ) 
 	{
@@ -1019,12 +1054,11 @@ else
 //--------------------------------------------------------------------------------
 protected static String inputToPattern( String input )
 {
-//[parse_string, parse_word,  parse_white, parse_number, parse_operator1, parse_operator2, parse_char, parse_backslash, parse_other, parse_dash, parse_eol_comment
-// ,parse_var
-//, parse_slash,  ]
-
 input = input.toUpperCase();
 StringBuffer patternBuf = new StringBuffer();
+boolean[] inCommentBuf = new boolean[ 1 ];
+inCommentBuf[ 0 ] = false;
+
 while( true )
 	{
 	//p( input );
@@ -1062,7 +1096,7 @@ while( true )
 		}
 	else if( functionName.equals( "parse_operator2" ) )
 		{
-		patternBuf.append( parse_operator2( input, lengthBuf ) );
+		patternBuf.append( parse_operator2( input, lengthBuf, inCommentBuf ) );
 		input = input.substring( lengthBuf[ 0 ] );
 		}
 	else if( functionName.equals( "parse_char" ) )
@@ -1093,6 +1127,11 @@ while( true )
 	else if( functionName.equals( "parse_var" ) )
 		{
 		patternBuf.append( parse_var( input, lengthBuf ) );
+		input = input.substring( lengthBuf[ 0 ] );		
+		}
+	else if( functionName.equals( "parse_slash" ) )
+		{
+		patternBuf.append( parse_slash( input, lengthBuf, inCommentBuf ) );
 		input = input.substring( lengthBuf[ 0 ] );		
 		}
 	}
