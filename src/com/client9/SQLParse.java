@@ -7,10 +7,12 @@ public class SQLParse
 private static Map sqlKeywords = new HashMap( 500 );
 private static Map multiKeywords = new HashMap( 50 );
 private static List pt2Function = new ArrayList( 130 );
-private static List multiKeywordsStart;
+private static Set multiKeywordsStart;
+private static Set operators2;
+
 static
 {
-/* sqlparse_data_h_to_java output start */
+/* Automatically generated content. See sqlparse_data_h_to_java */
 sqlKeywords.put( "ABS", "f" );
 sqlKeywords.put( "ACCESSIBLE", "k" );
 sqlKeywords.put( "ACOS", "f" );
@@ -659,10 +661,10 @@ pt2Function.add( "parse_other");	/* } */
 pt2Function.add( "parse_operator1");	/* ~ */
 pt2Function.add( "parse_white");
 
-/* output end */
+/* Automatically generated content end */
 
+multiKeywordsStart = new HashSet( Arrays.asList( new String[]{
 	//copy and paste from sqlparse_data.h
-multiKeywordsStart = Arrays.asList( new String[]{
     "ALTER",
     "CROSS",
     "FULL",
@@ -684,7 +686,37 @@ multiKeywordsStart = Arrays.asList( new String[]{
     "SIMILAR",
     "SOUNDS",
     "UNION",
-} );
+} ) );
+
+operators2 = new HashSet( Arrays.asList( new String[]{
+	//copy and paste from sqlparse_data.h
+    "!!",
+    "!<",
+    "!=",
+    "!>",
+    "!~",
+    "%=",
+    "&&",
+    "&=",
+    "*=",
+    "+=",
+    "-=",
+    "/=",
+    ":=",
+    "<<",
+    "<=",
+    "<>",
+    "<@",
+    ">=",
+    ">>",
+    "@>",
+    "^=",
+    "|/",
+    "|=",
+    "||",
+    "~*",
+} ) );
+
 }
 //--------------------------------------------------------------------------------
 public static boolean isSQLi( final String input )
@@ -790,7 +822,7 @@ else if( input.equals( "." ) )
 	lengthBuf[ 0 ] = 1;
 	return "n";
 	}
-else if( input.matches( "^\\.[^0-9]+.*" ) ) // .A or .
+else if( input.matches( "^\\.[^0-9]+.*" ) ) // .A 
 	{
 	lengthBuf[ 0 ] = 1;
 	return "n";
@@ -804,7 +836,7 @@ else
 	  )
 		{
 		rest = Util.getMatch( "^(E.[0-9]+)", rest );
-		lengthBuf[ 0 ] = match.length() + rest.length();
+		lengthBuf[ 0 ] = match.length() + rest.length(); //TODO: 1.2E-1A should be 'n'?
 		return "1";
 		}
 	else if( rest.matches( "^[A-Z]+.*" ) ) //oh no!
@@ -820,11 +852,51 @@ else
 		}
 	}
 }
+//  <=> をoとして消化
+// コメント内の場合、*/を単にスキップする
+// && || を&として消化
+// is_operator2で2文字のオペレータかどうかしらべ、その場合はoとして消化する
+//--------------------------------------------------------------------------------
+protected static String parse_operator2( String input, int[] lengthBuf )
+{
+if( input.startsWith( "<=>" ) )
+	{
+	lengthBuf[ 0 ] = 3;
+	return "o";
+	}
+else if( input.length() == 1 )
+	{
+	lengthBuf[ 0 ] = 1;
+	return "o";	
+	}
+else
+	{
+	String twoByteStr = input.substring( 0, 2 );
+	if( twoByteStr.equals( "&&" ) || twoByteStr.equals( "||" ) )
+		{
+		lengthBuf[ 0 ] = 2;
+		return "&";
+		}
+	else
+		{
+		if( operators2.contains( twoByteStr ) )
+			{
+			lengthBuf[ 0 ] = 2;
+			return "o";
+			}
+		else
+			{
+			lengthBuf[ 0 ] = 1;
+			return "o";
+			}
+		}
+	}
+}
 //--------------------------------------------------------------------------------
 protected static String inputToPattern( String input )
 {
-//[parse_string, parse_word,  parse_white,
-//parse_number, parse_other, parse_operator2, parse_operator1,
+//[parse_string, parse_word,  parse_white, parse_number, parse_operator1, parse_operator2, 
+//parse_other, ,
 //parse_dash, parse_eol_comment, parse_var, parse_slash, parse_char, parse_backslash]
 
 input = input.toUpperCase();
@@ -857,6 +929,16 @@ while( true )
 	else if( functionName.equals( "parse_number" ) )
 		{
 		patternBuf.append( parse_number( input, lengthBuf ) );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_operator1" ) )
+		{
+		patternBuf.append( "o" );
+		input = input.substring( 1 );
+		}
+	else if( functionName.equals( "parse_operator2" ) )
+		{
+		patternBuf.append( parse_operator2( input, lengthBuf ) );
 		input = input.substring( lengthBuf[ 0 ] );
 		}
 	}

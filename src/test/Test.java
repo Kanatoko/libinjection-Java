@@ -33,6 +33,34 @@ testParseWord( "ABSA", "n" );
 private static void test2()
 throws Exception
 {
+testParseOperator2( "<=>", "o", 3 );
+testParseOperator2( "*=", "o", 2 );
+testParseOperator2( "!!", "o", 2 );
+testParseOperator2( "!<", "o", 2 );
+testParseOperator2( "!=", "o", 2 );
+testParseOperator2( "!>", "o", 2 );
+testParseOperator2( "!~", "o", 2 );
+testParseOperator2( "%=", "o", 2 );
+testParseOperator2( "&&", "&", 2 );
+testParseOperator2( "&=", "o", 2 );
+testParseOperator2( "*=", "o", 2 );
+testParseOperator2( "+=", "o", 2 );
+testParseOperator2( "-=", "o", 2 );
+testParseOperator2( "/=", "o", 2 );
+testParseOperator2( ":=", "o", 2 );
+testParseOperator2( "<<", "o", 2 );
+testParseOperator2( "<=", "o", 2 );
+testParseOperator2( "<>", "o", 2 );
+testParseOperator2( "<@", "o", 2 );
+testParseOperator2( ">=", "o", 2 );
+testParseOperator2( ">>", "o", 2 );
+testParseOperator2( "@>", "o", 2 );
+testParseOperator2( "^=", "o", 2 );
+testParseOperator2( "|/", "o", 2 );
+testParseOperator2( "|=", "o", 2 );
+testParseOperator2( "||", "&", 2 );
+testParseOperator2( "~*", "o", 2 );
+
 testParseNumber( "12345-", "1", 5 );
 testParseNumber( "0X1", "1", 3 );
 testParseNumber( "0X123", "1", 5 );
@@ -49,6 +77,18 @@ testParseNumber( "12345X", "n", 6 );
 testParseNumber( ".123", "1", 4 );
 testParseNumber( ".123V", "n", 5 );
 
+testInputToPattern( "&&", "&" );
+testInputToPattern( "&&ABS", "&f" );
+testInputToPattern( "9&&ABS", "1&f" );
+testInputToPattern( "12345&&ABS", "1&f" );
+
+testInputToPattern( "&", "o" );
+testInputToPattern( "&ABS", "of" );
+testInputToPattern( "9&ABS", "1of" );
+testInputToPattern( "12345&ABS", "1of" );
+
+testInputToPattern( "ABS|", "fo" );
+
 testInputToPattern( "ABS A", "fn" );
 testInputToPattern( "A'HOGE'", "ns" );
 testInputToPattern( "A 'HOGE'", "ns" );
@@ -64,22 +104,29 @@ testInputToPattern( ".123", "1" );
 testInputToPattern( ".123V", "n" );
 testInputToPattern( ".123 V", "1n" );
 testInputToPattern( ".123V V", "nn" );
-/*
-testInputToPattern( "1.2E-1", "1", 6 );
-testInputToPattern( "1.2E-1A", "1", 6 );
-testInputToPattern( "1.2E-12", "1", 7 );
-testInputToPattern( "1.2E+1", "1", 6 );
-testInputToPattern( "1.2E+1A", "1", 6 );
-testInputToPattern( "1.2E+12", "1", 7 );
-testInputToPattern( "12345X", "n", 6 );
-*/
-
+testInputToPattern( "1.2E-1", "1");
+testInputToPattern( "1.2E-1A", "1n" );
+testInputToPattern( "1.2E-12", "1" );
+testInputToPattern( "1.2E+1", "1" );
+testInputToPattern( "1.2E+1A", "1n" );
+testInputToPattern( "1.2E+12", "1" );
+testInputToPattern( "12345X", "n" );
 
 testParseString( "'HOGE'", '\'', "" );
 testParseString( "'HOGE'A", '\'', "A" );
 testParseString( "'HOGE'AA", '\'', "AA" );
 testParseString( "'", '\'', "" );
 testParseString( "''", '\'', "" );
+}
+//--------------------------------------------------------------------------------
+private static void testParseOperator2( String input, String result, int length )
+throws Exception
+{
+int[] lengthBuf = new int[ 1 ];
+if( !parse_operator2( input, lengthBuf ).equals( result ) )
+	{
+	ex( input + " " + result + " " + length );
+	}
 }
 //--------------------------------------------------------------------------------
 private static void testParseNumber( String input, String result, int length )
