@@ -86,6 +86,38 @@ testInputToPattern( "&", "o" );
 testInputToPattern( "&ABS", "of" );
 testInputToPattern( "9&ABS", "1of" );
 testInputToPattern( "12345&ABS", "1of" );
+testInputToPattern( "abs \"*/ :?&\"", "fs" );
+
+	//parse_char
+testInputToPattern( ":;(),", ":;()," );
+
+	//parse_backslash
+testInputToPattern( "\\N", "1" );
+testInputToPattern( "\\NABS", "1f" );
+testInputToPattern( "\\A", "?n" );
+testInputToPattern( "\\ABS", "?f" );
+
+	//parse_eol_comment
+testInputToPattern( "ABS#", "fc" );
+
+	//parse_dash
+testInputToPattern( "ABS--", "fc" );
+testInputToPattern( "ABS-", "fo" );
+
+	//parse_var
+testInputToPattern( "@-", "vo" );
+
+	//is_mysql_comment
+testMySqlComment( "/*", 0 );
+testMySqlComment( "/*a", 0 );
+testMySqlComment( "/*!", 3 );
+testMySqlComment( "/*!a", 3 );
+testMySqlComment( "/*!1", 4 );
+testMySqlComment( "/*!1a", 4 );
+testMySqlComment( "/*!12oo", 4 );
+testMySqlComment( "/*!12ooo", 3 ); //TODO: why 3?
+testMySqlComment( "/*!1234", 4 );
+testMySqlComment( "/*!12345", 8 );
 
 testInputToPattern( "ABS|", "fo" );
 
@@ -117,6 +149,35 @@ testParseString( "'HOGE'A", '\'', "A" );
 testParseString( "'HOGE'AA", '\'', "AA" );
 testParseString( "'", '\'', "" );
 testParseString( "''", '\'', "" );
+
+testParseVar( "@", "v", 1 );
+testParseVar( "@@", "v", 2 );
+testParseVar( "@@a", "v", 3 );
+testParseVar( "@a", "v", 2 );
+testParseVar( "@-", "v", 1 );
+testParseVar( "@@a-", "v", 3 );
+testParseVar( "@@$a-", "v", 4 );
+testParseVar( "@@_a-", "v", 4 );
+testParseVar( "@@a.a-", "v", 5 );
+}
+//--------------------------------------------------------------------------------
+private static void testMySqlComment( String input, int result )
+throws Exception
+{
+if( result != is_mysql_comment( input ) )
+	{
+	ex( input + " " + result );
+	}
+}
+//--------------------------------------------------------------------------------
+private static void testParseVar( String input, String result, int length )
+throws Exception
+{
+int[] lengthBuf = new int[ 1 ];
+if( !parse_var( input, lengthBuf ).equals( result ) )
+	{
+	ex( input + " " + result + " " + length );
+	}
 }
 //--------------------------------------------------------------------------------
 private static void testParseOperator2( String input, String result, int length )

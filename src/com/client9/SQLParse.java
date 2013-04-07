@@ -893,17 +893,141 @@ else
 	}
 }
 //--------------------------------------------------------------------------------
+protected static String parse_backslash( String input, int[] lengthBuf )
+{
+if( input.startsWith( "\\N" ) )
+	{
+	lengthBuf[ 0 ] = 2;
+	return "1";
+	}
+else
+	{
+	return parse_other( input, lengthBuf );
+	}
+}
+//--------------------------------------------------------------------------------
+protected static String parse_other( String input, int[] lengthBuf )
+{
+lengthBuf[ 0 ] = 1;
+return "?";
+}
+//--------------------------------------------------------------------------------
+protected static String parse_dash( String input, int[] lengthBuf )
+{
+if( input.startsWith( "--" ) )
+	{
+	return parse_eol_comment( input, lengthBuf );
+	}
+else
+	{
+	lengthBuf[ 0 ] = 1;
+	return "o";
+	}
+}
+//--------------------------------------------------------------------------------
+protected static String parse_eol_comment( String input, int[] lengthBuf )
+{
+int index = input.indexOf( '\n' );
+if( index == -1 )
+	{
+	lengthBuf[ 0 ] = input.length();
+	}
+else
+	{
+	lengthBuf[ 0 ] = index + 1;
+	}
+return "c";
+}
+//--------------------------------------------------------------------------------
+protected static String parse_var( String input, int[] lengthBuf )
+{
+//ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.$
+String match = Util.getMatch( "^(@{1,2}[A-Z0-9_\\.\\$]*)", input );
+lengthBuf[ 0 ] = match.length();
+return "v";
+}
+//--------------------------------------------------------------------------------
+protected static String parse_slash( String input, int[] lengthBuf )
+{
+if( input.length() == 2 )
+	{
+	if( input.charAt( 1 ) != '*' )
+		{
+		lengthBuf[ 0 ] = 1;
+		return "o";
+		}
+	}
+
+return "";
+}
+//戻り値は 0, 3, 4, 8のどれか
+// 8 -> /*!12345 が見つかった場合
+// 0 -> 見つからない場合
+// 3 -> /*!  だけ見つかった場合
+// 4 -> /*!1 まで見つかった場合
+//--------------------------------------------------------------------------------
+protected static int is_mysql_comment( String input )
+{
+	// input starts with /*
+if( input.length() <= 2 ) 
+	{
+	return 0;
+	}
+else if( input.charAt( 2 ) != '!' )
+	{
+	return 0;
+	}
+
+	// this is a mysql comment
+	// got "/*!"
+
+else if( input.length() == 3 )
+	{
+	return 3;
+	}
+	
+else if( input.length() == 4 )
+	{
+	if( Character.isDigit( input.charAt( 3 ) ) )
+		{
+		return 4;
+		}
+	else
+		{
+		return 3;
+		}
+	}
+	
+		//length > 4
+else if( !Character.isDigit( input.charAt( 4 ) ) ) // handle odd case of /*!0SELECT
+	{
+	return 4;
+	}
+else if( input.length() < 8 )
+	{
+	return 4;
+	}
+else if( input.matches( "^/\\*\\![0-9]{5}.*" ) )
+	{
+	return 8;
+	}
+else
+	{
+	return 3; //TODO: why 3?
+	}
+}
+//--------------------------------------------------------------------------------
 protected static String inputToPattern( String input )
 {
-//[parse_string, parse_word,  parse_white, parse_number, parse_operator1, parse_operator2, 
-//parse_other, ,
-//parse_dash, parse_eol_comment, parse_var, parse_slash, parse_char, parse_backslash]
+//[parse_string, parse_word,  parse_white, parse_number, parse_operator1, parse_operator2, parse_char, parse_backslash, parse_other, parse_dash, parse_eol_comment
+// ,parse_var
+//, parse_slash,  ]
 
 input = input.toUpperCase();
 StringBuffer patternBuf = new StringBuffer();
 while( true )
 	{
-	p( input );
+	//p( input );
 	if( input.length() == 0 )
 		{
 		break;
@@ -940,6 +1064,36 @@ while( true )
 		{
 		patternBuf.append( parse_operator2( input, lengthBuf ) );
 		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_char" ) )
+		{
+		patternBuf.append( firstChar );
+		input = input.substring( 1 );
+		}
+	else if( functionName.equals( "parse_backslash" ) )
+		{
+		patternBuf.append( parse_backslash( input, lengthBuf ) );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_other" ) )
+		{
+		patternBuf.append( parse_other( input, lengthBuf ) );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_eol_comment" ) )
+		{
+		patternBuf.append( parse_eol_comment( input, lengthBuf ) );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_dash" ) )
+		{
+		patternBuf.append( parse_dash( input, lengthBuf ) );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_var" ) )
+		{
+		patternBuf.append( parse_var( input, lengthBuf ) );
+		input = input.substring( lengthBuf[ 0 ] );		
 		}
 	}
 
