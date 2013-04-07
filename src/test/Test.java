@@ -80,35 +80,35 @@ testParseNumber( "12345X", "n", 6 );
 testParseNumber( ".123", "1", 4 );
 testParseNumber( ".123V", "n", 5 );
 
-testInputToPattern( "&&", "&" );
-testInputToPattern( "&&ABS", "&f" );
-testInputToPattern( "9&&ABS", "1&f" );
-testInputToPattern( "12345&&ABS", "1&f" );
+testParseToken( "&&", "&" );
+testParseToken( "&&ABS", "&f" );
+testParseToken( "9&&ABS", "1&f" );
+testParseToken( "12345&&ABS", "1&f" );
 
-testInputToPattern( "&", "o" );
-testInputToPattern( "&ABS", "of" );
-testInputToPattern( "9&ABS", "1of" );
-testInputToPattern( "12345&ABS", "1of" );
-testInputToPattern( "abs \"*/ :?&\"", "fs" );
+testParseToken( "&", "o" );
+testParseToken( "&ABS", "of" );
+testParseToken( "9&ABS", "1of" );
+testParseToken( "12345&ABS", "1of" );
+testParseToken( "abs \"*/ :?&\"", "fs" );
 
 	//parse_char
-testInputToPattern( ":;(),", ":;()," );
+testParseToken( ":;(),", ":;()," );
 
 	//parse_backslash
-testInputToPattern( "\\N", "1" );
-testInputToPattern( "\\NABS", "1f" );
-testInputToPattern( "\\A", "?n" );
-testInputToPattern( "\\ABS", "?f" );
+testParseToken( "\\N", "1" );
+testParseToken( "\\NABS", "1f" );
+testParseToken( "\\A", "?n" );
+testParseToken( "\\ABS", "?f" );
 
 	//parse_eol_comment
-testInputToPattern( "ABS#", "fc" );
+testParseToken( "ABS#", "fc" );
 
 	//parse_dash
-testInputToPattern( "ABS--", "fc" );
-testInputToPattern( "ABS-", "fo" );
+testParseToken( "ABS--", "fc" );
+testParseToken( "ABS-", "fo" );
 
 	//parse_var
-testInputToPattern( "@-", "vo" );
+testParseToken( "@-", "vo" );
 
 	//is_mysql_comment
 testMySqlComment( "/*", 0 );
@@ -122,43 +122,43 @@ testMySqlComment( "/*!12ooo", 3 ); //TODO: why 3?
 testMySqlComment( "/*!1234", 4 );
 testMySqlComment( "/*!12345", 8 );
 
-testInputToPattern( "ABS|", "fo" );
+testParseToken( "ABS|", "fo" );
 
-testInputToPattern( "ABS A", "fn" );
-testInputToPattern( "A'HOGE'", "ns" );
-testInputToPattern( "A 'HOGE'", "ns" );
-testInputToPattern( "A 'HOGE", "ns" );
-testInputToPattern( "'", "s" );
+testParseToken( "ABS A", "fn" );
+testParseToken( "A'HOGE'", "ns" );
+testParseToken( "A 'HOGE'", "ns" );
+testParseToken( "A 'HOGE", "ns" );
+testParseToken( "'", "s" );
 //testInputToPattern( "12345-", "1o" );
-testInputToPattern( "0X1", "1"  );
-testInputToPattern( "0X123", "1" );
-testInputToPattern( "0X123V", "1n" );
-testInputToPattern( ".", "n" );
-testInputToPattern( ".A", "nn" );
-testInputToPattern( ".123", "1" );
-testInputToPattern( ".123V", "n" );
-testInputToPattern( ".123 V", "1n" );
-testInputToPattern( ".123V V", "nn" );
-testInputToPattern( "1.2E-1", "1");
-testInputToPattern( "1.2E-1A", "1n" );
-testInputToPattern( "1.2E-12", "1" );
-testInputToPattern( "1.2E+1", "1" );
-testInputToPattern( "1.2E+1A", "1n" );
-testInputToPattern( "1.2E+12", "1" );
-testInputToPattern( "12345X", "n" );
+testParseToken( "0X1", "1"  );
+testParseToken( "0X123", "1" );
+testParseToken( "0X123V", "1n" );
+testParseToken( ".", "n" );
+testParseToken( ".A", "nn" );
+testParseToken( ".123", "1" );
+testParseToken( ".123V", "n" );
+testParseToken( ".123 V", "1n" );
+testParseToken( ".123V V", "nn" );
+testParseToken( "1.2E-1", "1");
+testParseToken( "1.2E-1A", "1n" );
+testParseToken( "1.2E-12", "1" );
+testParseToken( "1.2E+1", "1" );
+testParseToken( "1.2E+1A", "1n" );
+testParseToken( "1.2E+12", "1" );
+testParseToken( "12345X", "n" );
 
 	//parse_slash + mysql
-testInputToPattern( "/", "o" );
-testInputToPattern( "/a", "on" );
-testInputToPattern( "//", "oo" );
-testInputToPattern( "/*", "c" );
-testInputToPattern( "/*a", "c" );
-testInputToPattern( "/*abc*/", "c" );
-testInputToPattern( "/*abc*/a", "cn" ); //TODO: reader returns 'n'
-testInputToPattern( "/*! 123", "1" );
-testInputToPattern( "/*! 123 abs", "1f" );
-testInputToPattern( "/*! 123 abs */", "1f" );
-testInputToPattern( "/*! 123 abs */4", "1f1" );
+testParseToken( "/", "o" );
+testParseToken( "/a", "on" );
+testParseToken( "//", "oo" );
+testParseToken( "/*", "c" );
+testParseToken( "/*a", "c" );
+testParseToken( "/*abc*/", "c" );
+testParseToken( "/*abc*/a", "cn" ); //TODO: reader returns 'n'
+testParseToken( "/*! 123", "1" );
+testParseToken( "/*! 123 abs", "1f" );
+testParseToken( "/*! 123 abs */", "1f" );
+testParseToken( "/*! 123 abs */4", "1f1" );
 
 testParseString( "'HOGE'", '\'', "" );
 testParseString( "'HOGE'A", '\'', "A" );
@@ -235,10 +235,10 @@ if( !parse_string( input, delim ).equals( result ) )
 	}
 }
 //--------------------------------------------------------------------------------
-private static void testInputToPattern( String input, String pattern )
+private static void testParseToken( String input, String pattern )
 throws Exception
 {
-if( inputToPattern( input ).equals( pattern ) )
+if( parseToken( input ).equals( pattern ) )
 	{
 	//OK
 	}

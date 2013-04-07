@@ -737,13 +737,14 @@ throws Exception
 {
 Set s = new HashSet();
 s.addAll( pt2Function );
+
 p( s );
 }
 //--------------------------------------------------------------------------------
 private static boolean isSQLiImpl( final String input )
 throws Exception
 {
-String pattern = inputToPattern( input );
+String pattern = parseToken( input );
 return false;
 }
 //--------------------------------------------------------------------------------
@@ -1052,7 +1053,7 @@ else
 	}
 }
 //--------------------------------------------------------------------------------
-protected static String inputToPattern( String input )
+protected static String parseToken( String input )
 {
 input = input.toUpperCase();
 StringBuffer patternBuf = new StringBuffer();
@@ -1068,7 +1069,14 @@ while( true )
 		}
 	char firstChar = input.charAt( 0 );
 	int i = ( int )( ( byte )firstChar );
+	if( i < 0 || 127 < i )
+		{
+		input = input.substring( 1 );
+		continue;
+		}
+	
 	String functionName = ( String )pt2Function.get( i );
+
 	int[] lengthBuf = new int[ 1 ];
 	if( functionName.equals( "parse_word" ) )
 		{
