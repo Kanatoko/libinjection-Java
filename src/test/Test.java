@@ -9,12 +9,40 @@ extends SQLParse
 public static void main( String[] args )
 throws Exception
 {
+test3();
 test1();
 test2();
 
 p( "OK." );
 }
-//------------------------------------------0-------------------------------------
+//--------------------------------------------------------------------------------
+private static void test3()
+throws Exception
+{
+testParseToken( "ABS", "", "f", true );
+testParseToken( " ABS", "", "f", true );
+testParseToken( "123", "", "1", true );
+testParseToken( "'aaa'", "", "s", true );
+}
+//--------------------------------------------------------------------------------
+private static void testParseToken( String input, String inputOut, String type, boolean result )
+throws Exception
+{
+String[] inputBuf = new String[ 1 ];
+String[] typeBuf = new String[ 1 ];
+char delim = ' ';
+
+inputBuf[ 0 ] = input;
+boolean _result = parse_token( inputBuf, delim, typeBuf );
+if( _result != result
+ || !inputBuf[ 0 ].equals( inputOut )
+ || !typeBuf[ 0 ].equals( type )
+  )
+	{
+	ex( input + "/" + type + "/" + result  + "/" + inputBuf[ 0 ] + "/" + typeBuf[ 0 ] + "/" + _result );
+	}
+}
+//-------------------------------------------------------------------------------
 private static void ex( String message )
 throws Exception
 {
@@ -33,7 +61,6 @@ testParseWord( "ABSA", "n" );
 private static void test2()
 throws Exception
 {
-
 	//is_mysql_comment
 testMySqlComment( "/*", 0 );
 testMySqlComment( "/*a", 0 );
@@ -54,13 +81,13 @@ testParseString( "''", '\'', "" );
 
 testParseVar( "@", "v", 1 );
 testParseVar( "@@", "v", 2 );
-testParseVar( "@@a", "v", 3 );
-testParseVar( "@a", "v", 2 );
+testParseVar( "@@A", "v", 3 );
+testParseVar( "@A", "v", 2 );
 testParseVar( "@-", "v", 1 );
-testParseVar( "@@a-", "v", 3 );
-testParseVar( "@@$a-", "v", 4 );
-testParseVar( "@@_a-", "v", 4 );
-testParseVar( "@@a.a-", "v", 5 );
+testParseVar( "@@A-", "v", 3 );
+testParseVar( "@@$A-", "v", 4 );
+testParseVar( "@@_A-", "v", 4 );
+testParseVar( "@@A.A-", "v", 5 );
 
 testParseOperator2( "*/", "", 2, true );
 testParseOperator2( "*/a", "", 2, true );
@@ -196,9 +223,12 @@ private static void testParseVar( String input, String result, int length )
 throws Exception
 {
 int[] lengthBuf = new int[ 1 ];
-if( !parse_var( input, lengthBuf ).equals( result ) )
+String[] typeBuf = new String[ 1 ];
+parse_var( input, typeBuf, lengthBuf );
+if( !typeBuf[ 0 ].equals( result )
+ || lengthBuf[ 0 ] != length )
 	{
-	ex( input + " " + result + " " + length );
+	ex( input + "/" + result + "/" + length + "/" + typeBuf[ 0 ] + "/" + lengthBuf[ 0 ] );
 	}
 }
 //--------------------------------------------------------------------------------
@@ -212,11 +242,14 @@ private static void testParseOperator2( String input, String result, int length,
 throws Exception
 {
 int[] lengthBuf = new int[ 1 ];
-boolean inCommentBuf[] = new boolean[ 1 ];
-inCommentBuf[ 0 ] = inComment;
-if( !parse_operator2( input, lengthBuf, inCommentBuf ).equals( result ) )
+String[] typeBuf = new String[ 1 ];
+parse_operator2( input, inComment, typeBuf, lengthBuf );
+
+if( lengthBuf[ 0 ] != length
+ || !result.equals( typeBuf[ 0 ] )
+  )
 	{
-	ex( input + " " + result + " " + length );
+	ex( input + "/" + result + "/" + length + "/" + typeBuf[ 0 ] + "/" + lengthBuf[ 0 ] );
 	}
 }
 //--------------------------------------------------------------------------------
@@ -224,12 +257,17 @@ private static void testParseNumber( String input, String result, int length )
 throws Exception
 {
 int[] lengthBuf = new int[ 1 ];
-if( !parse_number( input, lengthBuf ).equals( result )
- || lengthBuf[ 0 ] != length
- )
+String[] typeBuf = new String[ 1 ];
+
+parse_number( input, typeBuf, lengthBuf );
+
+if( lengthBuf[ 0 ] != length
+ || !result.equals( typeBuf[ 0 ] )
+  )
 	{
-	ex( input + " " + result + " " + length );
+	ex( input + "/" + result + "/" + length + "/" + typeBuf[ 0 ] + "/" + lengthBuf[ 0 ] );
 	}
+
 }
 //--------------------------------------------------------------------------------
 private static void testParseString( String input, char delim, String result )
@@ -257,18 +295,21 @@ else
 	}
 }
 //--------------------------------------------------------------------------------
-private static void testParseWord( String input, String pattern )
+private static void testParseWord( String input, String result )
 throws Exception
 {
 int[] lengthBuf = new int[ 1 ];
-if( parse_word( input, lengthBuf ).equals( pattern ) )
+String[] typeBuf = new String[ 1 ];
+
+parse_word( input, typeBuf, lengthBuf );
+
+input = input.substring( lengthBuf[ 0 ] );
+
+if( !result.equals( typeBuf[ 0 ] ) )
 	{
-	//OK
+	ex( input + "/" + typeBuf[ 0 ] + "/" + lengthBuf[ 0 ] );
 	}
-else
-	{
-	ex( input + " " + pattern );
-	}
+
 }
 //--------------------------------------------------------------------------------
 }

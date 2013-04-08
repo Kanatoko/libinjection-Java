@@ -753,18 +753,18 @@ protected static void p( Object o )
 System.out.println( o );
 }
 //--------------------------------------------------------------------------------
-protected static String parse_word( String input, int[] lengthBuf )
+protected static void parse_word( String input, String[] typeBuf, int[] lengthBuf )
 {
 String word = Util.getMatch( "^[A-Z0-9_\\.$]+", input );
 lengthBuf[ 0 ] = word.length();
 String value = ( String )sqlKeywords.get( word );
 if( value == null )
 	{
-	return "n";
+	typeBuf[ 0 ] = "n";
 	}
 else
 	{
-	return value;
+	typeBuf[ 0 ] = value;
 	}
 }
 //--------------------------------------------------------------------------------
@@ -806,7 +806,7 @@ lengthBuf[ 0 ] = input.length();
 return;
 }
 //--------------------------------------------------------------------------------
-protected static String parse_number( String input, int[] lengthBuf )
+protected static void parse_number( String input, String[] typeBuf, int[] lengthBuf )
 {
 if( input.startsWith( "0X" ) )
 	{
@@ -814,23 +814,23 @@ if( input.startsWith( "0X" ) )
 	if( match.length() == 2 )
 		{
 		lengthBuf[ 0 ] = 2;
-		return "n";
+		typeBuf[ 0 ] = "n";
 		}
 	else
 		{
 		lengthBuf[ 0 ] = match.length();
-		return "1";
+		typeBuf[ 0 ] = "1";
 		}
 	}
 else if( input.equals( "." ) )
 	{
 	lengthBuf[ 0 ] = 1;
-	return "n";
+	typeBuf[ 0 ] = "n";
 	}
 else if( input.matches( "^\\.[^0-9]+.*" ) ) // .A 
 	{
 	lengthBuf[ 0 ] = 1;
-	return "n";
+	typeBuf[ 0 ] = "n";
 	}
 else
 	{
@@ -842,38 +842,38 @@ else
 		{
 		rest = Util.getMatch( "^(E.[0-9]+)", rest );
 		lengthBuf[ 0 ] = match.length() + rest.length(); //TODO: 1.2E-1A should be 'n'?
-		return "1";
+		typeBuf[ 0 ] = "1";
 		}
 	else if( rest.matches( "^[A-Z]+.*" ) ) //oh no!
 		{
 		String restAlNum = Util.getMatch( "^([A-Z0-9]+)", rest );
 		lengthBuf[ 0 ] = match.length() + restAlNum.length();
-		return "n";
+		typeBuf[ 0 ] = "n";
 		}
 	else
 		{
 		lengthBuf[ 0 ] = match.length();
-		return "1";
+		typeBuf[ 0 ] = "1";
 		}
 	}
 }
+// MySQLのコメント内の場合は */ をスルーする
 //  <=> をoとして消化
 // コメント内の場合、*/を単にスキップする
 // && || を&として消化
 // is_operator2で2文字のオペレータかどうかしらべ、その場合はoとして消化する
-// MySQLのコメント内の場合は */ をスルーする
 //--------------------------------------------------------------------------------
-protected static String parse_operator2( String input, int[] lengthBuf, boolean[] inCommentBuf )
+protected static void parse_operator2( String input, final boolean inComment, String[] typeBuf, int[] lengthBuf )
 {
 if( input.startsWith( "<=>" ) )
 	{
 	lengthBuf[ 0 ] = 3;
-	return "o";
+	typeBuf[ 0 ] = "o";
 	}
 else if( input.length() == 1 )
 	{
 	lengthBuf[ 0 ] = 1;
-	return "o";	
+	typeBuf[ 0 ] = "o";	
 	}
 else
 	{
@@ -881,62 +881,62 @@ else
 	if( twoByteStr.equals( "&&" ) || twoByteStr.equals( "||" ) )
 		{
 		lengthBuf[ 0 ] = 2;
-		return "&";
+		typeBuf[ 0 ] = "&";
 		}
-	else if( inCommentBuf[ 0 ] == true && twoByteStr.equals( "*/" ) )
+	else if( inComment && twoByteStr.equals( "*/" ) )
 		{
 		lengthBuf[ 0 ] = 2;
-		return "";
+		typeBuf[ 0 ] = "";
 		}
 	else
 		{
 		if( operators2.contains( twoByteStr ) )
 			{
 			lengthBuf[ 0 ] = 2;
-			return "o";
+			typeBuf[ 0 ] = "o";
 			}
 		else
 			{
 			lengthBuf[ 0 ] = 1;
-			return "o";
+			typeBuf[ 0 ] = "o";
 			}
 		}
 	}
 }
 //--------------------------------------------------------------------------------
-protected static String parse_backslash( String input, int[] lengthBuf )
+protected static void parse_backslash( String input, String[] typeBuf, int[] lengthBuf )
 {
 if( input.startsWith( "\\N" ) )
 	{
 	lengthBuf[ 0 ] = 2;
-	return "1";
+	typeBuf[ 0 ] = "1";
 	}
 else
 	{
-	return parse_other( input, lengthBuf );
+	parse_other( input, typeBuf, lengthBuf );
 	}
 }
 //--------------------------------------------------------------------------------
-protected static String parse_other( String input, int[] lengthBuf )
+protected static void parse_other( String input, String[] typeBuf, int[] lengthBuf )
 {
 lengthBuf[ 0 ] = 1;
-return "?";
+typeBuf[ 0 ] = "?";
 }
 //--------------------------------------------------------------------------------
-protected static String parse_dash( String input, int[] lengthBuf )
+protected static void parse_dash( String input, String[] typeBuf, int[] lengthBuf )
 {
 if( input.startsWith( "--" ) )
 	{
-	return parse_eol_comment( input, lengthBuf );
+	parse_eol_comment( input, typeBuf, lengthBuf );
 	}
 else
 	{
 	lengthBuf[ 0 ] = 1;
-	return "o";
+	typeBuf[ 0 ] = "o";
 	}
 }
 //--------------------------------------------------------------------------------
-protected static String parse_eol_comment( String input, int[] lengthBuf )
+protected static void parse_eol_comment( String input, String[] typeBuf, int[] lengthBuf )
 {
 int index = input.indexOf( '\n' );
 if( index == -1 )
@@ -947,23 +947,23 @@ else
 	{
 	lengthBuf[ 0 ] = index + 1;
 	}
-return "c";
+typeBuf[ 0 ] = "c";
 }
 //--------------------------------------------------------------------------------
-protected static String parse_var( String input, int[] lengthBuf )
+protected static void parse_var( String input, String[] typeBuf, int[] lengthBuf )
 {
 //ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.$
 String match = Util.getMatch( "^(@{1,2}[A-Z0-9_\\.\\$]*)", input );
 lengthBuf[ 0 ] = match.length();
-return "v";
+typeBuf[ 0 ] = "v";
 }
 //--------------------------------------------------------------------------------
-protected static String parse_slash( String input, int[] lengthBuf, boolean[] inCommentBuf )
+protected static void parse_slash( String input, int[] lengthBuf, String[] typeBuf, boolean[] inCommentBuf )
 {
 if( !input.startsWith( "/*" ) )
 	{
 	lengthBuf[ 0 ] = 1;
-	return "o";
+	typeBuf[ 0 ] = "o";
 	}
 
 	//starts with /*
@@ -971,7 +971,7 @@ else if( input.length() == 2 )
 	{
 	//input is '/*'
 	lengthBuf[ 0 ] = 2;
-	return "c";
+	typeBuf[ 0 ] = "c";
 	}
 
 //length > 2
@@ -983,12 +983,12 @@ if( mysqlResult == 0 )
 	if( index == -1 )
 		{
 		lengthBuf[ 0 ] = input.length();
-		return "c";
+		typeBuf[ 0 ] = "c";
 		}
 	else
 		{
 		lengthBuf[ 0 ] = index + 2;
-		return "c";
+		typeBuf[ 0 ] = "c";
 		}
 	}
 else
@@ -996,7 +996,7 @@ else
 	//MySQL Comment
 	inCommentBuf[ 0 ] = true;
 	lengthBuf[ 0 ] = mysqlResult;
-	return "";
+	typeBuf[ 0 ] = "";
 	}
 }
 //--------------------------------------------------------------------------------
@@ -1058,12 +1058,14 @@ else
 }
 //--------------------------------------------------------------------------------
 // 'や"の内部にいるときは終わりまでパースしてtrueで抜ける
-// ch < 0 || ch > 127 の文字は全部無視してループする
+// ch < 0 || ch > 127 の文字は全部無視してループする(いちいち関数を抜けない）
 // 最後にたどり着いてしまったらfalseで抜ける
 // 何かしらtypeを取得できたらtrueで抜ける
-protected static boolean parse_token( String input, char delim, int[] lengthBuf, String[] typeBuf )
+protected static boolean parse_token( String[] inputBuf, char delim, String[] typeBuf )
 {
 	//initialize
+String input = inputBuf[ 0 ];
+int[] lengthBuf = new int[ 1 ];
 lengthBuf[ 0 ] = 0;
 typeBuf[ 0 ] = "";
 
@@ -1093,11 +1095,12 @@ while( true )
 		}
 	
 	String functionName = ( String )pt2Function.get( i );
+	p( functionName );
 	
 	if( functionName.equals( "parse_word" ) )
 		{
-		typeBuf[ 0 ] = parse_word( input, lengthBuf );
-		//input = input.substring( lengthBuf[ 0 ] );
+		parse_word( input, typeBuf, lengthBuf );
+		input = input.substring( lengthBuf[ 0 ] );
 		}
 	else if( functionName.equals( "parse_white" ) )
 		{
@@ -1108,18 +1111,19 @@ while( true )
 		{
 		typeBuf[ 0 ] = "s";
 		parse_string( input, firstChar, lengthBuf );
+		input = input.substring( lengthBuf[ 0 ] );
 		}
-	/*
 	else if( functionName.equals( "parse_number" ) )
 		{
-		patternBuf.append( parse_number( input, lengthBuf ) );
+		parse_number( input, typeBuf, lengthBuf );
 		input = input.substring( lengthBuf[ 0 ] );
 		}
 	else if( functionName.equals( "parse_operator1" ) )
 		{
-		patternBuf.append( "o" );
+		typeBuf[ 0 ] = "o";
 		input = input.substring( 1 );
 		}
+	/*
 	else if( functionName.equals( "parse_operator2" ) )
 		{
 		patternBuf.append( parse_operator2( input, lengthBuf, inCommentBuf ) );
@@ -1161,7 +1165,18 @@ while( true )
 		input = input.substring( lengthBuf[ 0 ] );		
 		}
 	*/
-	return true;
+	
+	p( "---" + input + "---" );
+	p( ":::" + typeBuf[ 0 ] + ":::" );
+	if( typeBuf[ 0 ].equals( "" ) )
+		{
+		
+		}
+	else
+		{
+		inputBuf[ 0 ] = input;
+		return true;
+		}
 	}
 }
 //--------------------------------------------------------------------------------
