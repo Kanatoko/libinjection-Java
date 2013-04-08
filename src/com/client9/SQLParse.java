@@ -4,6 +4,8 @@ import java.util.*;
 
 public class SQLParse
 {
+public static final int MAX_TOKENS = 5;
+
 private static Map sqlKeywords = new HashMap( 500 );
 private static Map multiKeywords = new HashMap( 50 );
 private static List pt2Function = new ArrayList( 130 );
@@ -863,7 +865,7 @@ else
 // && || を&として消化
 // is_operator2で2文字のオペレータかどうかしらべ、その場合はoとして消化する
 //--------------------------------------------------------------------------------
-protected static void parse_operator2( String input, final boolean inComment, String[] typeBuf, int[] lengthBuf )
+protected static void parse_operator2( String input, final boolean[] inCommentBuf, String[] typeBuf, int[] lengthBuf )
 {
 if( input.startsWith( "<=>" ) )
 	{
@@ -883,9 +885,10 @@ else
 		lengthBuf[ 0 ] = 2;
 		typeBuf[ 0 ] = "&";
 		}
-	else if( inComment && twoByteStr.equals( "*/" ) )
+	else if( inCommentBuf[ 0 ] && twoByteStr.equals( "*/" ) )
 		{
 		lengthBuf[ 0 ] = 2;
+		inCommentBuf[ 0 ] = false;
 		typeBuf[ 0 ] = "";
 		}
 	else
@@ -973,30 +976,31 @@ else if( input.length() == 2 )
 	lengthBuf[ 0 ] = 2;
 	typeBuf[ 0 ] = "c";
 	}
-
-//length > 2
-
-int mysqlResult = is_mysql_comment( input );
-if( mysqlResult == 0 )
+else
 	{
-	int index = input.indexOf( "*/", 2 );
-	if( index == -1 )
+	//length > 2
+	int mysqlResult = is_mysql_comment( input );
+	if( mysqlResult == 0 )
 		{
-		lengthBuf[ 0 ] = input.length();
-		typeBuf[ 0 ] = "c";
+		int index = input.indexOf( "*/", 2 );
+		if( index == -1 )
+			{
+			lengthBuf[ 0 ] = input.length();
+			typeBuf[ 0 ] = "c";
+			}
+		else
+			{
+			lengthBuf[ 0 ] = index + 2;
+			typeBuf[ 0 ] = "c";
+			}
 		}
 	else
 		{
-		lengthBuf[ 0 ] = index + 2;
-		typeBuf[ 0 ] = "c";
+		//MySQL Comment
+		inCommentBuf[ 0 ] = true;
+		lengthBuf[ 0 ] = mysqlResult;
+		typeBuf[ 0 ] = "";
 		}
-	}
-else
-	{
-	//MySQL Comment
-	inCommentBuf[ 0 ] = true;
-	lengthBuf[ 0 ] = mysqlResult;
-	typeBuf[ 0 ] = "";
 	}
 }
 //--------------------------------------------------------------------------------
@@ -1061,7 +1065,7 @@ else
 // ch < 0 || ch > 127 の文字は全部無視してループする(いちいち関数を抜けない）
 // 最後にたどり着いてしまったらfalseで抜ける
 // 何かしらtypeを取得できたらtrueで抜ける
-protected static boolean parse_token( String[] inputBuf, char delim, String[] typeBuf )
+protected static void parse_token( String[] inputBuf, boolean[] inCommentBuf, String[] typeBuf )
 {
 	//initialize
 String input = inputBuf[ 0 ];
@@ -1069,130 +1073,154 @@ int[] lengthBuf = new int[ 1 ];
 lengthBuf[ 0 ] = 0;
 typeBuf[ 0 ] = "";
 
-if( input.length() == 0 )
+char firstChar = input.charAt( 0 );
+int i = ( int )( ( byte )firstChar );
+if( i < 0 || 127 < i )
 	{
-	return false;
+	input = input.substring( 1 );
 	}
 
-boolean inComment = false;
-if( delim == '\'' || delim == '"' )
+String functionName = ( String )pt2Function.get( i );
+p( functionName );
+
+if( functionName.equals( "parse_word" ) )
 	{
-		//TODO implement
-	return true;
+	parse_word( input, typeBuf, lengthBuf );
+	input = input.substring( lengthBuf[ 0 ] );
+	}
+else if( functionName.equals( "parse_white" ) )
+	{
+	input = input.substring( 1 );
+	}
+else if( functionName.equals( "parse_string" ) )
+	{
+	typeBuf[ 0 ] = "s";
+	parse_string( input, firstChar, lengthBuf );
+	input = input.substring( lengthBuf[ 0 ] );
+	}
+else if( functionName.equals( "parse_number" ) )
+	{
+	parse_number( input, typeBuf, lengthBuf );
+	input = input.substring( lengthBuf[ 0 ] );
+	}
+else if( functionName.equals( "parse_operator1" ) )
+	{
+	typeBuf[ 0 ] = "o";
+	input = input.substring( 1 );
+	}
+else if( functionName.equals( "parse_operator2" ) )
+	{
+	parse_operator2( input, inCommentBuf, typeBuf, lengthBuf );
+	input = input.substring( lengthBuf[ 0 ] );
+	}
+else if( functionName.equals( "parse_char" ) )
+	{
+	typeBuf[ 0 ] = firstChar + "";
+	input = input.substring( 1 );
+	}
+else if( functionName.equals( "parse_backslash" ) )
+	{
+	parse_backslash( input, typeBuf, lengthBuf );
+	input = input.substring( lengthBuf[ 0 ] );
+	}
+else if( functionName.equals( "parse_other" ) )
+	{
+	parse_other( input, typeBuf, lengthBuf );
+	input = input.substring( lengthBuf[ 0 ] );
+	}
+else if( functionName.equals( "parse_eol_comment" ) )
+	{
+	parse_eol_comment( input, typeBuf, lengthBuf );
+	input = input.substring( lengthBuf[ 0 ] );
+	}
+else if( functionName.equals( "parse_dash" ) )
+	{
+	parse_dash( input, typeBuf, lengthBuf );
+	input = input.substring( lengthBuf[ 0 ] );
+	}
+else if( functionName.equals( "parse_var" ) )
+	{
+	parse_var( input, typeBuf, lengthBuf );
+	input = input.substring( lengthBuf[ 0 ] );		
+	}
+else if( functionName.equals( "parse_slash" ) )
+	{
+	parse_slash( input, lengthBuf, typeBuf, inCommentBuf );
+	input = input.substring( lengthBuf[ 0 ] );		
 	}
 
-while( true )
-	{
-	if( input.length() == 0 )
-		{
-		return false;
-		}
-	char firstChar = input.charAt( 0 );
-	int i = ( int )( ( byte )firstChar );
-	if( i < 0 || 127 < i )
-		{
-		input = input.substring( 1 );
-		continue;
-		}
-	
-	String functionName = ( String )pt2Function.get( i );
-	p( functionName );
-	
-	if( functionName.equals( "parse_word" ) )
-		{
-		parse_word( input, typeBuf, lengthBuf );
-		input = input.substring( lengthBuf[ 0 ] );
-		}
-	else if( functionName.equals( "parse_white" ) )
-		{
-		input = input.substring( 1 );
-		continue;
-		}
-	else if( functionName.equals( "parse_string" ) )
-		{
-		typeBuf[ 0 ] = "s";
-		parse_string( input, firstChar, lengthBuf );
-		input = input.substring( lengthBuf[ 0 ] );
-		}
-	else if( functionName.equals( "parse_number" ) )
-		{
-		parse_number( input, typeBuf, lengthBuf );
-		input = input.substring( lengthBuf[ 0 ] );
-		}
-	else if( functionName.equals( "parse_operator1" ) )
-		{
-		typeBuf[ 0 ] = "o";
-		input = input.substring( 1 );
-		}
-	else if( functionName.equals( "parse_operator2" ) )
-		{
-		parse_operator2( input, inComment, typeBuf, lengthBuf );
-		input = input.substring( lengthBuf[ 0 ] );
-		}
-	else if( functionName.equals( "parse_char" ) )
-		{
-		typeBuf[ 0 ] = firstChar + "";
-		input = input.substring( 1 );
-		}
-	else if( functionName.equals( "parse_backslash" ) )
-		{
-		parse_backslash( input, typeBuf, lengthBuf );
-		input = input.substring( lengthBuf[ 0 ] );
-		}
-	else if( functionName.equals( "parse_other" ) )
-		{
-		parse_other( input, typeBuf, lengthBuf );
-		input = input.substring( lengthBuf[ 0 ] );
-		}
-	else if( functionName.equals( "parse_eol_comment" ) )
-		{
-		parse_eol_comment( input, typeBuf, lengthBuf );
-		input = input.substring( lengthBuf[ 0 ] );
-		}
-	/*
-	else if( functionName.equals( "parse_dash" ) )
-		{
-		patternBuf.append( parse_dash( input, lengthBuf ) );
-		input = input.substring( lengthBuf[ 0 ] );
-		}
-	else if( functionName.equals( "parse_var" ) )
-		{
-		patternBuf.append( parse_var( input, lengthBuf ) );
-		input = input.substring( lengthBuf[ 0 ] );		
-		}
-	else if( functionName.equals( "parse_slash" ) )
-		{
-		patternBuf.append( parse_slash( input, lengthBuf, inCommentBuf ) );
-		input = input.substring( lengthBuf[ 0 ] );		
-		}
-	*/
-	
-	p( "---" + input + "---" );
-	p( ":::" + typeBuf[ 0 ] + ":::" );
-	if( typeBuf[ 0 ].equals( "" ) )
-		{
-		
-		}
-	else
-		{
-		inputBuf[ 0 ] = input;
-		return true;
-		}
-	}
+p( "---" + input + "---" );
+p( ":::" + typeBuf[ 0 ] + ":::" );
+inputBuf[ 0 ] = input;
 }
 //--------------------------------------------------------------------------------
 protected static String sqli_tokenize( String input )
 {
 input = input.toUpperCase();
-StringBuffer patternBuf = new StringBuffer();
-boolean[] inCommentBuf = new boolean[ 1 ];
-inCommentBuf[ 0 ] = false;
+String[] type = new String[ MAX_TOKENS ];
+Arrays.fill( type, "" );
 
-String lastType;
-String currentType;
+String[] inputBuf = new String[]{ input };
+boolean[] inCommentBuf = new boolean[]{ false };
+String[] typeBuf = new String[]{ "" };
 
+int typeIndex = 0;
+while( true )
+	{
+	parse_token( inputBuf, inCommentBuf, typeBuf );
 
-return null;
+	if( typeBuf[ 0 ].length() == 1 )
+		{
+			//remove last 'c' comment
+		if( typeIndex > 0 && type[ typeIndex -1 ].equals( "c" ) )
+			{
+			typeIndex --;
+			}
+		
+		type[ typeIndex ] = typeBuf[ 0 ];
+		++ typeIndex;
+		}
+		
+	if( typeIndex == type.length )
+		{
+		p( "type is full" );
+		break;
+		}
+
+	if( inputBuf[ 0 ].length() == 0 )
+		{
+		p( "input is consumed" );
+		break;
+		}
+	}
+StringBuffer buf = new StringBuffer();
+for( int i = 0; i < type.length; ++i )
+	{
+	buf.append( type[ i ] );
+	}
+return buf.toString();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //--------------------------------------------------------------------------------
 }

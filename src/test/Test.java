@@ -19,50 +19,62 @@ p( "OK." );
 private static void test3()
 throws Exception
 {
-testParseToken( "ABS", "", "f", true );
-testParseToken( " ABS", "", "f", true );
-testParseToken( "123", "", "1", true );
-testParseToken( "'aaa'", "", "s", true );
+testParseToken( "ABS", "", "f" );
+//testParseToken( " ABS", "", "f" );
+testParseToken( "123", "", "1" );
+testParseToken( "'aaa'", "", "s" );
 
 	//operator2
-testParseToken( "<=>", "", "o", true );
-testParseToken( "&&", "", "&", true );
+testParseToken( "<=>", "", "o" );
+testParseToken( "&&", "", "&" );
 
 	//parse_char
-testParseToken( "(", "", "(", true );
+testParseToken( "(", "", "(" );
 
 	//parse_backslash
-testParseToken( "\\N", "", "1", true );
-testParseToken( "\\NABS", "ABS", "1", true );
-testParseToken( "\\A", "A", "?", true );
-testParseToken( "\\ABS", "ABS", "?", true );
+testParseToken( "\\N", "", "1" );
+testParseToken( "\\NABS", "ABS", "1" );
+testParseToken( "\\A", "A", "?" );
+testParseToken( "\\ABS", "ABS", "?" );
 
 	//parse_other
-testParseToken( "[", "", "?", true );
+testParseToken( "[", "", "?" );
 
 	//parse_eol_comment
-testParseToken( "#hogehoge\na", "a", "c", true );
-testParseToken( "#hogehoge", "", "c", true );
-testParseToken( "#hogehoge\nhogefuga", "hogefuga", "c", true );
+testParseToken( "#hogehoge\na", "a", "c" );
+testParseToken( "#hogehoge", "", "c" );
+testParseToken( "#hogehoge\nhogefuga", "hogefuga", "c" );
 
+	//parse_dash
+testParseToken( "-a", "a", "o" );
+testParseToken( "--a", "", "c" );
+testParseToken( "--a\nhoge", "hoge", "c" );
+
+	//parse_white
+testParseToken( " ", "", "" );
+
+	//parse_char
+testParseToken( ",", "", "," );
 
 }
 //--------------------------------------------------------------------------------
-private static void testParseToken( String input, String inputOut, String type, boolean result )
+private static void testParseToken( String input, String inputOut, String type )
 throws Exception
 {
 String[] inputBuf = new String[ 1 ];
 String[] typeBuf = new String[ 1 ];
+boolean[] inCommentBuf = new boolean[ 1 ];
+inCommentBuf[ 0 ] = false;
 char delim = ' ';
 
 inputBuf[ 0 ] = input;
-boolean _result = parse_token( inputBuf, delim, typeBuf );
-if( _result != result
+parse_token( inputBuf, inCommentBuf, typeBuf );
+if( false
  || !inputBuf[ 0 ].equals( inputOut )
  || !typeBuf[ 0 ].equals( type )
   )
 	{
-	ex( input + "/" + type + "/" + result  + "/" + inputBuf[ 0 ] + "/" + typeBuf[ 0 ] + "/" + _result );
+	ex( input + "/" + type + "/" + inputBuf[ 0 ] + "/" + typeBuf[ 0 ] );
 	}
 }
 //-------------------------------------------------------------------------------
@@ -159,12 +171,9 @@ testParseNumber( "12345X", "n", 6 );
 testParseNumber( ".123", "1", 4 );
 testParseNumber( ".123V", "n", 5 );
 
-if( System.currentTimeMillis() > 0 )
-	{
-	return;
-	}
 testParseToken( "&&", "&" );
 testParseToken( "&&ABS", "&f" );
+
 testParseToken( "9&&ABS", "1&f" );
 testParseToken( "12345&&ABS", "1&f" );
 
@@ -225,12 +234,17 @@ testParseToken( "//", "oo" );
 testParseToken( "/*", "c" );
 testParseToken( "/*a", "c" );
 testParseToken( "/*abc*/", "c" );
-testParseToken( "/*abc*/a", "cn" ); //TODO: reader returns 'n'
+testParseToken( "/*abc*/a", "n" );
 testParseToken( "/*! 123", "1" );
 testParseToken( "/*! 123 abs", "1f" );
 testParseToken( "/*! 123 abs */", "1f" );
 testParseToken( "/*! 123 abs */4", "1f1" );
 
+testParseToken( "111 abs 222 abs 333 abs 444 abs 555 abs", "1f1f1" );
+
+	//comment
+testParseToken( "/*hoge*/abs/*fuga*/1", "f1" );
+testParseToken( "/*hoge*/abs/*fuga*/1/*gyoe*/", "f1c" );
 }
 //--------------------------------------------------------------------------------
 private static void testMySqlComment( String input, int result )
@@ -266,7 +280,9 @@ throws Exception
 {
 int[] lengthBuf = new int[ 1 ];
 String[] typeBuf = new String[ 1 ];
-parse_operator2( input, inComment, typeBuf, lengthBuf );
+boolean[] inCommentBuf = new boolean[ 1 ];
+inCommentBuf[ 0 ] = inComment;
+parse_operator2( input, inCommentBuf, typeBuf, lengthBuf );
 
 if( lengthBuf[ 0 ] != length
  || !result.equals( typeBuf[ 0 ] )
@@ -308,13 +324,14 @@ if( !_result.equals( result ) )
 private static void testParseToken( String input, String pattern )
 throws Exception
 {
-if( sqli_tokenize( input ).equals( pattern ) )
+String result = sqli_tokenize( input );
+if( pattern.equals( result ) )
 	{
 	//OK
 	}
 else
 	{
-	ex( input + " " + pattern );	
+	ex( input + "/" + pattern + "/" + result );	
 	}
 }
 //--------------------------------------------------------------------------------
