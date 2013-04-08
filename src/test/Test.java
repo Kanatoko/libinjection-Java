@@ -245,6 +245,10 @@ testParseToken( "111 abs 222 abs 333 abs 444 abs 555 abs", "1f1f1" );
 	//comment
 testParseToken( "/*hoge*/abs/*fuga*/1", "f1" );
 testParseToken( "/*hoge*/abs/*fuga*/1/*gyoe*/", "f1c" );
+
+	//multikeywords
+testParseToken( "1 alter table", "1k" );
+testParseToken( "1 in boolean mode", "1k" );
 }
 //--------------------------------------------------------------------------------
 private static void testMySqlComment( String input, int result )

@@ -11,6 +11,7 @@ private static Map multiKeywords = new HashMap( 50 );
 private static List pt2Function = new ArrayList( 130 );
 private static Set multiKeywordsStart;
 private static Set operators2;
+private static Set multikeywordsFirstWordTypeSet;
 
 static
 {
@@ -500,40 +501,6 @@ multiKeywords.put( "SIMILAR TO", "o" );
 multiKeywords.put( "SOUNDS LIKE", "o" );
 multiKeywords.put( "UNION ALL", "U" );
 
-multiKeywords.put( "ALTER DOMAIN", "k" );
-multiKeywords.put( "ALTER TABLE", "k" );
-multiKeywords.put( "CROSS JOIN", "k" );
-multiKeywords.put( "FULL OUTER", "k" );
-multiKeywords.put( "GROUP BY", "B" );
-multiKeywords.put( "IN BOOLEAN", "n" );
-multiKeywords.put( "IN BOOLEAN MODE", "k" );
-multiKeywords.put( "INTERSECT ALL", "o" );
-multiKeywords.put( "IS NOT", "o" );
-multiKeywords.put( "LEFT JOIN", "k" );
-multiKeywords.put( "LEFT OUTER", "k" );
-multiKeywords.put( "LOCK TABLE", "k" );
-multiKeywords.put( "LOCK TABLES", "k" );
-multiKeywords.put( "NATURAL FULL", "k" );
-multiKeywords.put( "NATURAL INNER", "k" );
-multiKeywords.put( "NATURAL JOIN", "k" );
-multiKeywords.put( "NATURAL LEFT", "k" );
-multiKeywords.put( "NATURAL OUTER", "k" );
-multiKeywords.put( "NATURAL RIGHT", "k" );
-multiKeywords.put( "NOT BETWEEN", "o" );
-multiKeywords.put( "NOT IN", "o" );
-multiKeywords.put( "NOT LIKE", "o" );
-multiKeywords.put( "NOT SIMILAR", "o" );
-multiKeywords.put( "NOT SIMILAR TO", "o" );
-multiKeywords.put( "ORDER BY", "B" );
-multiKeywords.put( "OWN3D BY", "B" );
-multiKeywords.put( "READ WRITE", "k" );
-multiKeywords.put( "RIGHT JOIN", "k" );
-multiKeywords.put( "RIGHT OUTER", "k" );
-multiKeywords.put( "SELECT ALL", "k" );
-multiKeywords.put( "SIMILAR TO", "o" );
-multiKeywords.put( "SOUNDS LIKE", "o" );
-multiKeywords.put( "UNION ALL", "U" );
-
 pt2Function.add( "parse_white");
 pt2Function.add( "parse_white");
 pt2Function.add( "parse_white");
@@ -717,6 +684,11 @@ operators2 = new HashSet( Arrays.asList( new String[]{
     "|=",
     "||",
     "~*",
+} ) );
+
+
+multikeywordsFirstWordTypeSet = new HashSet( Arrays.asList( new String[]{
+"n","k","U","o"
 } ) );
 
 }
@@ -1157,46 +1129,96 @@ inputBuf[ 0 ] = input;
 protected static String sqli_tokenize( String input )
 {
 input = input.toUpperCase();
-String[] type = new String[ MAX_TOKENS ];
-Arrays.fill( type, "" );
+String[] typeArray = new String[ MAX_TOKENS ];
+Arrays.fill( typeArray, "" );
 
 String[] inputBuf = new String[]{ input };
 boolean[] inCommentBuf = new boolean[]{ false };
 String[] typeBuf = new String[]{ "" };
+String lastInput = input;
+String lastProcessed = "";
+String currentType = "";
 
 int typeIndex = 0;
 while( true )
 	{
+	int inputLength = inputBuf[ 0 ].length();
 	parse_token( inputBuf, inCommentBuf, typeBuf );
+	currentType = typeBuf[ 0 ];
+	
+		//lastType
+	String lastType = "";
+	if( typeIndex > 0 )
+		{
+		lastType = typeArray[ typeIndex - 1 ];
+		}
 
-	if( typeBuf[ 0 ].length() == 1 )
+	if( currentType.length() == 1 )
 		{
 			//remove last 'c' comment
-		if( typeIndex > 0 && type[ typeIndex -1 ].equals( "c" ) )
+		if( typeIndex > 0 && lastType.equals( "c" ) )
 			{
 			typeIndex --;
 			}
 		
-		type[ typeIndex ] = typeBuf[ 0 ];
+		typeArray[ typeIndex ] = currentType;
 		++ typeIndex;
 		}
 		
-	if( typeIndex == type.length )
+	String processed = lastInput.substring( 0, lastInput.length() - inputBuf[ 0 ].length() );
+	p( "lastProcessed:" + lastProcessed );
+	p( "processed:" + processed );
+	p( "currentType:" + currentType );
+	boolean multiKeywordsFound = false;
+	if( currentType.equals( "o" ) || currentType.equals( "k" ) || currentType.equals( "n" ) )
+		{
+		if( multikeywordsFirstWordTypeSet.contains( lastType ) )
+			{
+			if( multiKeywordsStart.contains( lastProcessed ) )
+				{
+				String _key = lastProcessed + " " + processed;
+				String multiKeyType = ( String )multiKeywords.get( _key );
+				if( multiKeyType != null )
+					{
+					p( "multi keywords found" );
+					multiKeywordsFound = true;
+					lastProcessed = _key;
+					
+						//reset currentType
+					typeIndex --;
+					typeArray[ typeIndex ] = "";
+					
+						//overwrite lastType
+					typeIndex --;
+					typeArray[ typeIndex ] = multiKeyType;
+					++typeIndex;
+					}
+				}
+			}
+		}
+
+	if( typeIndex == typeArray.length )
 		{
 		p( "type is full" );
 		break;
 		}
-
+	
 	if( inputBuf[ 0 ].length() == 0 )
 		{
 		p( "input is consumed" );
 		break;
 		}
+	
+	lastInput = inputBuf[ 0 ];
+	if( multikeywordsFirstWordTypeSet.contains( currentType ) && multiKeywordsFound == false )
+		{
+		lastProcessed = processed;
+		}
 	}
 StringBuffer buf = new StringBuffer();
-for( int i = 0; i < type.length; ++i )
+for( int i = 0; i < typeArray.length; ++i )
 	{
-	buf.append( type[ i ] );
+	buf.append( typeArray[ i ] );
 	}
 return buf.toString();
 }
