@@ -252,6 +252,10 @@ testParseToken( "1 in boolean mode", "1k" );
 
 	//string
 testParseToken( "1'hoge' 'hoge'1","1s1" );
+
+	//operator is followed by a unary operator
+testParseToken( "1 case 1", "1o1" );
+testParseToken( "1 case not 1", "1o1" );
 }
 //--------------------------------------------------------------------------------
 private static void testMySqlComment( String input, int result )

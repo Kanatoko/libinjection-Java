@@ -12,6 +12,7 @@ private static List pt2Function = new ArrayList( 130 );
 private static Set multiKeywordsStart;
 private static Set operators2;
 private static Set multikeywordsFirstWordTypeSet;
+private static Set unaryOpSet;
 
 static
 {
@@ -691,6 +692,10 @@ multikeywordsFirstWordTypeSet = new HashSet( Arrays.asList( new String[]{
 "n","k","U","o"
 } ) );
 
+unaryOpSet = new HashSet( Arrays.asList( new String[]{
+"+", "-", "!", "!!", "NOT", "~"
+}) );
+
 }
 //--------------------------------------------------------------------------------
 public static boolean isSQLi( final String input )
@@ -1202,6 +1207,19 @@ while( true )
 					++typeIndex;
 					}
 				}
+			}
+		}
+	
+	if( multiKeywordsFound == false )
+		{
+		if( currentType.equals( "o" )
+		 && ( lastType.equals( "o" ) || lastType.equals( "&" ) || lastType.equals( "U" ) )
+		 && unaryOpSet.contains( processed )
+		  )
+			{
+				//an operator is followed by a unary operator, skip it.
+			typeIndex --;
+			typeArray[ typeIndex ] = "";
 			}
 		}
 	
