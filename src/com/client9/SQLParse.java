@@ -1074,6 +1074,7 @@ if( input.length() == 0 )
 	return false;
 	}
 
+boolean inComment = false;
 if( delim == '\'' || delim == '"' )
 	{
 		//TODO implement
@@ -1123,32 +1124,32 @@ while( true )
 		typeBuf[ 0 ] = "o";
 		input = input.substring( 1 );
 		}
-	/*
 	else if( functionName.equals( "parse_operator2" ) )
 		{
-		patternBuf.append( parse_operator2( input, lengthBuf, inCommentBuf ) );
+		parse_operator2( input, inComment, typeBuf, lengthBuf );
 		input = input.substring( lengthBuf[ 0 ] );
 		}
 	else if( functionName.equals( "parse_char" ) )
 		{
-		patternBuf.append( firstChar );
+		typeBuf[ 0 ] = firstChar + "";
 		input = input.substring( 1 );
 		}
 	else if( functionName.equals( "parse_backslash" ) )
 		{
-		patternBuf.append( parse_backslash( input, lengthBuf ) );
+		parse_backslash( input, typeBuf, lengthBuf );
 		input = input.substring( lengthBuf[ 0 ] );
 		}
 	else if( functionName.equals( "parse_other" ) )
 		{
-		patternBuf.append( parse_other( input, lengthBuf ) );
+		parse_other( input, typeBuf, lengthBuf );
 		input = input.substring( lengthBuf[ 0 ] );
 		}
 	else if( functionName.equals( "parse_eol_comment" ) )
 		{
-		patternBuf.append( parse_eol_comment( input, lengthBuf ) );
+		parse_eol_comment( input, typeBuf, lengthBuf );
 		input = input.substring( lengthBuf[ 0 ] );
 		}
+	/*
 	else if( functionName.equals( "parse_dash" ) )
 		{
 		patternBuf.append( parse_dash( input, lengthBuf ) );

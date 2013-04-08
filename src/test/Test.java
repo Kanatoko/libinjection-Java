@@ -23,6 +23,29 @@ testParseToken( "ABS", "", "f", true );
 testParseToken( " ABS", "", "f", true );
 testParseToken( "123", "", "1", true );
 testParseToken( "'aaa'", "", "s", true );
+
+	//operator2
+testParseToken( "<=>", "", "o", true );
+testParseToken( "&&", "", "&", true );
+
+	//parse_char
+testParseToken( "(", "", "(", true );
+
+	//parse_backslash
+testParseToken( "\\N", "", "1", true );
+testParseToken( "\\NABS", "ABS", "1", true );
+testParseToken( "\\A", "A", "?", true );
+testParseToken( "\\ABS", "ABS", "?", true );
+
+	//parse_other
+testParseToken( "[", "", "?", true );
+
+	//parse_eol_comment
+testParseToken( "#hogehoge\na", "a", "c", true );
+testParseToken( "#hogehoge", "", "c", true );
+testParseToken( "#hogehoge\nhogefuga", "hogefuga", "c", true );
+
+
 }
 //--------------------------------------------------------------------------------
 private static void testParseToken( String input, String inputOut, String type, boolean result )
