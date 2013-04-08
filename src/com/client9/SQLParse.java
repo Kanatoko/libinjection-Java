@@ -1156,7 +1156,13 @@ while( true )
 	if( currentType.length() == 1 )
 		{
 			//remove last 'c' comment
-		if( typeIndex > 0 && lastType.equals( "c" ) )
+		if( lastType.equals( "c" ) )
+			{
+			typeIndex --;
+			}
+		
+		//strings
+		if( currentType.equals( "s" ) && lastType.equals( "s" ) )
 			{
 			typeIndex --;
 			}
@@ -1169,6 +1175,8 @@ while( true )
 	p( "lastProcessed:" + lastProcessed );
 	p( "processed:" + processed );
 	p( "currentType:" + currentType );
+	
+		//multikeywords
 	boolean multiKeywordsFound = false;
 	if( currentType.equals( "o" ) || currentType.equals( "k" ) || currentType.equals( "n" ) )
 		{
@@ -1196,7 +1204,7 @@ while( true )
 				}
 			}
 		}
-
+	
 	if( typeIndex == typeArray.length )
 		{
 		p( "type is full" );
