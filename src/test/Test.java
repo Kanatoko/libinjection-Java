@@ -259,7 +259,15 @@ testParseToken( "1 case not 1", "1o1" );
 
 testParseToken( "SELECT 1 IN BOOLEAN MODE;", "k1k;" );
 
+	//fold
 testParseToken( "1-1-1-1-1-1-1-1-1 OR 1=1--", "1&1o1" );
+testParseToken( "-select", "k" );
+testParseToken( "-1", "1" );
+testParseToken( "(1", "1" );
+testParseToken( "(abs", "f" );
+testParseToken( "((abs", "f" );
+testParseToken( "(((abs", "f" );
+
 }
 //--------------------------------------------------------------------------------
 private static void testMySqlComment( String input, int result )

@@ -1194,13 +1194,13 @@ while( true )
 			}
 		
 			//strings
-		if( currentType.equals( "s" ) && lastType.equals( "s" ) )
+		else if( currentType.equals( "s" ) && lastType.equals( "s" ) )
 			{
 			typeIndex --;
 			}
 		
 			//fold
-		if( currentType.equals( "1" ) )
+		else if( currentType.equals( "1" ) )
 			{
 			if( lastType.equals( "o" ) && arithOpSet.contains( lastProcessed ) )
 				{
@@ -1223,10 +1223,19 @@ while( true )
 					}
 				}
 			}
-		
-		typeArray [ typeIndex ] = currentType;
-		valueArray[ typeIndex ] = processed;
-		++ typeIndex;
+
+		if( typeIndex == 0 
+		 && ( currentType.equals( "(" ) || unaryOpSet.contains( processed ) )
+		  )
+			{
+			//ignore first ( or unary op
+			}
+		else
+			{
+			typeArray [ typeIndex ] = currentType;
+			valueArray[ typeIndex ] = processed;
+			++ typeIndex;
+			}
 		}
 	
 		//multikeywords
