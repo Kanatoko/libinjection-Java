@@ -13,6 +13,7 @@ private static Set multiKeywordsStart;
 private static Set operators2;
 private static Set multikeywordsFirstWordTypeSet;
 private static Set unaryOpSet;
+private static Set arithOpSet;
 
 static
 {
@@ -693,8 +694,27 @@ multikeywordsFirstWordTypeSet = new HashSet( Arrays.asList( new String[]{
 } ) );
 
 unaryOpSet = new HashSet( Arrays.asList( new String[]{
-"+", "-", "!", "!!", "NOT", "~"
+"+",
+"-",
+"!",
+"!!",
+"NOT",
+"~"
 }) );
+
+arithOpSet = new HashSet( Arrays.asList( new String[]{
+"-",
+"+",
+"~",
+"!",
+"/",
+"%",
+"*",
+"|",
+"&",
+"MOD",
+"DIV",
+} ) );
 
 }
 //--------------------------------------------------------------------------------
@@ -1134,7 +1154,8 @@ inputBuf[ 0 ] = input;
 protected static String sqli_tokenize( String input )
 {
 input = input.toUpperCase();
-String[] typeArray = new String[ MAX_TOKENS ];
+String[] typeArray = new String[ MAX_TOKENS ]; //types. for example, "1", "o", "n", "f"
+String[] valueArray = new String[ MAX_TOKENS ]; //processed values. for example, "or" "select"
 Arrays.fill( typeArray, "" );
 
 String[] inputBuf = new String[]{ input };
@@ -1147,10 +1168,16 @@ String currentType = "";
 int typeIndex = 0;
 while( true )
 	{
-	int inputLength = inputBuf[ 0 ].length();
+	final int inputLength = inputBuf[ 0 ].length();
 	parse_token( inputBuf, inCommentBuf, typeBuf );
 	currentType = typeBuf[ 0 ];
+		
+	String processed = lastInput.substring( 0, lastInput.length() - inputBuf[ 0 ].length() );
+	p( "lastProcessed:" + lastProcessed );
+	p( "processed:" + processed );
+	p( "currentType:" + currentType );
 	
+
 		//lastType
 	String lastType = "";
 	if( typeIndex > 0 )
@@ -1166,20 +1193,41 @@ while( true )
 			typeIndex --;
 			}
 		
-		//strings
+			//strings
 		if( currentType.equals( "s" ) && lastType.equals( "s" ) )
 			{
 			typeIndex --;
 			}
 		
-		typeArray[ typeIndex ] = currentType;
+			//fold
+		if( currentType.equals( "1" ) )
+			{
+			if( lastType.equals( "o" ) && arithOpSet.contains( lastProcessed ) )
+				{
+				if( typeIndex >= 2 )
+					{
+					if( typeArray[ typeIndex - 2 ].equals( "1" ) )
+						{
+						// 1, o, 1
+						typeIndex -= 2;
+						typeArray[ typeIndex + 1 ] = "";
+						}
+					else
+						{
+						typeIndex --;
+						}
+					}
+				else
+					{
+					
+					}
+				}
+			}
+		
+		typeArray [ typeIndex ] = currentType;
+		valueArray[ typeIndex ] = processed;
 		++ typeIndex;
 		}
-		
-	String processed = lastInput.substring( 0, lastInput.length() - inputBuf[ 0 ].length() );
-	p( "lastProcessed:" + lastProcessed );
-	p( "processed:" + processed );
-	p( "currentType:" + currentType );
 	
 		//multikeywords
 	boolean multiKeywordsFound = false;
@@ -1246,6 +1294,9 @@ for( int i = 0; i < typeArray.length; ++i )
 	{
 	buf.append( typeArray[ i ] );
 	}
+
+p( Arrays.asList( valueArray ) );
+
 return buf.toString();
 }
 
