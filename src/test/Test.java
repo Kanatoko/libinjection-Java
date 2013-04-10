@@ -289,6 +289,22 @@ testParseToken( "SELECT ~ 1;", "k1;" ); //TODO: c version returns ko1;
 testParseToken( "SELECT 1E2;", "k1;" );
 testParseToken( "SELECT 1E;", "k1;" );
 testParseToken( "SELECT .123e1;", "k1;" );
+
+	// is SQLi?
+testIsSQLi( "1 or 1=1--", true );
+testIsSQLi( "1 or 'a'='a';--hogefuga", true );
+testIsSQLi( "foo' or 1=1--", true );
+testIsSQLi( "foo\" or 1=1--", true );
+
+}
+//--------------------------------------------------------------------------------
+private static void testIsSQLi( String input, boolean isSqli )
+throws Exception
+{
+if( isSQLi( input ) != isSqli )
+	{
+	ex( input );
+	}
 }
 //--------------------------------------------------------------------------------
 private static void testMySqlComment( String input, int result )
