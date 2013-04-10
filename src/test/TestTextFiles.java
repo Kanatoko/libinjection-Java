@@ -54,13 +54,11 @@ while( true )
 	String expected = expectedBuf.toString();
 	
 	p( "test:" + test );
-	p( "input:" + input + "--" );
+	p( "input:" + input + "<<" );
 	
 	String parsed = sqli_tokenize( input );
 	p( "parsed   : " + parsed );
 	p( "expected : " + expected );
-	
-	
 	
 	if( parsed.equals( expected ) )
 		{
@@ -70,6 +68,7 @@ while( true )
 		{
 		p( "*** NOT MATCH ****:" + fileName );
 		}
+	p( "" );
 	}
 }
 //--------------------------------------------------------------------------------

@@ -261,6 +261,8 @@ testParseToken( "1 case not 1", "1o1" );
 testParseToken( "SELECT 1 IN BOOLEAN MODE;", "k1k;" );
 
 	//fold
+testParseToken( "1-1", "1" );
+testParseToken( "abs -1", "f1" ); //TODO: c version returns fo1
 testParseToken( "1-1-1-1-1-1-1-1-1 OR 1=1--", "1&1o1" );
 testParseToken( "-select", "k" );
 testParseToken( "-1", "1" );
@@ -270,12 +272,23 @@ testParseToken( "((abs", "f" );
 testParseToken( "(((abs", "f" );
 
 testParseToken( "SELECT 1/2;--", "k1;c" );
+testParseToken( "SELECT 1/2;", "k1;" );
 
 testParseToken( "SELECT \\N;", "k1;" );
 
 	// fix up for ambigous "IN"
 testParseToken( "in abs", "ff" );
-//testParseToken( "in aaa", "nn" );
+testParseToken( "in aaa", "nn" );
+
+testParseToken( "SELECT 123E", "k1" );
+testParseToken( "SELECT 123E abs", "k1f" );
+testParseToken( "SELECT 1.2E34;", "k1;" );
+testParseToken( "SELECT 1 / 2;", "k1;" );
+testParseToken( "SELECT 123456789.12345678912345678 + 1;", "k1;" );
+testParseToken( "SELECT ~ 1;", "k1;" ); //TODO: c version returns ko1;
+testParseToken( "SELECT 1E2;", "k1;" );
+testParseToken( "SELECT 1E;", "k1;" );
+testParseToken( "SELECT .123e1;", "k1;" );
 }
 //--------------------------------------------------------------------------------
 private static void testMySqlComment( String input, int result )

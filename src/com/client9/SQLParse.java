@@ -835,11 +835,9 @@ else
 	{
 	String match = Util.getMatch( "^[0-9\\.]+", input );
 	String rest = input.substring( match.length() );
-	if( rest.startsWith( "E+" )
-	 || rest.startsWith( "E-" )
-	  )
+	if( rest.length() > 0 && rest.charAt( 0 ) == 'E' )
 		{
-		rest = Util.getMatch( "^(E.[0-9]+)", rest );
+		rest = Util.getMatch( "^(E[\\+\\-]?[0-9]*)", rest );
 		lengthBuf[ 0 ] = match.length() + rest.length(); //TODO: 1.2E-1A should be 'n'?
 		typeBuf[ 0 ] = "1";
 		}
@@ -1318,7 +1316,10 @@ for( int i = 0; i < typeArray.length; ++i )
 	buf.append( typeArray[ i ] );
 	}
 
+p( "---" );
 p( Arrays.asList( valueArray ) );
+p( buf.toString() );
+p( "---" );
 
 return buf.toString();
 }
