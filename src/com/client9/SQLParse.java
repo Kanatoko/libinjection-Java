@@ -1223,6 +1223,20 @@ while( true )
 					}
 				}
 			}
+	
+			//fix up for ambigous "IN"
+		else if( lastProcessed.equals( "IN" ) && lastType.equals( "n" ) )
+			{
+			if( !currentType.equals( "s" )
+			 && !currentType.equals( "o" )
+			 && !currentType.equals( "n" )
+			 && !currentType.equals( "k" )
+			  )
+				{
+				p( ">>> currentType:" + currentType );
+				typeArray[ typeIndex - 1 ] = "f"; //overwrite n to f
+				}
+			}
 
 		if( typeIndex == 0 
 		 && ( currentType.equals( "(" ) || unaryOpSet.contains( processed ) )
