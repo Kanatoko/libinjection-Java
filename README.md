@@ -7,6 +7,11 @@ Compatibility
 -------------------------
 It is not 100% compatible with the original C implementation at this time.
 
+How to use
+-------------------------
+Call static method com.client9.libinjection.SQLParse.isSQLi( String s ).
+It is thread safe.
+
 ```Java
 package test;
 
@@ -30,7 +35,7 @@ if( isSQLi )
 
 LICENSE
 -------------------------
-libinjection-Java is provided based on the LICENSE of original implementation of libinjection by Nick Galbreath.
+libinjection-Java is distributed under the same license as libinjection.
 
 Copyright (c) 2012, 2013 Nick Galbreath
 Licensed under standard BSD open source license
