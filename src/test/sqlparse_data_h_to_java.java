@@ -3,7 +3,7 @@ package test;
 import java.awt.Font;
 import java.io.*;
 
-import com.client9.Util;
+import com.client9.libinjection.SQLParse;
 
 /*
  * read "sqlparse_data.h" and write Java code to System.out
@@ -42,8 +42,8 @@ while( true )
 		}
 	else if( line.matches( pattern ) )
 		{
-		String key   = Util.getMatch( "\"([^\"]+)\"", line );
-		String value = Util.getMatch( "'([^\"]+)'", line );
+		String key   = SQLParse.getMatch( "\"([^\"]+)\"", line );
+		String value = SQLParse.getMatch( "'([^\"]+)'", line );
 		p( mapName + ".put( \"" + key + "\", \"" + value + "\" );" );
 		}
 	else if( line.indexOf( "char_parse_map[]" ) > -1 )
@@ -58,7 +58,7 @@ while( true )
 			{
 			s = "	/* " + ( char )k + " */";
 			}
-		p( "pt2Function.add( \"" + Util.getMatch( "(parse[^,]+),", line ) + "\");" + s );
+		p( "pt2Function.add( \"" + SQLParse.getMatch( "(parse[^,]+),", line ) + "\");" + s );
 		++k;
 		}
 	}

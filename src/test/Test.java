@@ -1,6 +1,6 @@
 package test;
 
-import com.client9.SQLParse;
+import com.client9.libinjection.SQLParse;
 
 public class Test
 extends SQLParse
@@ -9,6 +9,8 @@ extends SQLParse
 public static void main( String[] args )
 throws Exception
 {
+debug = true;
+
 test3();
 test1();
 test2();
@@ -96,6 +98,7 @@ testParseWord( "ABSA", "n" );
 private static void test2()
 throws Exception
 {
+
 	//is_mysql_comment
 testMySqlComment( "/*", 0 );
 testMySqlComment( "/*a", 0 );
@@ -239,6 +242,7 @@ testParseToken( "/*! 123", "1" );
 testParseToken( "/*! 123 abs", "1f" );
 testParseToken( "/*! 123 abs */", "1f" );
 testParseToken( "/*! 123 abs */4", "1f1" );
+testParseToken( "'189'))/**/or/**/1=@@version------snip----", "s))&1" );
 
 testParseToken( "111 abs 222 abs 333 abs 444 abs 555 abs", "1f1f1" );
 
@@ -262,7 +266,6 @@ testParseToken( "SELECT 1 IN BOOLEAN MODE;", "k1k;" );
 
 	//fold
 testParseToken( "1-1", "1" );
-testParseToken( "abs -1", "f1" ); //TODO: c version returns fo1
 testParseToken( "1-1-1-1-1-1-1-1-1 OR 1=1--", "1&1o1" );
 testParseToken( "-select", "k" );
 testParseToken( "-1", "1" );
@@ -285,7 +288,12 @@ testParseToken( "SELECT 123E abs", "k1f" );
 testParseToken( "SELECT 1.2E34;", "k1;" );
 testParseToken( "SELECT 1 / 2;", "k1;" );
 testParseToken( "SELECT 123456789.12345678912345678 + 1;", "k1;" );
-testParseToken( "SELECT ~ 1;", "k1;" ); //TODO: c version returns ko1;
+
+//testParseToken( "SELECT ~ 1;", "k1;" ); //TODO: c version returns ko1;
+testParseToken( "SELECT ~ 1;", "ko1;" );
+//testParseToken( "abs -1", "f1" ); //TODO: c version returns fo1
+testParseToken( "abs -1", "fo1" );
+
 testParseToken( "SELECT 1E2;", "k1;" );
 testParseToken( "SELECT 1E;", "k1;" );
 testParseToken( "SELECT .123e1;", "k1;" );
@@ -295,7 +303,6 @@ testIsSQLi( "1 or 1=1--", true );
 testIsSQLi( "1 or 'a'='a';--hogefuga", true );
 testIsSQLi( "foo' or 1=1--", true );
 testIsSQLi( "foo\" or 1=1--", true );
-
 }
 //--------------------------------------------------------------------------------
 private static void testIsSQLi( String input, boolean isSqli )

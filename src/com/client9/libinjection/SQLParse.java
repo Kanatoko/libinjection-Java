@@ -1,10 +1,12 @@
-package com.client9;
+package com.client9.libinjection;
 
 import java.util.*;
+import java.util.regex.*;
 
 public class SQLParse
 {
 public static final int MAX_TOKENS = 5;
+protected static boolean debug = false;
 
 private static Map sqlKeywords = new HashMap( 500 );
 private static Map multiKeywords = new HashMap( 50 );
@@ -2847,7 +2849,7 @@ public static boolean isSQLi( final String input )
 {
 try
 	{
-	return isSQLiImpl( input );
+	return isSQLiImpl( input, null );
 	}
 catch( Exception e )
 	{
@@ -2856,10 +2858,16 @@ catch( Exception e )
 	}
 }
 //--------------------------------------------------------------------------------
-private static boolean isSQLiImpl( final String input )
+private static boolean isSQLiImpl( final String input, String[] tokenBuf )
 throws Exception
 {
+if( tokenBuf == null )
+	{
+	tokenBuf = new String[ 1 ];
+	}
+
 String tokenized = sqli_tokenize( input );
+tokenBuf[ 0 ] = tokenized;
 if( fingerprints.contains( tokenized ) )
 	{
 	p( "isSQLi: type1 : " + tokenized );
@@ -2869,6 +2877,7 @@ if( fingerprints.contains( tokenized ) )
 if( input.indexOf( '\'' ) > -1 )
 	{
 	tokenized = sqli_tokenize( "'" + input );
+	tokenBuf[ 0 ] = tokenized;
 	if( fingerprints.contains( tokenized ) )
 		{
 		p( "isSQLi: type2 : " + tokenized );
@@ -2879,6 +2888,7 @@ if( input.indexOf( '\'' ) > -1 )
 if( input.indexOf( '"' ) > -1 )
 	{
 	tokenized = sqli_tokenize( "\"" + input );
+	tokenBuf[ 0 ] = tokenized;
 	if( fingerprints.contains( tokenized ) )
 		{
 		p( "isSQLi: type3 : " + tokenized );
@@ -2891,12 +2901,15 @@ return false;
 //--------------------------------------------------------------------------------
 protected static void p( Object o )
 {
-System.out.println( o );
+if( debug )
+	{
+	System.out.println( o );
+	}
 }
 //--------------------------------------------------------------------------------
 protected static void parse_word( String input, String[] typeBuf, int[] lengthBuf )
 {
-String word = Util.getMatch( "^[A-Z0-9_\\.$]+", input );
+String word = getMatch( "^[A-Z0-9_\\.$]+", input );
 lengthBuf[ 0 ] = word.length();
 String value = ( String )sqlKeywords.get( word );
 if( value == null )
@@ -2933,7 +2946,7 @@ for( int i = 0; i < input.length(); ++i )
 			{
 			if( input.charAt( i - 1 ) == '\\' )
 				{
-				//ignroe
+				//ignore
 				}
 			else
 				{
@@ -2951,7 +2964,7 @@ protected static void parse_number( String input, String[] typeBuf, int[] length
 {
 if( input.startsWith( "0X" ) )
 	{
-	String match = Util.getMatch( "^0X[0-9A-F]*", input );
+	String match = getMatch( "^0X[0-9A-F]*", input );
 	if( match.length() == 2 )
 		{
 		lengthBuf[ 0 ] = 2;
@@ -2975,17 +2988,17 @@ else if( input.matches( "^\\.[^0-9]+.*" ) ) // .A
 	}
 else
 	{
-	String match = Util.getMatch( "^[0-9\\.]+", input );
+	String match = getMatch( "^[0-9\\.]+", input );
 	String rest = input.substring( match.length() );
 	if( rest.length() > 0 && rest.charAt( 0 ) == 'E' )
 		{
-		rest = Util.getMatch( "^(E[\\+\\-]?[0-9]*)", rest );
+		rest = getMatch( "^(E[\\+\\-]?[0-9]*)", rest );
 		lengthBuf[ 0 ] = match.length() + rest.length(); //TODO: 1.2E-1A should be 'n'?
 		typeBuf[ 0 ] = "1";
 		}
 	else if( rest.matches( "^[A-Z]+.*" ) ) //oh no!
 		{
-		String restAlNum = Util.getMatch( "^([A-Z0-9]+)", rest );
+		String restAlNum = getMatch( "^([A-Z0-9]+)", rest );
 		lengthBuf[ 0 ] = match.length() + restAlNum.length();
 		typeBuf[ 0 ] = "n";
 		}
@@ -3093,7 +3106,7 @@ typeBuf[ 0 ] = "c";
 protected static void parse_var( String input, String[] typeBuf, int[] lengthBuf )
 {
 //ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.$
-String match = Util.getMatch( "^(@{1,2}[A-Z0-9_\\.\\$]*)", input );
+String match = getMatch( "^(@{1,2}[A-Z0-9_\\.\\$]*)", input );
 lengthBuf[ 0 ] = match.length();
 typeBuf[ 0 ] = "v";
 }
@@ -3216,74 +3229,76 @@ if( i < 0 || 127 < i )
 	{
 	input = input.substring( 1 );
 	}
-
-String functionName = ( String )pt2Function.get( i );
-p( functionName );
-
-if( functionName.equals( "parse_word" ) )
+else
 	{
-	parse_word( input, typeBuf, lengthBuf );
-	input = input.substring( lengthBuf[ 0 ] );
-	}
-else if( functionName.equals( "parse_white" ) )
-	{
-	input = input.substring( 1 );
-	}
-else if( functionName.equals( "parse_string" ) )
-	{
-	typeBuf[ 0 ] = "s";
-	parse_string( input, firstChar, lengthBuf );
-	input = input.substring( lengthBuf[ 0 ] );
-	}
-else if( functionName.equals( "parse_number" ) )
-	{
-	parse_number( input, typeBuf, lengthBuf );
-	input = input.substring( lengthBuf[ 0 ] );
-	}
-else if( functionName.equals( "parse_operator1" ) )
-	{
-	typeBuf[ 0 ] = "o";
-	input = input.substring( 1 );
-	}
-else if( functionName.equals( "parse_operator2" ) )
-	{
-	parse_operator2( input, inCommentBuf, typeBuf, lengthBuf );
-	input = input.substring( lengthBuf[ 0 ] );
-	}
-else if( functionName.equals( "parse_char" ) )
-	{
-	typeBuf[ 0 ] = firstChar + "";
-	input = input.substring( 1 );
-	}
-else if( functionName.equals( "parse_backslash" ) )
-	{
-	parse_backslash( input, typeBuf, lengthBuf );
-	input = input.substring( lengthBuf[ 0 ] );
-	}
-else if( functionName.equals( "parse_other" ) )
-	{
-	parse_other( input, typeBuf, lengthBuf );
-	input = input.substring( lengthBuf[ 0 ] );
-	}
-else if( functionName.equals( "parse_eol_comment" ) )
-	{
-	parse_eol_comment( input, typeBuf, lengthBuf );
-	input = input.substring( lengthBuf[ 0 ] );
-	}
-else if( functionName.equals( "parse_dash" ) )
-	{
-	parse_dash( input, typeBuf, lengthBuf );
-	input = input.substring( lengthBuf[ 0 ] );
-	}
-else if( functionName.equals( "parse_var" ) )
-	{
-	parse_var( input, typeBuf, lengthBuf );
-	input = input.substring( lengthBuf[ 0 ] );		
-	}
-else if( functionName.equals( "parse_slash" ) )
-	{
-	parse_slash( input, lengthBuf, typeBuf, inCommentBuf );
-	input = input.substring( lengthBuf[ 0 ] );		
+	String functionName = ( String )pt2Function.get( i );
+	p( functionName );
+	
+	if( functionName.equals( "parse_word" ) )
+		{
+		parse_word( input, typeBuf, lengthBuf );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_white" ) )
+		{
+		input = input.substring( 1 );
+		}
+	else if( functionName.equals( "parse_string" ) )
+		{
+		typeBuf[ 0 ] = "s";
+		parse_string( input, firstChar, lengthBuf );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_number" ) )
+		{
+		parse_number( input, typeBuf, lengthBuf );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_operator1" ) )
+		{
+		typeBuf[ 0 ] = "o";
+		input = input.substring( 1 );
+		}
+	else if( functionName.equals( "parse_operator2" ) )
+		{
+		parse_operator2( input, inCommentBuf, typeBuf, lengthBuf );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_char" ) )
+		{
+		typeBuf[ 0 ] = firstChar + "";
+		input = input.substring( 1 );
+		}
+	else if( functionName.equals( "parse_backslash" ) )
+		{
+		parse_backslash( input, typeBuf, lengthBuf );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_other" ) )
+		{
+		parse_other( input, typeBuf, lengthBuf );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_eol_comment" ) )
+		{
+		parse_eol_comment( input, typeBuf, lengthBuf );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_dash" ) )
+		{
+		parse_dash( input, typeBuf, lengthBuf );
+		input = input.substring( lengthBuf[ 0 ] );
+		}
+	else if( functionName.equals( "parse_var" ) )
+		{
+		parse_var( input, typeBuf, lengthBuf );
+		input = input.substring( lengthBuf[ 0 ] );		
+		}
+	else if( functionName.equals( "parse_slash" ) )
+		{
+		parse_slash( input, lengthBuf, typeBuf, inCommentBuf );
+		input = input.substring( lengthBuf[ 0 ] );		
+		}	
 	}
 
 p( "---" + input + "---" );
@@ -3291,7 +3306,7 @@ p( ":::" + typeBuf[ 0 ] + ":::" );
 inputBuf[ 0 ] = input;
 }
 //--------------------------------------------------------------------------------
-protected static String sqli_tokenize( String input )
+public static String sqli_tokenize( String input )
 {
 input = input.toUpperCase();
 String[] typeArray = new String[ MAX_TOKENS ]; //types. for example, "1", "o", "n", "f"
@@ -3309,6 +3324,10 @@ int typeIndex = 0;
 while( true )
 	{
 	final int inputLength = inputBuf[ 0 ].length();
+	if( inputLength == 0 )
+		{
+		break;
+		}
 	parse_token( inputBuf, inCommentBuf, typeBuf );
 	currentType = typeBuf[ 0 ];
 		
@@ -3354,7 +3373,7 @@ while( true )
 						}
 					else
 						{
-						typeIndex --;
+						//typeIndex --;
 						}
 					}
 				else
@@ -3436,8 +3455,16 @@ while( true )
 	
 	if( typeIndex == typeArray.length )
 		{
-		p( "type is full" );
-		break;
+		if( currentType.equals( "c" ) )
+			{
+				//remove last 'c' and search next
+			-- typeIndex;
+			}
+		else
+			{
+			p( "type is full" );
+			break;
+			}
 		}
 	
 	if( inputBuf[ 0 ].length() == 0 )
@@ -3466,26 +3493,47 @@ p( "---" );
 return buf.toString();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//------------------------------------------------------------------------------------------
+public static String getMatch( String patternStr, String target )
+{
+Pattern pattern = Pattern.compile( patternStr, Pattern.DOTALL );
+Matcher matcher = pattern.matcher( target );
+if( matcher.find() )
+	{
+	if( matcher.groupCount() > 0 )
+		{
+		return matcher.group( 1 );
+		}
+	else
+		{
+		return target.substring( matcher.start(), matcher.end() );
+		}
+	}
+else
+	{
+	return "";
+	}
+}
+//------------------------------------------------------------------------------------------
+public static String getMatchIgnoreCase( String patternStr, String target )
+{
+Pattern pattern = Pattern.compile( patternStr, Pattern.DOTALL | Pattern.CASE_INSENSITIVE );
+Matcher matcher = pattern.matcher( target );
+if( matcher.find() )
+	{
+	if( matcher.groupCount() > 0 )
+		{
+		return matcher.group( 1 );
+		}
+	else
+		{
+		return target.substring( matcher.start(), matcher.end() );
+		}
+	}
+else
+	{
+	return "";
+	}
+}
 //--------------------------------------------------------------------------------
 }

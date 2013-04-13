@@ -2,7 +2,7 @@ package test;
 
 import java.io.*;
 
-import com.client9.SQLParse;
+import com.client9.libinjection.SQLParse;
 
 public class TestTextFiles
 extends SQLParse

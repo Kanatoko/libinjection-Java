@@ -3,8 +3,6 @@ package test;
 import java.awt.Font;
 import java.io.*;
 
-import com.client9.Util;
-
 /*
  * read "fingerprints.txt" and write Java code to System.out
  */
