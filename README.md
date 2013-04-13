@@ -3,6 +3,8 @@ libinjection-Java
 
 libinjection-Java is a Java porting of the libinjection([http://www.client9.com/projects/libinjection/](http://www.client9.com/projects/libinjection/)) 
 
+Compatibility
+-------------------------
 It is not 100% compatible with the original C implementation at this time.
 
 ```Java
@@ -25,6 +27,10 @@ if( isSQLi )
 //--------------------------------------------------------------------------------
 }
 ```
+
+LICENSE
+-------------------------
+libinjection-Java is provided based on the LICENSE of original implementation of libinjection by Nick Galbreath.
 
 Copyright (c) 2012, 2013 Nick Galbreath
 Licensed under standard BSD open source license
