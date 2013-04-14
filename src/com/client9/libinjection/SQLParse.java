@@ -8,15 +8,15 @@ public class SQLParse
 public static final int MAX_TOKENS = 5;
 protected static boolean debug = false;
 
-private static Map sqlKeywords = new HashMap( 500 );
-private static Map multiKeywords = new HashMap( 50 );
-private static List pt2Function = new ArrayList( 130 );
-private static Set multiKeywordsStart;
-private static Set operators2;
-private static Set multikeywordsFirstWordTypeSet;
-private static Set unaryOpSet;
-private static Set arithOpSet;
-private static Set fingerprints;
+protected static Map sqlKeywords = new HashMap( 500 );
+protected static Map multiKeywords = new HashMap( 50 );
+protected static List pt2Function = new ArrayList( 130 );
+protected static Set multiKeywordsStart;
+protected static Set operators2;
+protected static Set multikeywordsFirstWordTypeSet;
+protected static Set unaryOpSet;
+protected static Set arithOpSet;
+protected static Set fingerprints;
 
 static
 {
@@ -3309,8 +3309,8 @@ inputBuf[ 0 ] = input;
 public static String sqli_tokenize( String input )
 {
 input = input.toUpperCase();
-String[] typeArray = new String[ MAX_TOKENS ]; //types. for example, "1", "o", "n", "f"
-String[] valueArray = new String[ MAX_TOKENS ]; //processed values. for example, "or" "select"
+String[] typeArray = new String[ MAX_TOKENS + 1 ]; //types. for example, "1", "o", "n", "f"
+String[] valueArray = new String[ MAX_TOKENS + 1 ]; //processed values. for example, "or" "select"
 Arrays.fill( typeArray, "" );
 
 String[] inputBuf = new String[]{ input };
@@ -3335,6 +3335,7 @@ while( true )
 	p( "lastProcessed:" + lastProcessed );
 	p( "processed:" + processed );
 	p( "currentType:" + currentType );
+	p( "typeIndex:" + typeIndex );
 	
 
 		//lastType
@@ -3342,6 +3343,7 @@ while( true )
 	if( typeIndex > 0 )
 		{
 		lastType = typeArray[ typeIndex - 1 ];
+		p( "lastType:" + lastType );
 		}
 
 	if( currentType.length() == 1 )
@@ -3415,7 +3417,7 @@ while( true )
 	boolean multiKeywordsFound = false;
 	if( currentType.equals( "o" ) || currentType.equals( "k" ) || currentType.equals( "n" ) )
 		{
-		if( multikeywordsFirstWordTypeSet.contains( lastType ) )
+		//if( multikeywordsFirstWordTypeSet.contains( lastType ) )
 			{
 			if( multiKeywordsStart.contains( lastProcessed ) )
 				{
@@ -3423,7 +3425,7 @@ while( true )
 				String multiKeyType = ( String )multiKeywords.get( _key );
 				if( multiKeyType != null )
 					{
-					p( "multi keywords found" );
+					p( ">>>>> multi keywords found" );
 					multiKeywordsFound = true;
 					lastProcessed = _key;
 					
@@ -3432,7 +3434,10 @@ while( true )
 					typeArray[ typeIndex ] = "";
 					
 						//overwrite lastType
-					typeIndex --;
+					if( typeIndex > 0 )
+						{
+						typeIndex --;
+						}
 					typeArray[ typeIndex ] = multiKeyType;
 					++typeIndex;
 					}
@@ -3453,18 +3458,26 @@ while( true )
 			}
 		}
 	
-	if( typeIndex == typeArray.length )
+	if( typeIndex == MAX_TOKENS )
 		{
 		if( currentType.equals( "c" ) )
 			{
 				//remove last 'c' and search next
 			-- typeIndex;
 			}
+		else if( multiKeywordsStart.contains( processed ) || multiKeywordsStart.contains( lastProcessed ) )
+			{
+				// need to check next
+			}
 		else
 			{
 			p( "type is full" );
 			break;
 			}
+		}
+	else if( typeIndex == MAX_TOKENS + 1 )
+		{
+		break;
 		}
 	
 	if( inputBuf[ 0 ].length() == 0 )
@@ -3480,7 +3493,7 @@ while( true )
 		}
 	}
 StringBuffer buf = new StringBuffer();
-for( int i = 0; i < typeArray.length; ++i )
+for( int i = 0; i < MAX_TOKENS; ++i )
 	{
 	buf.append( typeArray[ i ] );
 	}
