@@ -14,9 +14,6 @@ throws Exception
 {
 debug = true;
 
-testParseToken( "NOT IN", "o" );
-//testParseToken( "NOT IN CURRENT_DATECURRENT_TIME ~ ALTER 1&nov WITH ~", "ofok1" );
-
 test3();
 test1();
 test2();
@@ -261,6 +258,8 @@ testParseToken( "1 alter table", "1k" );
 testParseToken( "1 in boolean mode", "1k" );
 testParseToken( "in boolean abs", "nf" );
 testParseToken( "abs abs abs abs GROUP BY 1", "ffffB" );
+testParseToken( "NOT IN CURRENT_DATECURRENT_TIME ~ ALTER 1&nov WITH ~", "ofok1" );
+testParseToken( "NOT IN", "o" );
 
 	//string
 testParseToken( "1'hoge' 'hoge'1","1s1" );
@@ -310,6 +309,11 @@ testIsSQLi( "1 or 1=1--", true );
 testIsSQLi( "1 or 'a'='a';--hogefuga", true );
 testIsSQLi( "foo' or 1=1--", true );
 testIsSQLi( "foo\" or 1=1--", true );
+
+testParseToken( "FOO FOO FOO UNION && NOT BETWEEN", "nnnU&" );
+testParseToken( "FOO FOO IN BOOLEAN MODE", "nnk" );
+testParseToken( "FOO FOO IN BOOLEAN MODE 1", "nnk1" );
+testParseToken( "FOO FOO IN BOOLEAN MODE UNION &&", "nnkU&" );
 
 
 	//* o v o 

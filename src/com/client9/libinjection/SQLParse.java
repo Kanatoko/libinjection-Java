@@ -3333,7 +3333,7 @@ while( true )
 		
 	String processed = lastInput.substring( 0, lastInput.length() - inputBuf[ 0 ].length() );
 	p( "lastProcessed:" + lastProcessed );
-	p( "processed:" + processed );
+	p( "processed:[" + processed + "]" );
 	p( "currentType:" + currentType );
 	p( "typeIndex:" + typeIndex );
 	
@@ -3415,7 +3415,7 @@ while( true )
 	
 		//multikeywords
 	boolean multiKeywordsFound = false;
-	if( currentType.equals( "o" ) || currentType.equals( "k" ) || currentType.equals( "n" ) )
+	if( currentType.length() == 1 )
 		{
 		//if( multikeywordsFirstWordTypeSet.contains( lastType ) )
 			{
@@ -3425,7 +3425,7 @@ while( true )
 				String multiKeyType = ( String )multiKeywords.get( _key );
 				if( multiKeyType != null )
 					{
-					p( ">>>>> multi keywords found" );
+					p( "multi keywords found" );
 					multiKeywordsFound = true;
 					lastProcessed = _key;
 					
@@ -3441,6 +3441,14 @@ while( true )
 					typeArray[ typeIndex ] = multiKeyType;
 					++typeIndex;
 					}
+				else
+					{
+					lastProcessed = processed;
+					}
+				}
+			else
+				{
+				lastProcessed = processed;
 				}
 			}
 		}
