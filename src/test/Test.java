@@ -14,6 +14,8 @@ throws Exception
 {
 debug = true;
 
+//testParseToken( "COS MEDIUMINT IN #", "fknc" );
+//testParseToken( "LEFT OUTER CROSS JOIN", "fnk" );
 test3();
 test1();
 test2();

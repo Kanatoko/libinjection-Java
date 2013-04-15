@@ -5,7 +5,7 @@ import java.util.*;
 
 /**
  * Test compatibility with C implementation.
- * First generating random string, then compare the tokenized string of C impl and Java impl.
+ * Generates random string, then compare the tokenized string of C impl and Java impl.
  */
 public class Fuzzer
 extends Test
@@ -16,10 +16,11 @@ throws Exception
 {
 debug = true;
 
-while( true )
+for( int i = 0;; ++i )
 	{
 	if( !randomCheck() )
 		{
+		p( i + "" );
 		break;
 		}
 	}
@@ -46,8 +47,8 @@ for( int i = 0; i < array.length; ++i )
 String cResult= null, jResult = null;
 try
 	{
-	cResult = buf.toString();
-	jResult = sqli_tokenize( randomStr );
+	cResult = buf.toString().trim();
+	jResult = sqli_tokenize( randomStr ).trim();
 	debug = true;
 	if( !cResult.equals( jResult ) )
 		{
@@ -100,7 +101,7 @@ throws Exception
 {
 Collection[] collArray = new Collection[]{
 sqlKeywords.keySet(),
-multiKeywords.keySet(),
+//multiKeywords.keySet(),
 multiKeywordsStart,
 operators2,
 multikeywordsFirstWordTypeSet,
