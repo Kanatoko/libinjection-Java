@@ -1,7 +1,5 @@
-
 #ifndef _SQLPARSE_DATA_H
 #define _SQLPARSE_DATA_H
-
 #include "sqlparse.h"
 
 static const char* operators2[] = {
@@ -242,7 +240,7 @@ static const keyword_t sql_keywords[] = {
     {"LEADING", 'k'},
     {"LEAST", 'f'},
     {"LEAVE", 'k'},
-    {"LEFT", 'f'},
+    {"LEFT", 'n'},
     {"LENGTH", 'f'},
     {"LIKE", 'o'},
     {"LIMIT", 'k'},
@@ -353,7 +351,7 @@ static const keyword_t sql_keywords[] = {
     {"RETURN", 'k'},
     {"REVERSE", 'f'},
     {"REVOKE", 'k'},
-    {"RIGHT", 'f'},
+    {"RIGHT", 'n'},
     {"RLIKE", 'o'},
     {"ROUND", 'f'},
     {"ROW", 'f'},
@@ -372,7 +370,7 @@ static const keyword_t sql_keywords[] = {
     {"SHA", 'f'},
     {"SHA1", 'f'},
     {"SHA2", 'f'},
-    {"SHOW", 'k'},
+    {"SHOW", 'n'},
     {"SHUTDOWN", 'k'},
     {"SIGN", 'f'},
     {"SIGNAL", 'k'},
@@ -443,6 +441,7 @@ static const keyword_t sql_keywords[] = {
     {"UNION", 'U'},
     {"UNIQUE", 'n'},
     {"UNIX_TIMESTAMP", 'f'},
+    {"UNI_ON", 'U'},
     {"UNLOCK", 'k'},
     {"UNSIGNED", 'k'},
     {"UPDATE", 'k'},
@@ -485,7 +484,7 @@ static const keyword_t sql_keywords[] = {
     {"YEAR_MONTH", 'k'},
     {"ZEROFILL", 'k'},
 };
-static const size_t sql_keywords_sz = 450;
+static const size_t sql_keywords_sz = 451;
 static const char* multikeywords_start[] = {
     "ALTER",
     "CROSS",
@@ -533,6 +532,8 @@ static const keyword_t multikeywords[] = {
     {"NOT BETWEEN", 'o'},
     {"NOT IN", 'o'},
     {"NOT LIKE", 'o'},
+    {"NOT REGEXP", 'o'},
+    {"NOT RLIKE", 'o'},
     {"NOT SIMILAR", 'o'},
     {"NOT SIMILAR TO", 'o'},
     {"ORDER BY", 'B'},
@@ -545,7 +546,7 @@ static const keyword_t multikeywords[] = {
     {"SOUNDS LIKE", 'o'},
     {"UNION ALL", 'U'},
 };
-static const size_t multikeywords_sz = 33;
+static const size_t multikeywords_sz = 35;
 
 typedef size_t (*pt2Function)(sfilter *sf);
 static const pt2Function char_parse_map[] = {
@@ -678,4 +679,5 @@ static const pt2Function char_parse_map[] = {
    &parse_operator1, /* 126 */
    &parse_white, /* 127 */
 };
+
 #endif

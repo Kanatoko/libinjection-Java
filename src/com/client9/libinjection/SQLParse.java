@@ -229,7 +229,7 @@ sqlKeywords.put( "LCASE", "f" );
 sqlKeywords.put( "LEADING", "k" );
 sqlKeywords.put( "LEAST", "f" );
 sqlKeywords.put( "LEAVE", "k" );
-sqlKeywords.put( "LEFT", "f" );
+sqlKeywords.put( "LEFT", "n" );
 sqlKeywords.put( "LENGTH", "f" );
 sqlKeywords.put( "LIKE", "o" );
 sqlKeywords.put( "LIMIT", "k" );
@@ -340,7 +340,7 @@ sqlKeywords.put( "RESTRICT", "k" );
 sqlKeywords.put( "RETURN", "k" );
 sqlKeywords.put( "REVERSE", "f" );
 sqlKeywords.put( "REVOKE", "k" );
-sqlKeywords.put( "RIGHT", "f" );
+sqlKeywords.put( "RIGHT", "n" );
 sqlKeywords.put( "RLIKE", "o" );
 sqlKeywords.put( "ROUND", "f" );
 sqlKeywords.put( "ROW", "f" );
@@ -359,7 +359,7 @@ sqlKeywords.put( "SET", "k" );
 sqlKeywords.put( "SHA", "f" );
 sqlKeywords.put( "SHA1", "f" );
 sqlKeywords.put( "SHA2", "f" );
-sqlKeywords.put( "SHOW", "k" );
+sqlKeywords.put( "SHOW", "n" );
 sqlKeywords.put( "SHUTDOWN", "k" );
 sqlKeywords.put( "SIGN", "f" );
 sqlKeywords.put( "SIGNAL", "k" );
@@ -430,6 +430,7 @@ sqlKeywords.put( "UNHEX", "f" );
 sqlKeywords.put( "UNION", "U" );
 sqlKeywords.put( "UNIQUE", "n" );
 sqlKeywords.put( "UNIX_TIMESTAMP", "f" );
+sqlKeywords.put( "UNI_ON", "U" );
 sqlKeywords.put( "UNLOCK", "k" );
 sqlKeywords.put( "UNSIGNED", "k" );
 sqlKeywords.put( "UPDATE", "k" );
@@ -494,6 +495,8 @@ multiKeywords.put( "NATURAL RIGHT", "k" );
 multiKeywords.put( "NOT BETWEEN", "o" );
 multiKeywords.put( "NOT IN", "o" );
 multiKeywords.put( "NOT LIKE", "o" );
+multiKeywords.put( "NOT REGEXP", "o" );
+multiKeywords.put( "NOT RLIKE", "o" );
 multiKeywords.put( "NOT SIMILAR", "o" );
 multiKeywords.put( "NOT SIMILAR TO", "o" );
 multiKeywords.put( "ORDER BY", "B" );
@@ -634,7 +637,6 @@ pt2Function.add( "parse_operator2");	/* | */
 pt2Function.add( "parse_other");	/* } */
 pt2Function.add( "parse_operator1");	/* ~ */
 pt2Function.add( "parse_white");
-
 /* Automatically generated content end */
 
 multiKeywordsStart = new HashSet( Arrays.asList( new String[]{
@@ -725,6 +727,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "&1ovU",
 "&f()o",
 "&f(1)",
+"&f(1o",
 "&f(s)",
 "&f(v)",
 "&so1U",
@@ -752,8 +755,10 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "1&(v)",
 "1&(v,",
 "1&(vo",
+"1&1",
 "1&1Bf",
 "1&1Uk",
+"1&1c",
 "1&1f(",
 "1&1o(",
 "1&1o1",
@@ -1023,6 +1028,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "1Bvk1",
 "1Bvks",
 "1Bvkv",
+"1U",
 "1U((k",
 "1U(k1",
 "1U(kf",
@@ -1102,6 +1108,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "1Uv,1",
 "1Uv,s",
 "1Uv,v",
+"1c",
 "1f()k",
 "1k1U(",
 "1k1Uk",
@@ -1118,6 +1125,8 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "1kksc",
 "1kkvc",
 "1knkn",
+"1kno1",
+"1kokn",
 "1ksU(",
 "1ksUk",
 "1ksc",
@@ -1125,6 +1134,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "1kvUk",
 "1kvc",
 "1n&f(",
+"1n)Uk",
 "1nUk1",
 "1nUkn",
 "1nUks",
@@ -1192,7 +1202,6 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "1okv,",
 "1okvc",
 "1okvk",
-"1onos",
 "1onov",
 "1os)&",
 "1os)U",
@@ -1289,6 +1298,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "k1,1c",
 "k1,1k",
 "k1,f(",
+"k1,n,",
 "k1,s,",
 "k1,sc",
 "k1,sk",
@@ -1397,6 +1407,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "n&(s,",
 "n&(v)",
 "n&(v,",
+"n&1Bf",
 "n&1f(",
 "n&1o(",
 "n&1o1",
@@ -1500,11 +1511,13 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "n;kok",
 "nUk(k",
 "nUk1,",
+"nUkf(",
 "nUkn,",
 "nUks,",
 "nUkv,",
 "nUnk(",
 "nk1Uk",
+"nk1o1",
 "nkf(1",
 "nkf(s",
 "nkf(v",
@@ -1528,7 +1541,6 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "no1Uk",
 "no1f(",
 "no1o(",
-"no1o1",
 "no1of",
 "no1oo",
 "no1os",
@@ -1536,11 +1548,11 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "nof(1",
 "nof(s",
 "nof(v",
-"nok(1",
 "nok(f",
 "nok(k",
 "nok(s",
 "nok(v",
+"nono1",
 "nos&1",
 "nos&v",
 "nosUk",
@@ -1604,6 +1616,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "s&(v)",
 "s&(v,",
 "s&(vo",
+"s&1",
 "s&1Bf",
 "s&1Uk",
 "s&1c",
@@ -1663,6 +1676,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "s&oso",
 "s&ov",
 "s&ovo",
+"s&s",
 "s&s:o",
 "s&sBf",
 "s&sU(",
@@ -1803,7 +1817,6 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "s)oks",
 "s)okv",
 "s)on&",
-"s)ono",
 "s)os)",
 "s)osB",
 "s)osU",
@@ -1984,6 +1997,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "sUonv",
 "sUv,1",
 "sUv,v",
+"sc",
 "sf()k",
 "sf(1)",
 "sf(n,",
@@ -2055,6 +2069,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "snk1c",
 "snkf(",
 "snkvc",
+"sno(s",
 "sno1U",
 "snosU",
 "snovU",
@@ -2143,7 +2158,6 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "sonk1",
 "sonks",
 "sonkv",
-"sono1",
 "sonos",
 "sonov",
 "sos",
@@ -2627,6 +2641,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "vUv,1",
 "vUv,s",
 "vUv,v",
+"vc",
 "vf()k",
 "vf(1)",
 "vf(n,",

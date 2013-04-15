@@ -324,6 +324,9 @@ testIsSQLi( "1 & a = 1", false );
 
 testParseToken( "n k << o IN BOOLEAN SOUNDS LIKE", "nnonn" );
 
+	//libinjection issue#15
+testParseToken( "LEFT JOIN", "k" );
+testParseToken( "LEFT", "n" );
 }
 //--------------------------------------------------------------------------------
 private static void testIsSQLi( String input, boolean isSqli )
