@@ -14,6 +14,13 @@ throws Exception
 {
 debug = true;
 
+/*
+testParseToken( "a&a", "n" );
+testParseToken( "a&a1", "n" );
+testParseToken( "A - A", "n" );
+testParseToken( "A-A", "n" );
+*/
+//testParseToken( "HAVING a a @a - a", "knnvo" );
 //testParseToken( "COS MEDIUMINT IN #", "fknc" );
 //testParseToken( "LEFT OUTER CROSS JOIN", "fnk" );
 test3();
@@ -175,9 +182,9 @@ testParseNumber( "1.2E-12", "1", 7 );
 testParseNumber( "1.2E+1", "1", 6 );
 testParseNumber( "1.2E+1A", "1", 6 );
 testParseNumber( "1.2E+12", "1", 7 );
-testParseNumber( "12345X", "n", 6 );
+testParseNumber( "12345X", "1", 5 );
 testParseNumber( ".123", "1", 4 );
-testParseNumber( ".123V", "n", 5 );
+testParseNumber( ".123V", "1", 4 );
 
 testParseToken( "&&", "&" );
 testParseToken( "&&ABS", "&f" );
@@ -224,16 +231,16 @@ testParseToken( "0X123V", "1n" );
 testParseToken( ".", "n" );
 testParseToken( ".A", "nn" );
 testParseToken( ".123", "1" );
-testParseToken( ".123V", "n" );
+testParseToken( ".123V", "1n" );
 testParseToken( ".123 V", "1n" );
-testParseToken( ".123V V", "nn" );
+testParseToken( ".123V V", "1nn" );
 testParseToken( "1.2E-1", "1");
 testParseToken( "1.2E-1A", "1n" );
 testParseToken( "1.2E-12", "1" );
 testParseToken( "1.2E+1", "1" );
 testParseToken( "1.2E+1A", "1n" );
 testParseToken( "1.2E+12", "1" );
-testParseToken( "12345X", "n" );
+testParseToken( "12345X", "1n" );
 
 	//parse_slash + mysql
 testParseToken( "/", "o" );
@@ -317,7 +324,6 @@ testParseToken( "FOO FOO IN BOOLEAN MODE", "nnk" );
 testParseToken( "FOO FOO IN BOOLEAN MODE 1", "nnk1" );
 testParseToken( "FOO FOO IN BOOLEAN MODE UNION &&", "nnkU&" );
 
-
 	//* o v o 
 testIsSQLi( "1 & a = 1", false );
 
@@ -327,6 +333,9 @@ testParseToken( "n k << o IN BOOLEAN SOUNDS LIKE", "nnonn" );
 	//libinjection issue#15
 testParseToken( "LEFT JOIN", "k" );
 testParseToken( "LEFT", "n" );
+
+testParseToken( "SELECT 1 /*!12XXXXXXXXXXXX", "k11n" );
+
 }
 //--------------------------------------------------------------------------------
 private static void testIsSQLi( String input, boolean isSqli )

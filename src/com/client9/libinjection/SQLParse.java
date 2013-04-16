@@ -3011,12 +3011,14 @@ else
 		lengthBuf[ 0 ] = match.length() + rest.length(); //TODO: 1.2E-1A should be 'n'?
 		typeBuf[ 0 ] = "1";
 		}
+	/*
 	else if( rest.matches( "^[A-Z]+.*" ) ) //oh no!
 		{
 		String restAlNum = getMatch( "^([A-Z0-9]+)", rest );
 		lengthBuf[ 0 ] = match.length() + restAlNum.length();
 		typeBuf[ 0 ] = "n";
 		}
+	*/
 	else
 		{
 		lengthBuf[ 0 ] = match.length();
