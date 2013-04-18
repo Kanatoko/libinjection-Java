@@ -3165,7 +3165,7 @@ else
 		{
 		//MySQL Comment
 		inCommentBuf[ 0 ] = true;
-		lengthBuf[ 0 ] = mysqlResult;
+		lengthBuf[ 0 ] = 3;
 		typeBuf[ 0 ] = "";
 		}
 	}

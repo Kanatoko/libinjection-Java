@@ -14,6 +14,7 @@ throws Exception
 {
 debug = true;
 
+testParseToken( "0/*!unIoN seLeCt 1,concAt(0x4040,optiOn_vAlue,0x4040),3,4,5,6,7 frOm wp_options where option_name=0x617574685f73616c74*/--", "1Uk1," );
 /*
 testParseToken( "a&a", "n" );
 testParseToken( "a&a1", "n" );
