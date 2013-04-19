@@ -3146,7 +3146,7 @@ else if( input.length() == 2 )
 else
 	{
 	//length > 2
-	int mysqlResult = is_mysql_comment( input );
+	final int mysqlResult = is_mysql_comment( input );
 	if( mysqlResult == 0 )
 		{
 		int index = input.indexOf( "*/", 2 );
@@ -3165,7 +3165,8 @@ else
 		{
 		//MySQL Comment
 		inCommentBuf[ 0 ] = true;
-		lengthBuf[ 0 ] = 3;
+		p( "MySQL Result:" + mysqlResult );
+		lengthBuf[ 0 ] = mysqlResult;
 		typeBuf[ 0 ] = "";
 		}
 	}
@@ -3189,8 +3190,8 @@ else if( input.charAt( 2 ) != '!' )
 	return 0;
 	}
 
-	// this is a mysql comment
-	// got "/*!"
+// this is a mysql comment
+// got "/*!"
 
 else if( input.length() == 3 )
 	{
@@ -3209,7 +3210,12 @@ else if( input.length() == 4 )
 		}
 	}
 	
-		//length > 4
+//length > 4
+
+else if( !Character.isDigit( input.charAt( 3 ) ) )
+	{
+	return 3;
+	}
 else if( !Character.isDigit( input.charAt( 4 ) ) ) // handle odd case of /*!0SELECT
 	{
 	return 4;
