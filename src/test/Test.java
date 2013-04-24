@@ -14,7 +14,6 @@ throws Exception
 {
 debug = true;
 
-testParseToken( "0/*!unIoN seLeCt 1,concAt(0x4040,optiOn_vAlue,0x4040),3,4,5,6,7 frOm wp_options where option_name=0x617574685f73616c74*/--", "1Uk1," );
 /*
 testParseToken( "a&a", "n" );
 testParseToken( "a&a1", "n" );
@@ -281,6 +280,11 @@ testParseToken( "1 case not 1", "1o1" );
 testParseToken( "SELECT 1 IN BOOLEAN MODE;", "k1k;" );
 
 	//fold
+testParseToken( "abs abs abs abs -1", "ffffo" );
+testParseToken( "abs abs abs ( -1", "fff(1" );
+testParseToken( "1001 RLIKE ((-1))", "1o((1" );
+testParseToken( "1001 RLIKE ((-1)) UNION SELECT 1 FROM CREDIT_CARDS", "1o((1" );
+testParseToken( "1=-1", "1o1" );
 testParseToken( "1-1", "1" );
 testParseToken( "1-1-1-1-1-1-1-1-1 OR 1=1--", "1&1o1" );
 testParseToken( "-select", "k" );
@@ -336,6 +340,9 @@ testParseToken( "LEFT JOIN", "k" );
 testParseToken( "LEFT", "n" );
 
 testParseToken( "SELECT 1 /*!12XXXXXXXXXXXX", "k11n" );
+
+testParseToken( "0/*!unIoN seLeCt 1,concAt(0x4040,optiOn_vAlue,0x4040),3,4,5,6,7 frOm wp_options where option_name=0x617574685f73616c74*/--", "1Uk1," );
+testParseToken( "select/*!32302 1, */1", "k1,1" );
 
 }
 //--------------------------------------------------------------------------------

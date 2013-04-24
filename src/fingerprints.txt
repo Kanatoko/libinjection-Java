@@ -185,6 +185,7 @@
 1)k1o
 1)kks
 1)kkv
+1)knk
 1)ks
 1)ksc
 1)kso
@@ -389,6 +390,7 @@
 1k1U(
 1k1Uk
 1k1c
+1k1o1
 1kU1,
 1kUs,
 1kUv,
@@ -521,6 +523,7 @@ Ukv,f
 Ukv,n
 Ukv,s
 Ukv,v
+f((f(
 f((k(
 f((kf
 f()&f
@@ -564,6 +567,7 @@ f(vos
 f(vov
 k()ok
 k(1)U
+k(f(1
 k(ok(
 k(s)U
 k(sv)
@@ -582,9 +586,11 @@ k1,v,
 k1,vc
 k1,vk
 k1k(k
+k1kf(
 k1o(s
 k1o(v
 k;non
+kf((f
 kf(1)
 kf(1,
 kf(f(
@@ -635,7 +641,11 @@ knvvk
 knvvn
 ko(k(
 ko(kf
+ko(n,
+ko(s,
 kok(k
+ks&(k
+ks&(o
 ks)
 ks,1,
 ks,1c
@@ -729,9 +739,13 @@ n))&s
 n))&v
 n)))&
 n)));
+n)))B
+n)))U
 n)))k
 n)))o
 n));k
+n))B1
+n))Uk
 n))kk
 n))o(
 n))o1
@@ -745,6 +759,8 @@ n);kf
 n);kk
 n);kn
 n);ko
+n)B1c
+n)Uk1
 n)k1o
 n)kks
 n)kkv
@@ -785,8 +801,10 @@ n;kkv
 n;kn(
 n;ko(
 n;kok
+nB1c
 nUk(k
 nUk1,
+nUk1c
 nUkf(
 nUkn,
 nUks,
@@ -824,6 +842,7 @@ no1ov
 nof(1
 nof(s
 nof(v
+nok(1
 nok(f
 nok(k
 nok(s

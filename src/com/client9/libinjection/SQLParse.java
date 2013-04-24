@@ -6,7 +6,7 @@ import java.util.regex.*;
 public class SQLParse
 {
 public static final int MAX_TOKENS = 5;
-protected static boolean debug = false;
+public static boolean debug = false;
 
 protected static Map sqlKeywords = new HashMap( 500 );
 protected static Map multiKeywords = new HashMap( 50 );
@@ -909,6 +909,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "1)k1o",
 "1)kks",
 "1)kkv",
+"1)knk",
 "1)ks",
 "1)ksc",
 "1)kso",
@@ -1113,6 +1114,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "1k1U(",
 "1k1Uk",
 "1k1c",
+"1k1o1",
 "1kU1,",
 "1kUs,",
 "1kUv,",
@@ -1245,6 +1247,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "Ukv,n",
 "Ukv,s",
 "Ukv,v",
+"f((f(",
 "f((k(",
 "f((kf",
 "f()&f",
@@ -1288,6 +1291,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "f(vov",
 "k()ok",
 "k(1)U",
+"k(f(1",
 "k(ok(",
 "k(s)U",
 "k(sv)",
@@ -1306,9 +1310,11 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "k1,vc",
 "k1,vk",
 "k1k(k",
+"k1kf(",
 "k1o(s",
 "k1o(v",
 "k;non",
+"kf((f",
 "kf(1)",
 "kf(1,",
 "kf(f(",
@@ -1359,7 +1365,11 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "knvvn",
 "ko(k(",
 "ko(kf",
+"ko(n,",
+"ko(s,",
 "kok(k",
+"ks&(k",
+"ks&(o",
 "ks)",
 "ks,1,",
 "ks,1c",
@@ -1453,9 +1463,13 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "n))&v",
 "n)))&",
 "n)));",
+"n)))B",
+"n)))U",
 "n)))k",
 "n)))o",
 "n));k",
+"n))B1",
+"n))Uk",
 "n))kk",
 "n))o(",
 "n))o1",
@@ -1469,6 +1483,8 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "n);kk",
 "n);kn",
 "n);ko",
+"n)B1c",
+"n)Uk1",
 "n)k1o",
 "n)kks",
 "n)kkv",
@@ -1509,8 +1525,10 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "n;kn(",
 "n;ko(",
 "n;kok",
+"nB1c",
 "nUk(k",
 "nUk1,",
+"nUk1c",
 "nUkf(",
 "nUkn,",
 "nUks,",
@@ -1548,6 +1566,7 @@ fingerprints = new HashSet( Arrays.asList( new String[]{
 "nof(1",
 "nof(s",
 "nof(v",
+"nok(1",
 "nok(f",
 "nok(k",
 "nok(s",
@@ -3396,9 +3415,11 @@ while( true )
 						typeIndex -= 2;
 						typeArray[ typeIndex + 1 ] = "";
 						}
-					else
+					else if(  typeArray[ typeIndex - 2 ].equals( "(" ) )
 						{
-						//typeIndex --;
+						// (, o, 1
+						typeIndex --;
+						typeArray[ typeIndex + 1 ] = "1";
 						}
 					}
 				else
@@ -3466,12 +3487,12 @@ while( true )
 					}
 				else
 					{
-					lastProcessed = processed;
+					//lastProcessed = processed;
 					}
 				}
 			else
 				{
-				lastProcessed = processed;
+				//lastProcessed = processed;
 				}
 			}
 		}
@@ -3487,6 +3508,16 @@ while( true )
 			typeIndex --;
 			typeArray[ typeIndex ] = "";
 			}
+		/*
+		else if( multikeywordsFirstWordTypeSet.contains( currentType ) )
+			{
+			
+			}
+		*/
+		else if( currentType.length() == 1 )
+			{
+			lastProcessed = processed;
+			}
 		}
 	
 	if( typeIndex == MAX_TOKENS )
@@ -3499,6 +3530,10 @@ while( true )
 		else if( multiKeywordsStart.contains( processed ) || multiKeywordsStart.contains( lastProcessed ) )
 			{
 				// need to check next
+			}
+		else if( currentType.length() == 1 && currentType.equals( "o" ) )
+			{
+				//XXXXo1 -> XXXX1 fold
 			}
 		else
 			{
@@ -3518,10 +3553,12 @@ while( true )
 		}
 	
 	lastInput = inputBuf[ 0 ];
+	/*
 	if( multikeywordsFirstWordTypeSet.contains( currentType ) && multiKeywordsFound == false )
 		{
 		lastProcessed = processed;
 		}
+	*/
 	}
 StringBuffer buf = new StringBuffer();
 for( int i = 0; i < MAX_TOKENS; ++i )
