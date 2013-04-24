@@ -2902,7 +2902,7 @@ if( tokenBuf == null )
 
 String tokenized = sqli_tokenize( input );
 tokenBuf[ 0 ] = tokenized;
-if( fingerprints.contains( tokenized ) )
+if( isSQLiImpl2( tokenized ) )
 	{
 	p( "isSQLi: type1 : " + tokenized );
 	return true;
@@ -2912,7 +2912,8 @@ if( input.indexOf( '\'' ) > -1 )
 	{
 	tokenized = sqli_tokenize( "'" + input );
 	tokenBuf[ 0 ] = tokenized;
-	if( fingerprints.contains( tokenized ) )
+	
+	if( isSQLiImpl2( tokenized ) )
 		{
 		p( "isSQLi: type2 : " + tokenized );
 		return true;
@@ -2923,13 +2924,22 @@ if( input.indexOf( '"' ) > -1 )
 	{
 	tokenized = sqli_tokenize( "\"" + input );
 	tokenBuf[ 0 ] = tokenized;
-	if( fingerprints.contains( tokenized ) )
+	if( isSQLiImpl2( tokenized ) )
 		{
 		p( "isSQLi: type3 : " + tokenized );
 		return true;
 		}
 	}
 
+return false;
+}
+//--------------------------------------------------------------------------------
+private static boolean isSQLiImpl2( final String tokenized )
+{
+if( fingerprints.contains( tokenized ) )
+	{
+	return true;
+	}
 return false;
 }
 //--------------------------------------------------------------------------------
@@ -3571,7 +3581,23 @@ p( Arrays.asList( valueArray ) );
 p( buf.toString() );
 p( "---" );
 
-return buf.toString();
+final String tokenized = buf.toString();
+
+if( tokenized.length() == 2 )
+	{
+	if( valueArray[ 1 ].startsWith( "#" ) )
+		{
+			//foo#bar
+		return "NOT_SQLI";
+		}
+	else if( valueArray[ 1 ].startsWith( "--" ) && valueArray[ 1 ].length() > 2 )
+		{
+			//1--1
+		return "NOT_SQLI";
+		}
+	}
+
+return tokenized;
 }
 
 //------------------------------------------------------------------------------------------

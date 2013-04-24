@@ -14,8 +14,13 @@ throws Exception
 {
 debug = true;
 
+testIsSQLi( "true#false", false );
+testIsSQLi( "1--", true );
+testIsSQLi( "1--1", false );
 /*
+testParseToken( "1&1", "1" );
 testParseToken( "a&a", "n" );
+/*
 testParseToken( "a&a1", "n" );
 testParseToken( "A - A", "n" );
 testParseToken( "A-A", "n" );
@@ -208,7 +213,7 @@ testParseToken( "\\A", "?n" );
 testParseToken( "\\ABS", "?f" );
 
 	//parse_eol_comment
-testParseToken( "ABS#", "fc" );
+//testParseToken( "ABS#", "fc" );
 
 	//parse_dash
 testParseToken( "ABS--", "fc" );
