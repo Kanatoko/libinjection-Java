@@ -2957,8 +2957,10 @@ if( debug )
 //--------------------------------------------------------------------------------
 protected static void parse_word( String input, String[] typeBuf, int[] lengthBuf )
 {
-String word = getMatch( "^[A-Z0-9_\\.$]+", input );
+p( input );
+String word = getMatch( "^([A-Z0-9]+(:?[\\._][A-Z]+[0-9]*)*)", input );
 lengthBuf[ 0 ] = word.length();
+//p( word );
 String value = ( String )sqlKeywords.get( word );
 if( value == null )
 	{

@@ -14,7 +14,9 @@ throws Exception
 {
 debug = true;
 
-//testParseToken( "''AND 1.-1LIKE.1'", "s&1o1" );
+testParseToken( "LIKE.", "on" );
+testParseToken( "LIKE", "o" );
+testParseToken( "''AND 1.-1LIKE.1'", "s&1o1" );
 testParseToken( "1001 RLIKE ((-\"1\")) UNION SELECT 1 FROM CREDIT_CARDS", "1o((s" );
 testParseToken( "abs(-abs", "f(f" );
 testIsSQLi( "/* /* */", true );
