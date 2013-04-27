@@ -2940,6 +2940,10 @@ if( fingerprints.contains( tokenized ) )
 	{
 	return true;
 	}
+else if( tokenized.indexOf( 'X' ) > -1 )
+	{
+	return true;
+	}
 return false;
 }
 //--------------------------------------------------------------------------------
@@ -3187,7 +3191,15 @@ else
 		else
 			{
 			lengthBuf[ 0 ] = index + 2;
-			typeBuf[ 0 ] = "c";
+			String comment = input.substring( 0, index + 2 );
+			if( comment.indexOf( "/*", 1 ) > -1 )
+				{
+				typeBuf[ 0 ] = "X";
+				}
+			else
+				{
+				typeBuf[ 0 ] = "c";
+				}
 			}
 		}
 	else
@@ -3458,6 +3470,10 @@ while( true )
 		  )
 			{
 			//ignore first ( or unary op
+			}
+		else if( lastType.equals( "(" ) && unaryOpSet.contains( processed ) )
+			{
+			//ignore unary op
 			}
 		else
 			{

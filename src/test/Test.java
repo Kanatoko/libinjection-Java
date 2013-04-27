@@ -14,9 +14,10 @@ throws Exception
 {
 debug = true;
 
-testIsSQLi( "true#false", false );
-testIsSQLi( "1--", true );
-testIsSQLi( "1--1", false );
+//testParseToken( "''AND 1.-1LIKE.1'", "s&1o1" );
+testParseToken( "1001 RLIKE ((-\"1\")) UNION SELECT 1 FROM CREDIT_CARDS", "1o((s" );
+testParseToken( "abs(-abs", "f(f" );
+testIsSQLi( "/* /* */", true );
 /*
 testParseToken( "1&1", "1" );
 testParseToken( "a&a", "n" );
@@ -348,6 +349,10 @@ testParseToken( "SELECT 1 /*!12XXXXXXXXXXXX", "k11n" );
 
 testParseToken( "0/*!unIoN seLeCt 1,concAt(0x4040,optiOn_vAlue,0x4040),3,4,5,6,7 frOm wp_options where option_name=0x617574685f73616c74*/--", "1Uk1," );
 testParseToken( "select/*!32302 1, */1", "k1,1" );
+
+testIsSQLi( "true#false", false );
+testIsSQLi( "1--", true );
+testIsSQLi( "1--1", false );
 
 }
 //--------------------------------------------------------------------------------
