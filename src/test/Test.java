@@ -13,15 +13,22 @@ public static void main( String[] args )
 throws Exception
 {
 debug = true;
-
-testParseToken( "LIKE.", "on" );
-testParseToken( "LIKE", "o" );
-testParseToken( "''AND 1.-1LIKE.1'", "s&1o1" );
-testParseToken( "1001 RLIKE ((-\"1\")) UNION SELECT 1 FROM CREDIT_CARDS", "1o((s" );
-testParseToken( "abs(-abs", "f(f" );
-testIsSQLi( "/* /* */", true );
+p( sqli_tokenize( "SELECT" ) );
 /*
+testParseToken( "A00-00A-00A", "nno1n" );
+
+/* Bug in C impl? #25
+testParseToken( "FOO & 1", "n" );
+testParseToken( "FOO& 1", "n" );
+testParseToken( "FOO&1", "n" );
+*/
+
+/*
+testParseToken( "LIKE & 1", "oo1" );
+testParseToken( "LIKE&1", "oo1" );
 testParseToken( "1&1", "1" );
+testParseToken( "1 & 1", "1" );
+/*
 testParseToken( "a&a", "n" );
 /*
 testParseToken( "a&a1", "n" );
@@ -31,9 +38,11 @@ testParseToken( "A-A", "n" );
 //testParseToken( "HAVING a a @a - a", "knnvo" );
 //testParseToken( "COS MEDIUMINT IN #", "fknc" );
 //testParseToken( "LEFT OUTER CROSS JOIN", "fnk" );
+/*
 test3();
 test1();
 test2();
+*/
 
 p( "OK." );
 }
@@ -355,6 +364,13 @@ testParseToken( "select/*!32302 1, */1", "k1,1" );
 testIsSQLi( "true#false", false );
 testIsSQLi( "1--", true );
 testIsSQLi( "1--1", false );
+
+testParseToken( "LIKE.", "on" );
+testParseToken( "LIKE", "o" );
+testParseToken( "''AND 1.-1LIKE.1'", "s&1o1" );
+testParseToken( "1001 RLIKE ((-\"1\")) UNION SELECT 1 FROM CREDIT_CARDS", "1o((s" );
+testParseToken( "abs(-abs", "f(f" );
+testIsSQLi( "/* /* */", true );
 
 }
 //--------------------------------------------------------------------------------

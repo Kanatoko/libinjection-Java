@@ -66,7 +66,7 @@ while( true )
 		}
 	else
 		{
-		p( "*** NOT MATCH ****:" + fileName );
+		p( "*** NOT MATCH ****: " + fileName );
 		}
 	p( "" );
 	}
