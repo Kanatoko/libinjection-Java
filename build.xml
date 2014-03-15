@@ -34,48 +34,4 @@
             <classpath refid="libinjection.classpath"/>
         </javac>
     </target>
-    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
-        <copy todir="${ant.library.dir}">
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </copy>
-        <unzip dest="${ant.library.dir}">
-            <patternset includes="jdtCompilerAdapter.jar"/>
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </unzip>
-    </target>
-    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
-        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-        <antcall target="build"/>
-    </target>
-    <target name="Dev (2)">
-        <java classname="test.Dev" failonerror="true" fork="yes">
-            <classpath refid="libinjection.classpath"/>
-        </java>
-    </target>
-    <target name="TestJava">
-        <java classname="test.TestJava" failonerror="true" fork="yes">
-            <classpath refid="libinjection.classpath"/>
-        </java>
-    </target>
-    <target name="Fuzzer">
-        <java classname="test.Fuzzer" failonerror="true" fork="yes">
-            <classpath refid="libinjection.classpath"/>
-        </java>
-    </target>
-    <target name="sqlparse_data_h_to_java">
-        <java classname="test.sqlparse_data_h_to_java" failonerror="true" fork="yes">
-            <classpath refid="libinjection.classpath"/>
-        </java>
-    </target>
-    <target name="TestTextFiles">
-        <java classname="test.TestTextFiles" failonerror="true" fork="yes">
-            <classpath refid="libinjection.classpath"/>
-        </java>
-    </target>
-    <target name="fingerprints_to_java">
-        <java classname="test.fingerprints_to_java" failonerror="true" fork="yes">
-            <classpath refid="libinjection.classpath"/>
-        </java>
-    </target>
 </project>
