@@ -1,0 +1,2272 @@
+JAVA PROFILE 1.0.1, created Sat Mar 15 14:27:49 2014
+
+Copyright (c) 2003, 2005, Oracle and/or its affiliates. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
+  - Neither the name of Oracle nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Header for -agentlib:hprof (or -Xrunhprof) ASCII Output (JDK 5.0 JVMTI based)
+
+WARNING!  This file format is under development, and is subject to
+change without notice.
+
+This file contains the following types of records:
+
+THREAD START
+THREAD END      mark the lifetime of Java threads
+
+TRACE           represents a Java stack trace.  Each trace consists
+                of a series of stack frames.  Other records refer to
+                TRACEs to identify (1) where object allocations have
+                taken place, (2) the frames in which GC roots were
+                found, and (3) frequently executed methods.
+
+HEAP DUMP       is a complete snapshot of all live objects in the Java
+                heap.  Following distinctions are made:
+
+                ROOT    root set as determined by GC
+                CLS     classes 
+                OBJ     instances
+                ARR     arrays
+
+SITES           is a sorted list of allocation sites.  This identifies
+                the most heavily allocated object types, and the TRACE
+                at which those allocations occurred.
+
+CPU SAMPLES     is a statistical profile of program execution.  The VM
+                periodically samples all running threads, and assigns
+                a quantum to active TRACEs in those threads.  Entries
+                in this record are TRACEs ranked by the percentage of
+                total quanta they consumed; top-ranked TRACEs are
+                typically hot spots in the program.
+
+CPU TIME        is a profile of program execution obtained by measuring
+                the time spent in individual methods (excluding the time
+                spent in callees), as well as by counting the number of
+                times each method is called. Entries in this record are
+                TRACEs ranked by the percentage of total CPU time. The
+                "count" field indicates the number of times each TRACE 
+                is invoked.
+
+MONITOR TIME    is a profile of monitor contention obtained by measuring
+                the time spent by a thread waiting to enter a monitor.
+                Entries in this record are TRACEs ranked by the percentage
+                of total monitor contention time and a brief description
+                of the monitor.  The "count" field indicates the number of 
+                times the monitor was contended at that TRACE.
+
+MONITOR DUMP    is a complete snapshot of all the monitors and threads in 
+                the System.
+
+HEAP DUMP, SITES, CPU SAMPLES|TIME and MONITOR DUMP|TIME records are generated 
+at program exit.  They can also be obtained during program execution by typing 
+Ctrl-\ (on Solaris) or by typing Ctrl-Break (on Win32).
+
+--------
+
+THREAD START (obj=50000170, id = 200002, name="HPROF gc_finish watcher", group="system")
+THREAD START (obj=50000170, id = 200001, name="main", group="main")
+THREAD END (id = 200001)
+THREAD START (obj=50000170, id = 200003, name="DestroyJavaVM", group="main")
+THREAD END (id = 200003)
+TRACE 302298:
+	java.lang.Character.toUpperCaseEx(Character.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 302063:
+	java.util.Random.next(Random.java:Unknown line)
+	java.util.Random.nextInt(Random.java:Unknown line)
+	java.util.Random.nextBytes(Random.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302197:
+	java.lang.CharacterDataLatin1.toUpperCaseEx(CharacterDataLatin1.java:Unknown line)
+	java.lang.Character.toUpperCaseEx(Character.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+TRACE 302320:
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302301:
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302064:
+	java.util.Random.nextInt(Random.java:Unknown line)
+	java.util.Random.nextBytes(Random.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302195:
+	java.lang.CharacterData.of(CharacterData.java:Unknown line)
+	java.lang.Character.toUpperCaseEx(Character.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+TRACE 302196:
+	java.lang.CharacterDataLatin1.getProperties(CharacterDataLatin1.java:Unknown line)
+	java.lang.CharacterDataLatin1.toUpperCaseEx(CharacterDataLatin1.java:Unknown line)
+	java.lang.Character.toUpperCaseEx(Character.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+TRACE 302066:
+	java.util.Random.nextBytes(Random.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302295:
+	java.util.ArrayList.get(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302062:
+	java.util.concurrent.atomic.AtomicLong.compareAndSet(AtomicLong.java:Unknown line)
+	java.util.Random.next(Random.java:Unknown line)
+	java.util.Random.nextInt(Random.java:Unknown line)
+	java.util.Random.nextBytes(Random.java:Unknown line)
+TRACE 302061:
+	java.util.concurrent.atomic.AtomicLong.get(AtomicLong.java:Unknown line)
+	java.util.Random.next(Random.java:Unknown line)
+	java.util.Random.nextInt(Random.java:Unknown line)
+	java.util.Random.nextBytes(Random.java:Unknown line)
+TRACE 301899:
+	java.util.regex.Pattern$BmpCharProperty.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.match(Pattern.java:Unknown line)
+	java.util.regex.Matcher.search(Matcher.java:Unknown line)
+TRACE 302189:
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302154:
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302343:
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302600:
+	com.client9.libinjection.SQLParse.parseString(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.parseQuoteString(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302291:
+	java.lang.String.length(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302238:
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302179:
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuilder.append(StringBuilder.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+TRACE 301900:
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.match(Pattern.java:Unknown line)
+	java.util.regex.Matcher.search(Matcher.java:Unknown line)
+	java.util.regex.Matcher.find(Matcher.java:Unknown line)
+TRACE 302305:
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.get(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302181:
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302166:
+	java.util.HashMap.hash(HashMap.java:Unknown line)
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+TRACE 302302:
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302294:
+	java.util.ArrayList.elementData(ArrayList.java:Unknown line)
+	java.util.ArrayList.get(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302172:
+	java.lang.String.startsWith(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302331:
+	java.lang.Character.toUpperCaseEx(Character.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.isUnaryOperator(SQLParse.java:Unknown line)
+TRACE 302198:
+	java.lang.Character.toUpperCaseEx(Character.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302309:
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302292:
+	java.lang.String.charAt(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302308:
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302261:
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+TRACE 302311:
+	java.util.ArrayList.add(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302329:
+	com.client9.libinjection.SQLParse.isUnaryOperator(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302271:
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302251:
+	java.util.regex.Pattern$Start.match(Pattern.java:Unknown line)
+	java.util.regex.Matcher.search(Matcher.java:Unknown line)
+	java.util.regex.Matcher.find(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+TRACE 302284:
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302599:
+	java.lang.String.charAt(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.parseString(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.parseQuoteString(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302327:
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302306:
+	java.util.HashMap.get(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302293:
+	java.util.ArrayList.rangeCheck(ArrayList.java:Unknown line)
+	java.util.ArrayList.get(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302303:
+	java.util.HashMap.hash(HashMap.java:Unknown line)
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.get(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 302186:
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+TRACE 302335:
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.isUnaryOperator(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 301907:
+	java.util.regex.Pattern$Curly.match0(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.match(Pattern.java:Unknown line)
+	java.util.regex.Matcher.search(Matcher.java:Unknown line)
+TRACE 300251:
+	java.lang.String.hashCode(String.java:Unknown line)
+	java.util.HashMap.hash(HashMap.java:Unknown line)
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+TRACE 301852:
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302184:
+	java.lang.StringBuilder.toString(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302176:
+	java.lang.String.valueOf(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302188:
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302183:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuilder.toString(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+TRACE 302334:
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.isUnaryOperator(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 302148:
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuilder.append(StringBuilder.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302167:
+	java.util.HashMap.indexFor(HashMap.java:Unknown line)
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+TRACE 302296:
+	java.util.ArrayList.size(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302204:
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302336:
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+	com.client9.libinjection.SQLParse.isUnaryOperator(SQLParse.java:Unknown line)
+TRACE 302248:
+	java.util.regex.Pattern$Single.isSatisfiedBy(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.match(Pattern.java:Unknown line)
+TRACE 302252:
+	java.util.regex.Matcher.search(Matcher.java:Unknown line)
+	java.util.regex.Matcher.find(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302268:
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+TRACE 302270:
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 301861:
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+TRACE 302150:
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 301905:
+	java.util.regex.Pattern$BmpCharProperty.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match0(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.match(Pattern.java:Unknown line)
+TRACE 301828:
+	java.lang.String.codePointAt(String.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302168:
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302170:
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302300:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 302598:
+	java.lang.String.length(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.parseString(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.parseQuoteString(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302180:
+	java.lang.StringBuilder.append(StringBuilder.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+TRACE 302266:
+	java.lang.StringBuilder.length(StringBuilder.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+TRACE 301879:
+	java.util.regex.Pattern$Start.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302187:
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+TRACE 302253:
+	java.util.regex.Matcher.find(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302319:
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 301827:
+	java.lang.Character.codePointAtImpl(Character.java:Unknown line)
+	java.lang.String.codePointAt(String.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+TRACE 302262:
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302158:
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302310:
+	java.util.ArrayList.ensureCapacityInternal(ArrayList.java:Unknown line)
+	java.util.ArrayList.add(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302316:
+	java.util.ArrayList.addAll(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 301893:
+	java.lang.String.charAt(String.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.match(Pattern.java:Unknown line)
+TRACE 302299:
+	java.util.Locale.getLanguage(Locale.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 302318:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302337:
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+	com.client9.libinjection.SQLParse.isUnaryOperator(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 301159:
+	java.lang.String.hashCode(String.java:Unknown line)
+	java.util.HashMap.hash(HashMap.java:Unknown line)
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.get(HashMap.java:Unknown line)
+TRACE 302243:
+	java.util.regex.Matcher.<init>(Matcher.java:Unknown line)
+	java.util.regex.Pattern.matcher(Pattern.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302307:
+	java.lang.AbstractStringBuilder.ensureCapacityInternal(AbstractStringBuilder.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 301830:
+	java.util.regex.Pattern.isSupplementary(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302147:
+	java.lang.String.getChars(String.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuilder.append(StringBuilder.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+TRACE 302314:
+	java.util.ArrayList.toArray(ArrayList.java:Unknown line)
+	java.util.ArrayList.addAll(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 301878:
+	java.util.regex.Pattern$Curly.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+TRACE 302145:
+	java.lang.String.length(String.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuilder.append(StringBuilder.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+TRACE 302149:
+	java.lang.StringBuilder.append(StringBuilder.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302202:
+	java.util.Arrays.copyOfRange(Arrays.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+TRACE 302215:
+	java.util.Arrays.copyOf(Arrays.java:Unknown line)
+	java.util.Arrays.copyOf(Arrays.java:Unknown line)
+	java.util.ArrayList.toArray(ArrayList.java:Unknown line)
+	java.util.ArrayList.addAll(ArrayList.java:Unknown line)
+TRACE 302237:
+	java.util.regex.Pattern.newSingle(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+TRACE 301835:
+	java.util.regex.Pattern.peek(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302142:
+	java.lang.String.valueOf(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302285:
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302286:
+	java.util.AbstractList.<init>(AbstractList.java:Unknown line)
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 302287:
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302290:
+	java.lang.StringBuffer.<init>(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302297:
+	java.util.Locale.getDefault(Locale.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302169:
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302239:
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302278:
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendTail(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+TRACE 302182:
+	java.util.Arrays.copyOfRange(Arrays.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuilder.toString(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+TRACE 302272:
+	java.lang.String.charAt(String.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+TRACE 302146:
+	java.lang.AbstractStringBuilder.ensureCapacityInternal(AbstractStringBuilder.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuilder.append(StringBuilder.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+TRACE 302171:
+	java.lang.String.startsWith(String.java:Unknown line)
+	java.lang.String.startsWith(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302219:
+	java.util.ArrayList.addAll(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302340:
+	java.lang.String.startsWith(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 301462:
+	java.util.AbstractCollection.<init>(AbstractCollection.java:Unknown line)
+	java.util.AbstractList.<init>(AbstractList.java:Unknown line)
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+TRACE 302174:
+	java.lang.String.charAt(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302175:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.valueOf(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+TRACE 302208:
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.get(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302264:
+	java.lang.StringBuilder.length(StringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+TRACE 302304:
+	java.util.HashMap.indexFor(HashMap.java:Unknown line)
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.get(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 301860:
+	java.util.regex.Pattern.closure(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302288:
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 301859:
+	java.util.regex.Pattern$Curly.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.closure(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+TRACE 301864:
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302161:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.substring(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302231:
+	java.util.regex.Pattern.isSupplementary(Pattern.java:Unknown line)
+	java.util.regex.Pattern.newSingle(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 302328:
+	java.lang.String.length(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.isUnaryOperator(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302159:
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302177:
+	java.lang.String.length(String.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+TRACE 302269:
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+TRACE 302338:
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+	com.client9.libinjection.SQLParse.isUnaryOperator(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302547:
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	com.client9.libinjection.SQLParse.getMatch(SQLParse.java:Unknown line)
+TRACE 302178:
+	java.lang.AbstractStringBuilder.<init>(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+TRACE 302205:
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302257:
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302260:
+	java.lang.AbstractStringBuilder.ensureCapacityInternal(AbstractStringBuilder.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+TRACE 301764:
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 301824:
+	java.util.regex.Pattern.has(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 301834:
+	java.util.regex.Pattern.has(Pattern.java:Unknown line)
+	java.util.regex.Pattern.peek(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+TRACE 301877:
+	java.util.regex.Pattern$Node.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302130:
+	java.lang.String.length(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302199:
+	sun.util.locale.BaseLocale.getLanguage(BaseLocale.java:Unknown line)
+	java.util.Locale.getLanguage(Locale.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+TRACE 302211:
+	java.util.ArrayList.add(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 300142:
+	java.lang.StringCoding$StringDecoder.decode(StringCoding.java:Unknown line)
+	java.lang.StringCoding.decode(StringCoding.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+TRACE 301846:
+	java.util.regex.Pattern$CharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$CharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.<init>(Pattern.java:Unknown line)
+TRACE 301854:
+	java.util.regex.Pattern.peek(Pattern.java:Unknown line)
+	java.util.regex.Pattern.closure(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+TRACE 301863:
+	java.util.regex.Pattern.peek(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+TRACE 302152:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuilder.toString(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302160:
+	java.util.Arrays.copyOfRange(Arrays.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.substring(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302163:
+	java.lang.String.equals(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302193:
+	java.lang.String.substring(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302282:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 301839:
+	java.util.regex.Pattern.peek(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+TRACE 301856:
+	java.util.regex.Pattern.next(Pattern.java:Unknown line)
+	java.util.regex.Pattern.closure(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+TRACE 302153:
+	java.lang.StringBuilder.toString(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302173:
+	java.lang.String.length(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302213:
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302222:
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302255:
+	java.lang.StringBuffer.<init>(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302265:
+	java.lang.AbstractStringBuilder.length(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuilder.length(StringBuilder.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+TRACE 302279:
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendTail(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302322:
+	java.lang.String.length(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302339:
+	java.lang.String.startsWith(String.java:Unknown line)
+	java.lang.String.startsWith(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302729:
+	com.client9.libinjection.SQLParse.parseString(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 301855:
+	java.util.regex.Pattern.has(Pattern.java:Unknown line)
+	java.util.regex.Pattern.next(Pattern.java:Unknown line)
+	java.util.regex.Pattern.closure(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 301906:
+	java.util.regex.Pattern$LastNode.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match0(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.match(Pattern.java:Unknown line)
+TRACE 302143:
+	java.lang.String.length(String.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302164:
+	java.lang.StringBuffer.length(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302258:
+	java.lang.String.length(String.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302313:
+	java.util.Arrays.copyOf(Arrays.java:Unknown line)
+	java.util.ArrayList.toArray(ArrayList.java:Unknown line)
+	java.util.ArrayList.addAll(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 301901:
+	java.util.regex.Pattern$Node.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.match(Pattern.java:Unknown line)
+TRACE 301902:
+	java.lang.String.charAt(String.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match0(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+TRACE 302162:
+	java.lang.String.substring(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302192:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.substring(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302216:
+	java.util.Arrays.copyOf(Arrays.java:Unknown line)
+	java.util.ArrayList.toArray(ArrayList.java:Unknown line)
+	java.util.ArrayList.addAll(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302240:
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302244:
+	java.util.regex.Pattern.matcher(Pattern.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302263:
+	java.lang.AbstractStringBuilder.length(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuilder.length(StringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+TRACE 302280:
+	java.util.regex.Matcher.appendTail(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302283:
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302317:
+	java.util.Arrays.copyOfRange(Arrays.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 302321:
+	java.lang.String.equals(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 301831:
+	java.lang.Character.charCount(Character.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 301871:
+	java.util.regex.Pattern$TreeInfo.reset(Pattern.java:Unknown line)
+	java.util.regex.Pattern$TreeInfo.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 301889:
+	java.util.regex.Matcher.getTextLength(Matcher.java:Unknown line)
+	java.util.regex.Matcher.reset(Matcher.java:Unknown line)
+	java.util.regex.Matcher.<init>(Matcher.java:Unknown line)
+	java.util.regex.Pattern.matcher(Pattern.java:Unknown line)
+TRACE 302129:
+	java.lang.String.length(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302155:
+	java.lang.String.length(String.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302209:
+	java.util.HashMap.get(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302221:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302236:
+	java.util.regex.Pattern$Single.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.newSingle(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 302242:
+	java.util.regex.Matcher.reset(Matcher.java:Unknown line)
+	java.util.regex.Matcher.<init>(Matcher.java:Unknown line)
+	java.util.regex.Pattern.matcher(Pattern.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302274:
+	java.util.regex.Matcher.getTextLength(Matcher.java:Unknown line)
+	java.util.regex.Matcher.appendTail(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302289:
+	java.lang.AbstractStringBuilder.<init>(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.<init>(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 301771:
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize2(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 301779:
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize3(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 301829:
+	java.lang.Character.isSurrogate(Character.java:Unknown line)
+	java.util.regex.Pattern.isSupplementary(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+TRACE 302112:
+	java.lang.StringCoding.decode(StringCoding.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302214:
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302235:
+	java.util.regex.Pattern$BmpCharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Single.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.newSingle(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+TRACE 302259:
+	java.lang.String.length(String.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+TRACE 302330:
+	java.util.Locale.getDefault(Locale.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.isUnaryOperator(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 301661:
+	java.lang.Class.privateGetDeclaredMethods(Class.java:Unknown line)
+	java.lang.Class.getMethod0(Class.java:Unknown line)
+	java.lang.Class.getMethod(Class.java:Unknown line)
+	sun.launcher.LauncherHelper.getMainMethod(LauncherHelper.java:Unknown line)
+TRACE 301769:
+	java.util.HashMap.createEntry(HashMap.java:Unknown line)
+	java.util.HashMap.addEntry(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize2(SQLParse.java:Unknown line)
+TRACE 301773:
+	com.client9.libinjection.SQLParse.initialize2(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 301826:
+	java.lang.Character.isHighSurrogate(Character.java:Unknown line)
+	java.lang.Character.codePointAtImpl(Character.java:Unknown line)
+	java.lang.String.codePointAt(String.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 301876:
+	java.util.regex.Pattern$Node.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Node.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.<init>(Pattern.java:Unknown line)
+TRACE 302151:
+	java.util.Arrays.copyOfRange(Arrays.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuilder.toString(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302206:
+	java.util.HashMap.hash(HashMap.java:Unknown line)
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.get(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302212:
+	java.util.AbstractList.<init>(AbstractList.java:Unknown line)
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302226:
+	java.util.regex.Pattern.isSupplementary(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+TRACE 302234:
+	java.util.regex.Pattern$BmpCharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Single.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.newSingle(Pattern.java:Unknown line)
+TRACE 302246:
+	java.util.regex.Matcher.getTextLength(Matcher.java:Unknown line)
+	java.util.regex.Matcher.reset(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302267:
+	java.lang.AbstractStringBuilder.ensureCapacityInternal(AbstractStringBuilder.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+TRACE 300394:
+	java.util.HashMap$Entry.<init>(HashMap.java:Unknown line)
+	java.util.HashMap.createEntry(HashMap.java:Unknown line)
+	java.util.HashMap.addEntry(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+TRACE 301775:
+	java.util.HashMap.hash(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize3(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+TRACE 301777:
+	java.util.HashMap.createEntry(HashMap.java:Unknown line)
+	java.util.HashMap.addEntry(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize3(SQLParse.java:Unknown line)
+TRACE 302144:
+	java.lang.AbstractStringBuilder.<init>(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302185:
+	com.client9.libinjection.SQLParse.isWhiteSpaceChar(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302223:
+	java.lang.String.length(String.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302233:
+	java.util.regex.Pattern$CharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Single.<init>(Pattern.java:Unknown line)
+TRACE 302247:
+	java.util.regex.Matcher.reset(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302249:
+	java.util.regex.Pattern$Single.isSatisfiedBy(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match0(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+TRACE 302312:
+	java.util.ArrayList.clear(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 301760:
+	java.util.HashMap.hash(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 301762:
+	java.util.HashMap.createEntry(HashMap.java:Unknown line)
+	java.util.HashMap.addEntry(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+TRACE 301763:
+	java.util.HashMap.addEntry(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 302131:
+	java.lang.String.charAt(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302141:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.valueOf(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302156:
+	java.lang.AbstractStringBuilder.ensureCapacityInternal(AbstractStringBuilder.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302190:
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302217:
+	java.util.ArrayList.toArray(ArrayList.java:Unknown line)
+	java.util.ArrayList.addAll(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302254:
+	java.lang.AbstractStringBuilder.<init>(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.<init>(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302323:
+	java.lang.String.charAt(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302333:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.isUnaryOperator(SQLParse.java:Unknown line)
+TRACE 302493:
+	java.lang.String.codePointAt(String.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302494:
+	java.util.regex.Pattern.isSupplementary(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302528:
+	java.util.regex.Pattern.range(Pattern.java:Unknown line)
+	java.util.regex.Pattern.clazz(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+TRACE 302838:
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 301767:
+	java.util.HashMap.hash(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize2(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+TRACE 301770:
+	java.util.HashMap.addEntry(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize2(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+TRACE 301858:
+	java.util.regex.Pattern$Node.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.closure(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 301862:
+	java.util.regex.Pattern.has(Pattern.java:Unknown line)
+	java.util.regex.Pattern.peek(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 301872:
+	java.util.regex.Pattern$TreeInfo.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+TRACE 301875:
+	java.util.regex.Pattern$CharProperty.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302165:
+	com.client9.libinjection.SQLParse.isWhiteSpaceChar(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302194:
+	java.util.Locale.getDefault(Locale.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302241:
+	java.lang.Math.max(Math.java:Unknown line)
+	java.util.regex.Matcher.<init>(Matcher.java:Unknown line)
+	java.util.regex.Pattern.matcher(Pattern.java:Unknown line)
+	java.lang.String.replaceAll(String.java:Unknown line)
+TRACE 302245:
+	java.lang.String.length(String.java:Unknown line)
+	java.util.regex.Matcher.getTextLength(Matcher.java:Unknown line)
+	java.util.regex.Matcher.reset(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+TRACE 302256:
+	java.lang.AbstractStringBuilder.<init>(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	java.util.regex.Matcher.appendReplacement(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+TRACE 302647:
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 300131:
+	java.lang.ref.SoftReference.get(SoftReference.java:Unknown line)
+	java.lang.StringCoding.deref(StringCoding.java:Unknown line)
+	java.lang.StringCoding.decode(StringCoding.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+TRACE 301784:
+	com.client9.libinjection.SQLParse.initialize3(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 301825:
+	java.lang.String.length(String.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 301853:
+	java.util.regex.Pattern.has(Pattern.java:Unknown line)
+	java.util.regex.Pattern.peek(Pattern.java:Unknown line)
+	java.util.regex.Pattern.closure(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 301874:
+	java.util.regex.Pattern$Node.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$CharProperty.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.<init>(Pattern.java:Unknown line)
+TRACE 302040:
+	com.client9.libinjection.SQLParse.initKeywordMergeMap(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 302117:
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302200:
+	java.util.Locale.getLanguage(Locale.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302210:
+	java.util.ArrayList.ensureCapacityInternal(ArrayList.java:Unknown line)
+	java.util.ArrayList.add(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302277:
+	java.lang.String.charAt(String.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendTail(Matcher.java:Unknown line)
+TRACE 302326:
+	java.util.ArrayList.get(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302728:
+	java.lang.String.charAt(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.parseString(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 301610:
+	java.lang.ClassLoader.defineClass(ClassLoader.java:Unknown line)
+	java.security.SecureClassLoader.defineClass(SecureClassLoader.java:Unknown line)
+	java.net.URLClassLoader.defineClass(URLClassLoader.java:Unknown line)
+	java.net.URLClassLoader.access$100(URLClassLoader.java:Unknown line)
+TRACE 301832:
+	java.util.regex.Pattern.RemoveQEQuoting(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 301880:
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.lang.String.split(String.java:Unknown line)
+TRACE 301976:
+	java.lang.Math.min(Math.java:Unknown line)
+	java.util.Arrays.copyOf(Arrays.java:Unknown line)
+	java.util.Arrays.copyOf(Arrays.java:Unknown line)
+	java.util.ArrayList.toArray(ArrayList.java:Unknown line)
+TRACE 302157:
+	java.lang.String.getChars(String.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302203:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302218:
+	java.util.ArrayList.ensureCapacityInternal(ArrayList.java:Unknown line)
+	java.util.ArrayList.addAll(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302227:
+	java.util.regex.Pattern.has(Pattern.java:Unknown line)
+	java.util.regex.Pattern.next(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 302228:
+	java.util.regex.Pattern.next(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+TRACE 302229:
+	java.util.regex.Pattern.has(Pattern.java:Unknown line)
+	java.util.regex.Pattern.newSingle(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 302281:
+	java.util.Arrays.copyOfRange(Arrays.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+TRACE 302324:
+	java.util.ArrayList.rangeCheck(ArrayList.java:Unknown line)
+	java.util.ArrayList.get(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302332:
+	java.util.Locale.getLanguage(Locale.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.isUnaryOperator(SQLParse.java:Unknown line)
+TRACE 302538:
+	java.util.regex.Pattern.bitsOrSingle(Pattern.java:Unknown line)
+	java.util.regex.Pattern.range(Pattern.java:Unknown line)
+	java.util.regex.Pattern.clazz(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 302545:
+	java.util.regex.Pattern.clazz(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302607:
+	java.lang.Character.toUpperCaseCharArray(Character.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+TRACE 300045:
+	java.lang.Math.min(Math.java:Unknown line)
+	java.util.Arrays.copyOfRange(Arrays.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuilder.toString(StringBuilder.java:Unknown line)
+TRACE 300068:
+	java.lang.ThreadLocal$ThreadLocalMap.getEntry(ThreadLocal.java:Unknown line)
+	java.lang.ThreadLocal$ThreadLocalMap.access$000(ThreadLocal.java:Unknown line)
+	java.lang.ThreadLocal.get(ThreadLocal.java:Unknown line)
+	java.lang.StringCoding.deref(StringCoding.java:Unknown line)
+TRACE 301774:
+	java.lang.String.hashCode(String.java:Unknown line)
+	java.util.HashMap.hash(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize3(SQLParse.java:Unknown line)
+TRACE 301778:
+	java.util.HashMap.addEntry(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize3(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+TRACE 301869:
+	java.util.regex.Pattern$Node.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+TRACE 301873:
+	java.util.regex.Pattern$TreeInfo.reset(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.study(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 301898:
+	java.util.regex.Pattern$Ctype.isSatisfiedBy(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Start.match(Pattern.java:Unknown line)
+TRACE 302041:
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 302191:
+	java.util.Arrays.copyOfRange(Arrays.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.substring(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302201:
+	java.lang.Math.min(Math.java:Unknown line)
+	java.util.Arrays.copyOfRange(Arrays.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+TRACE 302220:
+	java.util.Arrays.copyOfRange(Arrays.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302224:
+	java.util.regex.Pattern.append(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+TRACE 302225:
+	java.lang.Character.isSurrogate(Character.java:Unknown line)
+	java.util.regex.Pattern.isSupplementary(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 302230:
+	java.lang.Character.isSurrogate(Character.java:Unknown line)
+	java.util.regex.Pattern.isSupplementary(Pattern.java:Unknown line)
+	java.util.regex.Pattern.newSingle(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+TRACE 302273:
+	java.lang.String.length(String.java:Unknown line)
+	java.util.regex.Matcher.getTextLength(Matcher.java:Unknown line)
+	java.util.regex.Matcher.appendTail(Matcher.java:Unknown line)
+	java.util.regex.Matcher.replaceAll(Matcher.java:Unknown line)
+TRACE 302480:
+	java.lang.String.equalsIgnoreCase(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302548:
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	com.client9.libinjection.SQLParse.getMatch(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 300132:
+	java.lang.StringCoding.deref(StringCoding.java:Unknown line)
+	java.lang.StringCoding.decode(StringCoding.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+TRACE 300137:
+	java.lang.StringCoding.access$000(StringCoding.java:Unknown line)
+	java.lang.StringCoding$StringDecoder.decode(StringCoding.java:Unknown line)
+	java.lang.StringCoding.decode(StringCoding.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+TRACE 301759:
+	java.lang.String.hashCode(String.java:Unknown line)
+	java.util.HashMap.hash(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+TRACE 301807:
+	java.util.HashMap$Entry.getKey(HashMap.java:Unknown line)
+	java.util.HashMap$KeyIterator.next(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initKeywordMergeMap(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+TRACE 301809:
+	java.lang.String.indexOf(String.java:Unknown line)
+	java.lang.String.indexOf(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.initKeywordMergeMap(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+TRACE 301810:
+	java.lang.String.indexOf(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.initKeywordMergeMap(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 301845:
+	java.util.regex.Pattern$Node.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$CharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$CharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.<init>(Pattern.java:Unknown line)
+TRACE 301908:
+	java.util.regex.Pattern$Start.match(Pattern.java:Unknown line)
+	java.util.regex.Matcher.search(Matcher.java:Unknown line)
+	java.util.regex.Matcher.find(Matcher.java:Unknown line)
+	java.util.regex.Pattern.split(Pattern.java:Unknown line)
+TRACE 302017:
+	java.util.ArrayList.set(ArrayList.java:Unknown line)
+	java.util.ArrayList$ListItr.set(ArrayList.java:Unknown line)
+	java.util.Collections.sort(Collections.java:Unknown line)
+	com.client9.libinjection.SQLParse.initKeywordMergeMap(SQLParse.java:Unknown line)
+TRACE 302116:
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	java.util.ArrayList.<init>(ArrayList.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302207:
+	java.util.HashMap.indexFor(HashMap.java:Unknown line)
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.get(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302275:
+	java.lang.String.length(String.java:Unknown line)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	java.util.regex.Matcher.appendTail(Matcher.java:Unknown line)
+TRACE 302315:
+	java.util.ArrayList.ensureCapacityInternal(ArrayList.java:Unknown line)
+	java.util.ArrayList.addAll(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+TRACE 302342:
+	java.util.ArrayList.clear(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302477:
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302495:
+	java.lang.Character.charCount(Character.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+TRACE 302507:
+	java.util.regex.Pattern$BmpCharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BmpCharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$BitClass.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.clazz(Pattern.java:Unknown line)
+TRACE 302558:
+	java.util.regex.Pattern.access$200(Pattern.java:Unknown line)
+	java.util.regex.Pattern$1.isSatisfiedBy(Pattern.java:Unknown line)
+	java.util.regex.Pattern$5.isSatisfiedBy(Pattern.java:Unknown line)
+	java.util.regex.Pattern$CharProperty.match(Pattern.java:Unknown line)
+TRACE 302583:
+	com.client9.libinjection.SQLParse.getMatch(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302593:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302606:
+	java.lang.CharacterDataLatin1.toUpperCaseCharArray(CharacterDataLatin1.java:Unknown line)
+	java.lang.Character.toUpperCaseCharArray(Character.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+	java.lang.String.toUpperCase(String.java:Unknown line)
+TRACE 302640:
+	java.lang.StringBuilder.append(StringBuilder.java:Unknown line)
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302685:
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.compile(Pattern.java:Unknown line)
+	java.util.regex.Pattern.matches(Pattern.java:Unknown line)
+TRACE 300129:
+	java.lang.ThreadLocal.get(ThreadLocal.java:Unknown line)
+	java.lang.StringCoding.deref(StringCoding.java:Unknown line)
+	java.lang.StringCoding.decode(StringCoding.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+TRACE 300135:
+	java.nio.charset.CharsetDecoder.maxCharsPerByte(CharsetDecoder.java:Unknown line)
+	java.lang.StringCoding$StringDecoder.decode(StringCoding.java:Unknown line)
+	java.lang.StringCoding.decode(StringCoding.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+TRACE 300136:
+	java.lang.StringCoding.scale(StringCoding.java:Unknown line)
+	java.lang.StringCoding.access$000(StringCoding.java:Unknown line)
+	java.lang.StringCoding$StringDecoder.decode(StringCoding.java:Unknown line)
+	java.lang.StringCoding.decode(StringCoding.java:Unknown line)
+TRACE 300305:
+	java.lang.Math.min(Math.java:Unknown line)
+	java.util.Arrays.copyOfRange(Arrays.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+TRACE 300329:
+	java.lang.Character.toLowerCase(Character.java:Unknown line)
+	java.lang.String.toLowerCase(String.java:Unknown line)
+	java.lang.String.toLowerCase(String.java:Unknown line)
+	java.net.URL.<init>(URL.java:Unknown line)
+TRACE 300354:
+	java.lang.String.charAt(String.java:Unknown line)
+	java.io.UnixFileSystem.normalize(UnixFileSystem.java:Unknown line)
+	java.io.File.<init>(File.java:Unknown line)
+	sun.misc.URLClassPath$JarLoader.<init>(URLClassPath.java:Unknown line)
+TRACE 300716:
+	java.util.zip.ZipFile.<init>(ZipFile.java:Unknown line)
+	java.util.zip.ZipFile.<init>(ZipFile.java:Unknown line)
+	java.util.jar.JarFile.<init>(JarFile.java:Unknown line)
+	java.util.jar.JarFile.<init>(JarFile.java:Unknown line)
+TRACE 301086:
+	java.net.URLStreamHandler.parseURL(URLStreamHandler.java:Unknown line)
+	sun.net.www.protocol.file.Handler.parseURL(Handler.java:Unknown line)
+	java.net.URL.<init>(URL.java:Unknown line)
+	java.net.URL.<init>(URL.java:Unknown line)
+TRACE 301761:
+	java.util.HashMap.indexFor(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 301768:
+	java.util.HashMap.indexFor(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize2(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+TRACE 301776:
+	java.util.HashMap.indexFor(HashMap.java:Unknown line)
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize3(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+TRACE 301808:
+	java.util.HashMap$KeyIterator.next(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initKeywordMergeMap(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 301838:
+	java.util.regex.Pattern.has(Pattern.java:Unknown line)
+	java.util.regex.Pattern.peek(Pattern.java:Unknown line)
+	java.util.regex.Pattern.atom(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 301888:
+	java.lang.String.length(String.java:Unknown line)
+	java.util.regex.Matcher.getTextLength(Matcher.java:Unknown line)
+	java.util.regex.Matcher.reset(Matcher.java:Unknown line)
+	java.util.regex.Matcher.<init>(Matcher.java:Unknown line)
+TRACE 301890:
+	java.util.regex.Matcher.reset(Matcher.java:Unknown line)
+	java.util.regex.Matcher.<init>(Matcher.java:Unknown line)
+	java.util.regex.Pattern.matcher(Pattern.java:Unknown line)
+	java.util.regex.Pattern.split(Pattern.java:Unknown line)
+TRACE 301910:
+	java.util.regex.Matcher.find(Matcher.java:Unknown line)
+	java.util.regex.Pattern.split(Pattern.java:Unknown line)
+	java.lang.String.split(String.java:Unknown line)
+	java.lang.String.split(String.java:Unknown line)
+TRACE 301947:
+	java.lang.String.split(String.java:Unknown line)
+	java.lang.String.split(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.initKeywordMergeMap(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+TRACE 301959:
+	java.util.AbstractList.<init>(AbstractList.java:Unknown line)
+	java.util.Arrays$ArrayList.<init>(Arrays.java:Unknown line)
+	java.util.Arrays.asList(Arrays.java:Unknown line)
+	com.client9.libinjection.SQLParse.initKeywordMergeMap(SQLParse.java:Unknown line)
+TRACE 302003:
+	java.util.TimSort.sort(TimSort.java:Unknown line)
+	java.util.Arrays.sort(Arrays.java:Unknown line)
+	java.util.Collections.sort(Collections.java:Unknown line)
+	com.client9.libinjection.SQLParse.initKeywordMergeMap(SQLParse.java:Unknown line)
+TRACE 302025:
+	java.util.HashMap.put(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.initKeywordMergeMap(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.initialize(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.<clinit>(SQLParse.java:Unknown line)
+TRACE 302039:
+	com.client9.libinjection.MListSizeComparator.compare(SQLParse.java:Unknown line)
+	java.util.TimSort.binarySort(TimSort.java:Unknown line)
+	java.util.TimSort.sort(TimSort.java:Unknown line)
+	java.util.TimSort.sort(TimSort.java:Unknown line)
+TRACE 302111:
+	sun.nio.cs.ISO_8859_1$Decoder.decode(ISO_8859_1.java:Unknown line)
+	java.lang.StringCoding$StringDecoder.decode(StringCoding.java:Unknown line)
+	java.lang.StringCoding.decode(StringCoding.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+TRACE 302113:
+	java.lang.String.<init>(String.java:Unknown line)
+	java.lang.String.<init>(String.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302127:
+	java.lang.AbstractStringBuilder.<init>(AbstractStringBuilder.java:Unknown line)
+	java.lang.StringBuffer.<init>(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302128:
+	java.lang.StringBuffer.<init>(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+	test.Dev.main(Dev.java:Unknown line)
+TRACE 302325:
+	java.util.ArrayList.elementData(ArrayList.java:Unknown line)
+	java.util.ArrayList.get(ArrayList.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302475:
+	java.util.HashMap.hash(HashMap.java:Unknown line)
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302509:
+	java.util.regex.Pattern$BitClass.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.clazz(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+	java.util.regex.Pattern.expr(Pattern.java:Unknown line)
+TRACE 302517:
+	java.util.regex.Pattern.next(Pattern.java:Unknown line)
+	java.util.regex.Pattern.single(Pattern.java:Unknown line)
+	java.util.regex.Pattern.range(Pattern.java:Unknown line)
+	java.util.regex.Pattern.clazz(Pattern.java:Unknown line)
+TRACE 302524:
+	java.util.regex.Pattern$CharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$CharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$1.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.rangeFor(Pattern.java:Unknown line)
+TRACE 302531:
+	java.util.regex.Pattern.nextEscaped(Pattern.java:Unknown line)
+	java.util.regex.Pattern.range(Pattern.java:Unknown line)
+	java.util.regex.Pattern.clazz(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 302542:
+	java.util.regex.Pattern$CharProperty.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern$5.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.union(Pattern.java:Unknown line)
+	java.util.regex.Pattern.clazz(Pattern.java:Unknown line)
+TRACE 302543:
+	java.util.regex.Pattern$5.<init>(Pattern.java:Unknown line)
+	java.util.regex.Pattern.union(Pattern.java:Unknown line)
+	java.util.regex.Pattern.clazz(Pattern.java:Unknown line)
+	java.util.regex.Pattern.sequence(Pattern.java:Unknown line)
+TRACE 302559:
+	java.util.regex.Pattern$1.isSatisfiedBy(Pattern.java:Unknown line)
+	java.util.regex.Pattern$5.isSatisfiedBy(Pattern.java:Unknown line)
+	java.util.regex.Pattern$CharProperty.match(Pattern.java:Unknown line)
+	java.util.regex.Pattern$Curly.match(Pattern.java:Unknown line)
+TRACE 302576:
+	java.util.regex.Matcher.find(Matcher.java:Unknown line)
+	com.client9.libinjection.SQLParse.getMatch(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302590:
+	java.lang.StringBuffer.append(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302594:
+	java.lang.StringBuffer.toString(StringBuffer.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302597:
+	java.lang.String.indexOf(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+	test.Dev.bruteForce(Dev.java:Unknown line)
+TRACE 302603:
+	java.lang.String.substring(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.parseQuoteString(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302641:
+	java.lang.StringBuilder.<init>(StringBuilder.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302648:
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.containsKey(HashMap.java:Unknown line)
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+	com.client9.libinjection.SQLParse.isArithmeticOperator(SQLParse.java:Unknown line)
+TRACE 302664:
+	java.util.HashMap.getEntry(HashMap.java:Unknown line)
+	java.util.HashMap.get(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+TRACE 302665:
+	java.util.HashMap.get(HashMap.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.getWordLength(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302721:
+	java.util.HashSet.contains(HashSet.java:Unknown line)
+	com.client9.libinjection.SQLParse.foldImpl(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.fold(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302727:
+	java.lang.String.length(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.parseString(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+TRACE 302762:
+	java.lang.String.charAt(String.java:Unknown line)
+	com.client9.libinjection.SQLParse.parseCStyleComment(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.parseComment(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+TRACE 302763:
+	com.client9.libinjection.SQLParse.parseCStyleComment(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.parseComment(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenizeOne(SQLParse.java:Unknown line)
+	com.client9.libinjection.SQLParse.tokenize(SQLParse.java:Unknown line)
+CPU TIME (ms) BEGIN (total = 13851) Sat Mar 15 14:28:03 2014
+rank   self  accum   count trace method
+   1  7.72%  7.72%  337651 302298 java.lang.Character.toUpperCaseEx
+   2  5.74% 13.46%  256000 302063 java.util.Random.next
+   3  5.69% 19.15%  391046 302197 java.lang.CharacterDataLatin1.toUpperCaseEx
+   4  5.60% 24.74%   10945 302320 com.client9.libinjection.SQLParse.foldImpl
+   5  3.68% 28.42%   29997 302301 java.lang.String.toUpperCase
+   6  3.60% 32.02%  256000 302064 java.util.Random.nextInt
+   7  2.46% 34.48%  391046 302195 java.lang.CharacterData.of
+   8  2.26% 36.74%  391046 302196 java.lang.CharacterDataLatin1.getProperties
+   9  2.16% 38.90%    1000 302066 java.util.Random.nextBytes
+  10  1.87% 40.77%   92204 302295 java.util.ArrayList.get
+  11  1.59% 42.36%  256000 302062 java.util.concurrent.atomic.AtomicLong.compareAndSet
+  12  1.41% 43.77%  256000 302061 java.util.concurrent.atomic.AtomicLong.get
+  13  1.29% 45.05%   46699 301899 java.util.regex.Pattern$BmpCharProperty.match
+  14  1.25% 46.30%    4302 302189 com.client9.libinjection.SQLParse.getWordLength
+  15  1.20% 47.50%    9773 302154 com.client9.libinjection.SQLParse.tokenizeOne
+  16  1.17% 48.67%    1000 302343 com.client9.libinjection.SQLParse.tokenize
+  17  0.98% 49.65%     165 302600 com.client9.libinjection.SQLParse.parseString
+  18  0.87% 50.52%  131949 302291 java.lang.String.length
+  19  0.86% 51.38%    5776 302238 java.util.regex.Pattern.compile
+  20  0.80% 52.18%   22420 302179 java.lang.AbstractStringBuilder.append
+  21  0.78% 52.96%   46699 301900 java.util.regex.Pattern$Curly.match
+  22  0.75% 53.71%   29805 302305 java.util.HashMap.getEntry
+  23  0.70% 54.41%   22014 302181 java.lang.StringBuilder.<init>
+  24  0.69% 55.10%   48490 302166 java.util.HashMap.hash
+  25  0.65% 55.75%   29997 302302 java.lang.String.toUpperCase
+  26  0.64% 56.39%   92204 302294 java.util.ArrayList.elementData
+  27  0.62% 57.01%   38662 302172 java.lang.String.startsWith
+  28  0.61% 57.63%   26330 302331 java.lang.Character.toUpperCaseEx
+  29  0.61% 58.23%   26468 302198 java.lang.Character.toUpperCaseEx
+  30  0.58% 58.82%   39228 302309 java.lang.StringBuffer.append
+  31  0.54% 59.36%   92770 302292 java.lang.String.charAt
+  32  0.54% 59.90%   39228 302308 java.lang.AbstractStringBuilder.append
+  33  0.53% 60.44%   12995 302261 java.lang.AbstractStringBuilder.append
+  34  0.53% 60.97%   39228 302311 java.util.ArrayList.add
+  35  0.53% 61.50%   21606 302329 com.client9.libinjection.SQLParse.isUnaryOperator
+  36  0.52% 62.02%   12995 302271 java.util.regex.Matcher.appendReplacement
+  37  0.51% 62.53%   18771 302251 java.util.regex.Pattern$Start.match
+  38  0.51% 63.04%    5776 302284 java.util.regex.Matcher.replaceAll
+  39  0.51% 63.54%   79987 302599 java.lang.String.charAt
+  40  0.50% 64.04%    5776 302327 com.client9.libinjection.SQLParse.fold
+  41  0.47% 64.51%   29805 302306 java.util.HashMap.get
+  42  0.46% 64.97%   92204 302293 java.util.ArrayList.rangeCheck
+  43  0.41% 65.38%   29805 302303 java.util.HashMap.hash
+  44  0.40% 65.79%   19792 302186 java.util.HashMap.getEntry
+  45  0.40% 66.18%   14426 302335 java.lang.String.toUpperCase
+  46  0.37% 66.55%   13136 301907 java.util.regex.Pattern$Curly.match0
+  47  0.36% 66.91%   49493 300251 java.lang.String.hashCode
+  48  0.36% 67.27%    6049 301852 java.util.regex.Pattern.atom
+  49  0.36% 67.63%   22014 302184 java.lang.StringBuilder.toString
+  50  0.35% 67.99%   22014 302176 java.lang.String.valueOf
+  51  0.35% 68.34%   19437 302188 java.util.HashSet.contains
+  52  0.35% 68.69%   22014 302183 java.lang.String.<init>
+  53  0.35% 69.03%   14426 302334 java.lang.String.toUpperCase
+  54  0.34% 69.37%   10051 302148 java.lang.AbstractStringBuilder.append
+  55  0.32% 69.70%   48490 302167 java.util.HashMap.indexFor
+  56  0.32% 70.02%   51415 302296 java.util.ArrayList.size
+  57  0.32% 70.34%    5305 302204 java.lang.String.toUpperCase
+  58  0.32% 70.66%   14426 302336 java.util.HashMap.getEntry
+  59  0.31% 70.97%   45327 302248 java.util.regex.Pattern$Single.isSatisfiedBy
+  60  0.31% 71.28%   18771 302252 java.util.regex.Matcher.search
+  61  0.31% 71.59%   12995 302268 java.lang.AbstractStringBuilder.append
+  62  0.31% 71.90%   12995 302270 java.lang.StringBuffer.append
+  63  0.30% 72.20%    6265 301861 java.util.regex.Pattern.sequence
+  64  0.30% 72.51%   10051 302150 java.lang.StringBuilder.<init>
+  65  0.29% 72.80%   15299 301905 java.util.regex.Pattern$BmpCharProperty.match
+  66  0.28% 73.08%   12428 301828 java.lang.String.codePointAt
+  67  0.27% 73.35%   13754 302168 java.util.HashMap.getEntry
+  68  0.27% 73.63%   13754 302170 java.util.HashSet.contains
+  69  0.27% 73.90%   16000 302300 java.lang.String.<init>
+  70  0.27% 74.18%   40082 302598 java.lang.String.length
+  71  0.27% 74.44%   22014 302180 java.lang.StringBuilder.append
+  72  0.27% 74.71%   12995 302266 java.lang.StringBuilder.length
+  73  0.26% 74.97%    5879 301879 java.util.regex.Pattern$Start.<init>
+  74  0.26% 75.23%   19437 302187 java.util.HashMap.containsKey
+  75  0.26% 75.49%   18771 302253 java.util.regex.Matcher.find
+  76  0.26% 75.75%   13403 302319 java.lang.StringBuffer.toString
+  77  0.25% 76.00%   16320 301827 java.lang.Character.codePointAtImpl
+  78  0.25% 76.25%   12995 302262 java.lang.StringBuffer.append
+  79  0.25% 76.50%    9773 302158 java.lang.AbstractStringBuilder.append
+  80  0.25% 76.75%   39228 302310 java.util.ArrayList.ensureCapacityInternal
+  81  0.25% 76.99%   10945 302316 java.util.ArrayList.addAll
+  82  0.24% 77.23%   46699 301893 java.lang.String.charAt
+  83  0.24% 77.47%   16000 302299 java.util.Locale.getLanguage
+  84  0.24% 77.71%   13403 302318 java.lang.String.<init>
+  85  0.23% 77.94%   14426 302337 java.util.HashMap.containsKey
+  86  0.22% 78.15%   34371 301159 java.lang.String.hashCode
+  87  0.22% 78.37%    5776 302243 java.util.regex.Matcher.<init>
+  88  0.22% 78.59%   39228 302307 java.lang.AbstractStringBuilder.ensureCapacityInternal
+  89  0.21% 78.80%   12428 301830 java.util.regex.Pattern.isSupplementary
+  90  0.21% 79.01%   32475 302147 java.lang.String.getChars
+  91  0.21% 79.21%   10945 302314 java.util.ArrayList.toArray
+  92  0.20% 79.42%    5879 301878 java.util.regex.Pattern$Curly.study
+  93  0.20% 79.62%   32475 302145 java.lang.String.length
+  94  0.20% 79.82%   10051 302149 java.lang.StringBuilder.append
+  95  0.20% 80.02%   23241 302202 java.util.Arrays.copyOfRange
+  96  0.20% 80.23%    8670 302215 java.util.Arrays.copyOf
+  97  0.20% 80.43%    5946 302237 java.util.regex.Pattern.newSingle
+  98  0.19% 80.62%   13237 301835 java.util.regex.Pattern.peek
+  99  0.19% 80.82%    9773 302142 java.lang.String.valueOf
+ 100  0.19% 81.01%    5776 302285 java.lang.String.replaceAll
+ 101  0.19% 81.21%   10945 302286 java.util.AbstractList.<init>
+ 102  0.19% 81.40%   10945 302287 java.util.ArrayList.<init>
+ 103  0.19% 81.60%   10945 302290 java.lang.StringBuffer.<init>
+ 104  0.19% 81.79%   29997 302297 java.util.Locale.getDefault
+ 105  0.19% 81.98%   13754 302169 java.util.HashMap.containsKey
+ 106  0.19% 82.17%    5776 302239 java.util.regex.Pattern.<init>
+ 107  0.19% 82.36%    5487 302278 java.lang.AbstractStringBuilder.append
+ 108  0.18% 82.54%   22420 302182 java.util.Arrays.copyOfRange
+ 109  0.18% 82.72%   22999 302272 java.lang.String.charAt
+ 110  0.17% 82.88%   32475 302146 java.lang.AbstractStringBuilder.ensureCapacityInternal
+ 111  0.17% 83.05%   38662 302171 java.lang.String.startsWith
+ 112  0.17% 83.21%    6770 302219 java.util.ArrayList.addAll
+ 113  0.17% 83.38%   12640 302340 java.lang.String.startsWith
+ 114  0.16% 83.54%   17858 301462 java.util.AbstractCollection.<init>
+ 115  0.16% 83.70%   22014 302174 java.lang.String.charAt
+ 116  0.16% 83.86%   22014 302175 java.lang.String.<init>
+ 117  0.16% 84.02%    4317 302208 java.util.HashMap.getEntry
+ 118  0.16% 84.17%   12995 302264 java.lang.StringBuilder.length
+ 119  0.16% 84.33%   29805 302304 java.util.HashMap.indexFor
+ 120  0.15% 84.48%    6972 301860 java.util.regex.Pattern.closure
+ 121  0.15% 84.64%   10945 302288 java.util.ArrayList.<init>
+ 122  0.14% 84.78%    6286 301859 java.util.regex.Pattern$Curly.<init>
+ 123  0.14% 84.93%    5900 301864 java.util.regex.Pattern.expr
+ 124  0.14% 85.07%    9773 302161 java.lang.String.<init>
+ 125  0.14% 85.21%    5946 302231 java.util.regex.Pattern.isSupplementary
+ 126  0.14% 85.36%   21606 302328 java.lang.String.length
+ 127  0.14% 85.50%    9773 302159 java.lang.StringBuffer.append
+ 128  0.14% 85.63%   22014 302177 java.lang.String.length
+ 129  0.14% 85.77%   12995 302269 java.lang.StringBuffer.append
+ 130  0.14% 85.91%   14426 302338 java.util.HashSet.contains
+ 131  0.14% 86.04%     365 302547 java.util.regex.Pattern.compile
+ 132  0.13% 86.17%   22014 302178 java.lang.AbstractStringBuilder.<init>
+ 133  0.13% 86.30%    5305 302205 java.lang.String.toUpperCase
+ 134  0.13% 86.43%   12995 302257 java.lang.StringBuilder.<init>
+ 135  0.13% 86.56%   12995 302260 java.lang.AbstractStringBuilder.ensureCapacityInternal
+ 136  0.12% 86.69%    3064 301764 java.util.HashMap.put
+ 137  0.12% 86.81%   17700 301824 java.util.regex.Pattern.has
+ 138  0.12% 86.93%   13237 301834 java.util.regex.Pattern.has
+ 139  0.12% 87.06%    5879 301877 java.util.regex.Pattern$Node.study
+ 140  0.12% 87.18%   16473 302130 java.lang.String.length
+ 141  0.12% 87.30%   23241 302199 sun.util.locale.BaseLocale.getLanguage
+ 142  0.12% 87.42%    6841 302211 java.util.ArrayList.add
+ 143  0.12% 87.54%    1002 300142 java.lang.StringCoding$StringDecoder.decode
+ 144  0.12% 87.65%    6565 301846 java.util.regex.Pattern$CharProperty.<init>
+ 145  0.12% 87.77%    7076 301854 java.util.regex.Pattern.peek
+ 146  0.12% 87.89%    6265 301863 java.util.regex.Pattern.peek
+ 147  0.12% 88.00%   10051 302152 java.lang.String.<init>
+ 148  0.12% 88.12%    9773 302160 java.util.Arrays.copyOfRange
+ 149  0.12% 88.23%    9233 302163 java.lang.String.equals
+ 150  0.12% 88.35%    5500 302193 java.lang.String.substring
+ 151  0.12% 88.46%    5487 302282 java.lang.String.<init>
+ 152  0.11% 88.57%    6115 301839 java.util.regex.Pattern.peek
+ 153  0.11% 88.68%    6291 301856 java.util.regex.Pattern.next
+ 154  0.11% 88.79%   10051 302153 java.lang.StringBuilder.toString
+ 155  0.11% 88.90%   26316 302173 java.lang.String.length
+ 156  0.11% 89.00%    5773 302213 java.util.ArrayList.<init>
+ 157  0.11% 89.11%    5779 302222 java.lang.StringBuffer.toString
+ 158  0.11% 89.22%    5487 302255 java.lang.StringBuffer.<init>
+ 159  0.11% 89.33%   12995 302265 java.lang.AbstractStringBuilder.length
+ 160  0.11% 89.44%    5487 302279 java.lang.StringBuffer.append
+ 161  0.11% 89.55%   17132 302322 java.lang.String.length
+ 162  0.11% 89.65%   12640 302339 java.lang.String.startsWith
+ 163  0.11% 89.76%      15 302729 com.client9.libinjection.SQLParse.parseString
+ 164  0.10% 89.86%    6291 301855 java.util.regex.Pattern.has
+ 165  0.10% 89.96%   13136 301906 java.util.regex.Pattern$LastNode.match
+ 166  0.10% 90.07%   10051 302143 java.lang.String.length
+ 167  0.10% 90.17%    9773 302164 java.lang.StringBuffer.length
+ 168  0.10% 90.27%   12995 302258 java.lang.String.length
+ 169  0.10% 90.37%   10945 302313 java.util.Arrays.copyOf
+ 170  0.09% 90.46%   13136 301901 java.util.regex.Pattern$Node.match
+ 171  0.09% 90.56%   13601 301902 java.lang.String.charAt
+ 172  0.09% 90.65%    9773 302162 java.lang.String.substring
+ 173  0.09% 90.74%    5499 302192 java.lang.String.<init>
+ 174  0.09% 90.84%    6770 302216 java.util.Arrays.copyOf
+ 175  0.09% 90.93%    5776 302240 java.util.regex.Pattern.compile
+ 176  0.09% 91.03%    5776 302244 java.util.regex.Pattern.matcher
+ 177  0.09% 91.12%   12995 302263 java.lang.AbstractStringBuilder.length
+ 178  0.09% 91.21%    5487 302280 java.util.regex.Matcher.appendTail
+ 179  0.09% 91.31%    5487 302283 java.lang.StringBuffer.toString
+ 180  0.09% 91.40%   13403 302317 java.util.Arrays.copyOfRange
+ 181  0.09% 91.50%   14046 302321 java.lang.String.equals
+ 182  0.09% 91.58%   12428 301831 java.lang.Character.charCount
+ 183  0.09% 91.67%    5879 301871 java.util.regex.Pattern$TreeInfo.reset
+ 184  0.09% 91.76%    6265 301889 java.util.regex.Matcher.getTextLength
+ 185  0.09% 91.84%   26319 302129 java.lang.String.length
+ 186  0.09% 91.93%    9773 302155 java.lang.String.length
+ 187  0.09% 92.02%    4317 302209 java.util.HashMap.get
+ 188  0.09% 92.10%    5779 302221 java.lang.String.<init>
+ 189  0.09% 92.19%    5946 302236 java.util.regex.Pattern$Single.<init>
+ 190  0.09% 92.27%    5776 302242 java.util.regex.Matcher.reset
+ 191  0.09% 92.36%    5487 302274 java.util.regex.Matcher.getTextLength
+ 192  0.09% 92.45%   10945 302289 java.lang.AbstractStringBuilder.<init>
+ 193  0.08% 92.53%    3109 301771 java.util.HashMap.put
+ 194  0.08% 92.61%    2874 301779 java.util.HashMap.put
+ 195  0.08% 92.69%   16320 301829 java.lang.Character.isSurrogate
+ 196  0.08% 92.77%    1000 302112 java.lang.StringCoding.decode
+ 197  0.08% 92.85%    5773 302214 java.util.ArrayList.<init>
+ 198  0.08% 92.92%    5946 302235 java.util.regex.Pattern$BmpCharProperty.<init>
+ 199  0.08% 93.00%   12995 302259 java.lang.String.length
+ 200  0.08% 93.08%   14426 302330 java.util.Locale.getDefault
+ 201  0.07% 93.16%       1 301661 java.lang.Class.privateGetDeclaredMethods
+ 202  0.07% 93.23%    3109 301769 java.util.HashMap.createEntry
+ 203  0.07% 93.30%       1 301773 com.client9.libinjection.SQLParse.initialize2
+ 204  0.07% 93.37%   16320 301826 java.lang.Character.isHighSurrogate
+ 205  0.07% 93.44%    5879 301876 java.util.regex.Pattern$Node.study
+ 206  0.07% 93.52%   10051 302151 java.util.Arrays.copyOfRange
+ 207  0.07% 93.59%    4317 302206 java.util.HashMap.hash
+ 208  0.07% 93.66%    5773 302212 java.util.AbstractList.<init>
+ 209  0.07% 93.73%    5946 302226 java.util.regex.Pattern.isSupplementary
+ 210  0.07% 93.81%    5946 302234 java.util.regex.Pattern$BmpCharProperty.<init>
+ 211  0.07% 93.88%    5776 302246 java.util.regex.Matcher.getTextLength
+ 212  0.07% 93.95%   12995 302267 java.lang.AbstractStringBuilder.ensureCapacityInternal
+ 213  0.06% 94.01%    9181 300394 java.util.HashMap$Entry.<init>
+ 214  0.06% 94.08%    2874 301775 java.util.HashMap.hash
+ 215  0.06% 94.14%    2874 301777 java.util.HashMap.createEntry
+ 216  0.06% 94.21%   10051 302144 java.lang.AbstractStringBuilder.<init>
+ 217  0.06% 94.27%   19655 302185 com.client9.libinjection.SQLParse.isWhiteSpaceChar
+ 218  0.06% 94.34%    5776 302223 java.lang.String.length
+ 219  0.06% 94.40%    5946 302233 java.util.regex.Pattern$CharProperty.<init>
+ 220  0.06% 94.47%    5776 302247 java.util.regex.Matcher.reset
+ 221  0.06% 94.53%   13460 302249 java.util.regex.Pattern$Single.isSatisfiedBy
+ 222  0.06% 94.60%   10945 302312 java.util.ArrayList.clear
+ 223  0.06% 94.66%    3064 301760 java.util.HashMap.hash
+ 224  0.06% 94.72%    3064 301762 java.util.HashMap.createEntry
+ 225  0.06% 94.77%    3064 301763 java.util.HashMap.addEntry
+ 226  0.06% 94.83%   10190 302131 java.lang.String.charAt
+ 227  0.06% 94.89%    9773 302141 java.lang.String.<init>
+ 228  0.06% 94.95%    9773 302156 java.lang.AbstractStringBuilder.ensureCapacityInternal
+ 229  0.06% 95.00%    4302 302190 com.client9.libinjection.SQLParse.getWordLength
+ 230  0.06% 95.06%    6770 302217 java.util.ArrayList.toArray
+ 231  0.06% 95.12%    5487 302254 java.lang.AbstractStringBuilder.<init>
+ 232  0.06% 95.18%    5580 302323 java.lang.String.charAt
+ 233  0.06% 95.24%    4139 302333 java.lang.String.<init>
+ 234  0.06% 95.29%    3892 302493 java.lang.String.codePointAt
+ 235  0.06% 95.35%    3892 302494 java.util.regex.Pattern.isSupplementary
+ 236  0.06% 95.41%    1072 302528 java.util.regex.Pattern.range
+ 237  0.06% 95.47%       1 302838 test.Dev.bruteForce
+ 238  0.05% 95.52%    3109 301767 java.util.HashMap.hash
+ 239  0.05% 95.57%    3109 301770 java.util.HashMap.addEntry
+ 240  0.05% 95.62%    6286 301858 java.util.regex.Pattern$Node.<init>
+ 241  0.05% 95.67%    6265 301862 java.util.regex.Pattern.has
+ 242  0.05% 95.72%    5879 301872 java.util.regex.Pattern$TreeInfo.<init>
+ 243  0.05% 95.77%    5879 301875 java.util.regex.Pattern$CharProperty.study
+ 244  0.05% 95.82%    6936 302165 com.client9.libinjection.SQLParse.isWhiteSpaceChar
+ 245  0.05% 95.87%    5305 302194 java.util.Locale.getDefault
+ 246  0.05% 95.92%    5456 302241 java.lang.Math.max
+ 247  0.05% 95.97%    5776 302245 java.lang.String.length
+ 248  0.05% 96.02%   12995 302256 java.lang.AbstractStringBuilder.<init>
+ 249  0.05% 96.07%      92 302647 com.client9.libinjection.SQLParse.getWordLength
+ 250  0.04% 96.12%    1002 300131 java.lang.ref.SoftReference.get
+ 251  0.04% 96.16%       1 301784 com.client9.libinjection.SQLParse.initialize3
+ 252  0.04% 96.20%    5900 301825 java.lang.String.length
+ 253  0.04% 96.25%    7076 301853 java.util.regex.Pattern.has
+ 254  0.04% 96.29%    5879 301874 java.util.regex.Pattern$Node.study
+ 255  0.04% 96.33%       1 302040 com.client9.libinjection.SQLParse.initKeywordMergeMap
+ 256  0.04% 96.38%    1000 302117 java.util.ArrayList.<init>
+ 257  0.04% 96.42%    3021 302200 java.util.Locale.getLanguage
+ 258  0.04% 96.46%    6841 302210 java.util.ArrayList.ensureCapacityInternal
+ 259  0.04% 96.51%    7584 302277 java.lang.String.charAt
+ 260  0.04% 96.55%    3955 302326 java.util.ArrayList.get
+ 261  0.04% 96.59%    7593 302728 java.lang.String.charAt
+ 262  0.04% 96.63%       3 301610 java.lang.ClassLoader.defineClass
+ 263  0.04% 96.66%    5900 301832 java.util.regex.Pattern.RemoveQEQuoting
+ 264  0.04% 96.70%     103 301880 java.util.regex.Pattern.compile
+ 265  0.04% 96.74%    8773 301976 java.lang.Math.min
+ 266  0.04% 96.77%    9773 302157 java.lang.String.getChars
+ 267  0.04% 96.81%    3021 302203 java.lang.String.<init>
+ 268  0.04% 96.84%    6770 302218 java.util.ArrayList.ensureCapacityInternal
+ 269  0.04% 96.88%    5880 302227 java.util.regex.Pattern.has
+ 270  0.04% 96.92%    5880 302228 java.util.regex.Pattern.next
+ 271  0.04% 96.95%    5946 302229 java.util.regex.Pattern.has
+ 272  0.04% 96.99%    5487 302281 java.util.Arrays.copyOfRange
+ 273  0.04% 97.03%    3955 302324 java.util.ArrayList.rangeCheck
+ 274  0.04% 97.06%    4139 302332 java.util.Locale.getLanguage
+ 275  0.04% 97.10%     706 302538 java.util.regex.Pattern.bitsOrSingle
+ 276  0.04% 97.13%     516 302545 java.util.regex.Pattern.clazz
+ 277  0.04% 97.17%    1410 302607 java.lang.Character.toUpperCaseCharArray
+ 278  0.03% 97.20%    3246 300045 java.lang.Math.min
+ 279  0.03% 97.23%    1043 300068 java.lang.ThreadLocal$ThreadLocalMap.getEntry
+ 280  0.03% 97.26%    2874 301774 java.lang.String.hashCode
+ 281  0.03% 97.29%    2874 301778 java.util.HashMap.addEntry
+ 282  0.03% 97.31%    5879 301869 java.util.regex.Pattern$Node.<init>
+ 283  0.03% 97.34%    5879 301873 java.util.regex.Pattern$TreeInfo.reset
+ 284  0.03% 97.37%    1372 301898 java.util.regex.Pattern$Ctype.isSatisfiedBy
+ 285  0.03% 97.40%       1 302041 com.client9.libinjection.SQLParse.initialize
+ 286  0.03% 97.43%    5499 302191 java.util.Arrays.copyOfRange
+ 287  0.03% 97.46%    2306 302201 java.lang.Math.min
+ 288  0.03% 97.49%    5779 302220 java.util.Arrays.copyOfRange
+ 289  0.03% 97.52%    5946 302224 java.util.regex.Pattern.append
+ 290  0.03% 97.55%    5946 302225 java.lang.Character.isSurrogate
+ 291  0.03% 97.57%    5946 302230 java.lang.Character.isSurrogate
+ 292  0.03% 97.60%    5487 302273 java.lang.String.length
+ 293  0.03% 97.63%    4269 302480 java.lang.String.equalsIgnoreCase
+ 294  0.03% 97.66%     365 302548 java.util.regex.Pattern.<init>
+ 295  0.02% 97.68%    1002 300132 java.lang.StringCoding.deref
+ 296  0.02% 97.70%    1002 300137 java.lang.StringCoding.access$000
+ 297  0.02% 97.73%    3064 301759 java.lang.String.hashCode
+ 298  0.02% 97.75%     974 301807 java.util.HashMap$Entry.getKey
+ 299  0.02% 97.77%     974 301809 java.lang.String.indexOf
+ 300  0.02% 97.79%     974 301810 java.lang.String.indexOf
+ 301  0.02% 97.81%    6565 301845 java.util.regex.Pattern$Node.<init>
+ 302  0.02% 97.83%     244 301908 java.util.regex.Pattern$Start.match
+ 303  0.02% 97.86%     307 302017 java.util.ArrayList.set
+ 304  0.02% 97.88%    1000 302116 java.util.ArrayList.<init>
+ 305  0.02% 97.90%    4317 302207 java.util.HashMap.indexFor
+ 306  0.02% 97.92%    5487 302275 java.lang.String.length
+ 307  0.02% 97.94%   10945 302315 java.util.ArrayList.ensureCapacityInternal
+ 308  0.02% 97.96%     997 302342 java.util.ArrayList.clear
+ 309  0.02% 97.99%     988 302477 java.util.HashMap.getEntry
+ 310  0.02% 98.01%    3892 302495 java.lang.Character.charCount
+ 311  0.02% 98.03%     516 302507 java.util.regex.Pattern$BmpCharProperty.<init>
+ 312  0.02% 98.05%     545 302558 java.util.regex.Pattern.access$200
+ 313  0.02% 98.07%     365 302583 com.client9.libinjection.SQLParse.getMatch
+ 314  0.02% 98.09%     412 302593 java.lang.String.<init>
+ 315  0.02% 98.12%    1570 302606 java.lang.CharacterDataLatin1.toUpperCaseCharArray
+ 316  0.02% 98.14%     406 302640 java.lang.StringBuilder.append
+ 317  0.02% 98.16%      21 302685 java.util.regex.Pattern.compile
+ 318  0.01% 98.17%    1002 300129 java.lang.ThreadLocal.get
+ 319  0.01% 98.19%    1002 300135 java.nio.charset.CharsetDecoder.maxCharsPerByte
+ 320  0.01% 98.20%    1002 300136 java.lang.StringCoding.scale
+ 321  0.01% 98.22%    2470 300305 java.lang.Math.min
+ 322  0.01% 98.23%      42 300329 java.lang.Character.toLowerCase
+ 323  0.01% 98.25%     699 300354 java.lang.String.charAt
+ 324  0.01% 98.26%       8 300716 java.util.zip.ZipFile.<init>
+ 325  0.01% 98.27%       6 301086 java.net.URLStreamHandler.parseURL
+ 326  0.01% 98.29%    3064 301761 java.util.HashMap.indexFor
+ 327  0.01% 98.30%    3109 301768 java.util.HashMap.indexFor
+ 328  0.01% 98.32%    2874 301776 java.util.HashMap.indexFor
+ 329  0.01% 98.33%     974 301808 java.util.HashMap$KeyIterator.next
+ 330  0.01% 98.35%    6115 301838 java.util.regex.Pattern.has
+ 331  0.01% 98.36%    6265 301888 java.lang.String.length
+ 332  0.01% 98.38%     103 301890 java.util.regex.Matcher.reset
+ 333  0.01% 98.39%     244 301910 java.util.regex.Matcher.find
+ 334  0.01% 98.40%     103 301947 java.lang.String.split
+ 335  0.01% 98.42%     103 301959 java.util.AbstractList.<init>
+ 336  0.01% 98.43%     103 302003 java.util.TimSort.sort
+ 337  0.01% 98.45%     103 302025 java.util.HashMap.put
+ 338  0.01% 98.46%      33 302039 com.client9.libinjection.MListSizeComparator.compare
+ 339  0.01% 98.48%    1000 302111 sun.nio.cs.ISO_8859_1$Decoder.decode
+ 340  0.01% 98.49%    1000 302113 java.lang.String.<init>
+ 341  0.01% 98.51%    1000 302127 java.lang.AbstractStringBuilder.<init>
+ 342  0.01% 98.52%    1000 302128 java.lang.StringBuffer.<init>
+ 343  0.01% 98.53%    3955 302325 java.util.ArrayList.elementData
+ 344  0.01% 98.55%     988 302475 java.util.HashMap.hash
+ 345  0.01% 98.56%     516 302509 java.util.regex.Pattern$BitClass.<init>
+ 346  0.01% 98.58%    1182 302517 java.util.regex.Pattern.next
+ 347  0.01% 98.59%     366 302524 java.util.regex.Pattern$CharProperty.<init>
+ 348  0.01% 98.61%     256 302531 java.util.regex.Pattern.nextEscaped
+ 349  0.01% 98.62%     343 302542 java.util.regex.Pattern$CharProperty.<init>
+ 350  0.01% 98.64%     343 302543 java.util.regex.Pattern$5.<init>
+ 351  0.01% 98.65%     271 302559 java.util.regex.Pattern$1.isSatisfiedBy
+ 352  0.01% 98.66%     365 302576 java.util.regex.Matcher.find
+ 353  0.01% 98.68%     206 302590 java.lang.StringBuffer.append
+ 354  0.01% 98.69%     412 302594 java.lang.StringBuffer.toString
+ 355  0.01% 98.71%     206 302597 java.lang.String.indexOf
+ 356  0.01% 98.72%     165 302603 java.lang.String.substring
+ 357  0.01% 98.74%     406 302641 java.lang.StringBuilder.<init>
+ 358  0.01% 98.75%     326 302648 java.util.HashMap.getEntry
+ 359  0.01% 98.77%     133 302664 java.util.HashMap.getEntry
+ 360  0.01% 98.78%     133 302665 java.util.HashMap.get
+ 361  0.01% 98.79%     192 302721 java.util.HashSet.contains
+ 362  0.01% 98.81%    3804 302727 java.lang.String.length
+ 363  0.01% 98.82%    1016 302762 java.lang.String.charAt
+ 364  0.01% 98.84%       1 302763 com.client9.libinjection.SQLParse.parseCStyleComment
+CPU TIME (ms) END

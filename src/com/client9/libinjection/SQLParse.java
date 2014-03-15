@@ -9991,19 +9991,28 @@ for( int k = 0; k < input.length(); ++k )
 	char _char = input.charAt( k );
 	String _str = _char + "";
 	int c = ( int )_char;
-	if( ( 0 <= c &&  c < 33 )  || c == 127 || isWhiteSpaceChar( _char ) ){}
-	else if( _char == ':' ) {}
-	else if( _char == ';' ) {}
-	else if( setOfOperator.contains( _str ) ) {}
-	else if( _char == '-' ) {}
-	else if( _char == '/' ) {}
-	else if( _char == '\'' || _char == '"' ) {}
-	else if( _char == '\\' ) {}
-	else if( _char == '@' ) {}
-	else if( _char == '#' ) {}
-	else if( _char == '?' ) {}
-	else if( _char == '(' || _char == ')' ) {}
-	else if( _char == '{' || _char == '}' ) {}
+	if( ( 0 <= c &&  c < 33 ) 
+	 || c == 127
+	 || isWhiteSpaceChar( _char )
+	 || _char == ':'
+	 || _char == ';'
+	 || setOfOperator.contains( _str )
+	 || _char == '-'
+	 || _char == '/'
+	 || _char == '\''
+	 || _char == '"'
+	 || _char == '\\'
+	 || _char == '@'
+	 || _char == '#'
+	 || _char == '?'
+	 || _char == '('
+	 || _char == ')'
+	 || _char == '{'
+	 || _char == '}'
+	 || _char == ','
+	  )
+		{
+		}
 	else if( _char == '[' || _char == ']' )
 		{
 		if( _char == '[' && k == 0 )
@@ -10011,7 +10020,6 @@ for( int k = 0; k < input.length(); ++k )
 			found = true;
 			}
 		}
-	else if( _char == ',' )	 {}
 	else if( _char == '.' )
 		{
 			//keyword?
@@ -10683,7 +10691,7 @@ for( int i = 0; i < token.length(); ++i )
 				}
 			}
 		
-		if( currentToken == ')' )
+		else if( currentToken == ')' )
 			{
 			if( nextToken == ')' )
 				{
@@ -10694,7 +10702,7 @@ for( int i = 0; i < token.length(); ++i )
 				}
 			}
 		
-		if( ( currentToken == 'n' || currentToken == 'v' )
+		else if( ( currentToken == 'n' || currentToken == 'v' )
 		 && nextToken == '('
 		  )
 			{
@@ -10705,7 +10713,7 @@ for( int i = 0; i < token.length(); ++i )
 				continue;
 				}
 			}
-		if( currentToken == 't' 
+		else if( currentToken == 't' 
 		 && ( nextToken == 'n'
 		   || nextToken == '1'
 		   || nextToken == 't'
@@ -10719,7 +10727,7 @@ for( int i = 0; i < token.length(); ++i )
 			continue;
 			}
 		
-		if( currentToken == 'k'
+		else if( currentToken == 'k'
 		 && ( currentValue.toUpperCase().equals( "IN" ) || currentValue.toUpperCase().equals( "NOT IN" ) )
 		  )
 			{
@@ -10737,12 +10745,12 @@ for( int i = 0; i < token.length(); ++i )
 				}
 			}
 		
-		if( currentToken == ';' && nextToken == ';' )
+		else if( currentToken == ';' && nextToken == ';' )
 			{
 			continue;
 			}
 		
-		if( currentToken == ';' && nextValue.equalsIgnoreCase( "IF" ) )
+		else if( currentToken == ';' && nextValue.equalsIgnoreCase( "IF" ) )
 			{
 			foldedValueList.add( currentValue );
 			foldedTokenBuf.append( ';' );
@@ -10752,7 +10760,7 @@ for( int i = 0; i < token.length(); ++i )
 			continue;			
 			}
 		
-		if( currentToken == '\\' )
+		else if( currentToken == '\\' )
 			{
 			if( isArithmeticOperator( nextValue ) )
 				{
@@ -10766,7 +10774,7 @@ for( int i = 0; i < token.length(); ++i )
 				}
 			}
 		
-		if( currentToken == 'A' && nextToken == 'n' )
+		else if( currentToken == 'A' && nextToken == 'n' )
 			{
 			if( nextValue.indexOf( "_" ) > -1 )
 				{
@@ -10779,7 +10787,7 @@ for( int i = 0; i < token.length(); ++i )
 				}
 			}
 		
-		if( currentToken == 'o'
+		else if( currentToken == 'o'
 		 && ( currentValue.equalsIgnoreCase( "LIKE" ) || currentValue.equalsIgnoreCase( "NOT LIKE" ) )
 		 && nextToken == '('
 		  )
@@ -10789,7 +10797,7 @@ for( int i = 0; i < token.length(); ++i )
 			continue;
 			}
 		
-		if( currentToken == '{' && nextToken == 'n' && nextValue.startsWith( "`" ) )
+		else if( currentToken == '{' && nextToken == 'n' && nextValue.startsWith( "`" ) )
 			{
 			foldedValueList.add( currentValue );
 			foldedTokenBuf.append( currentToken );
@@ -10798,7 +10806,7 @@ for( int i = 0; i < token.length(); ++i )
 			break;
 			}
 		
-		if( ( currentToken == 'o' || currentToken == '&' )
+		else if( ( currentToken == 'o' || currentToken == '&' )
 		 && ( nextToken == 't' || isUnaryOperator( nextValue ) )
 		  )
 			{
