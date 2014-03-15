@@ -124,497 +124,6 @@ for( int i = 0; i < 26; ++i )
 initialize();
 }
 //--------------------------------------------------------------------------------
-public static boolean isArithmeticOperator( final String s )
-{
-return arithmeticOperatorSet.contains( s );
-}
-//--------------------------------------------------------------------------------
-public static boolean isUnaryOperator( final String s )
-{
-
-if( s.length() > 3 )
-	{
-	return false;
-	}
-else
-	{
-	return unaryOperatorSet.contains( s.toUpperCase() );
-	}
-}
-//--------------------------------------------------------------------------------
-public static String fold( List valueList, final String token )
-{
-String lastToken = token;
-while( true )
-	{
-	String foldedToken = foldImpl( valueList, lastToken );
-	if( foldedToken.equals( lastToken ) )
-		{
-		break;
-		}
-	else
-		{
-		lastToken = foldedToken;
-		}
-	}
-
-if( lastToken.length() > LIBINJECTION_SQLI_MAX_TOKENS )
-	{
-	lastToken =  lastToken.substring( 0, LIBINJECTION_SQLI_MAX_TOKENS );
-	}
-
-	//do some work after folding
-
-	//Check for magic PHP backquote comment
-if( lastToken.length() > 1 )
-	{
-	int lastIndex = lastToken.length() - 1;
-	if( lastToken.charAt( lastIndex ) == 'n'
-	 && valueList.get( lastIndex ).equals( "`" )
-	  )
-		{
-		lastToken = lastToken.substring( 0, lastIndex ) + "c";
-		}
-	}
-
-return lastToken;
-}
-//--------------------------------------------------------------------------------
-public static String foldImpl( List valueList, String token )
-{
-List foldedValueList = new ArrayList();
-StringBuffer foldedTokenBuf = new StringBuffer();
-loop:
-for( int i = 0; i < token.length(); ++i )
-	{
-	char currentToken = token.charAt( i );
-	final String currentValue = ( String )valueList.get( i );
-	String nextValue = "dummy";
-	boolean hasNext = false;
-	char nextToken = ' ';
-	if( token.length() > i + 1 )
-		{
-		hasNext = true;
-		nextToken = token.charAt( i + 1 );
-		nextValue = ( String )valueList.get( i + 1 );
-		}
-	
-	if( foldedValueList.size() == 0 )
-		{
-			//initial unary operator
-		if( currentToken == 'o' )
-			{
-			if( isUnaryOperator( currentValue ) )
-				{
-				continue;
-				}
-			}
-		else if( currentToken == '(' )
-			{
-			continue;
-			}
-		else if( currentToken == 'c' )
-			{
-			continue;
-			}
-		else if( currentToken == 't' )
-			{
-			continue;
-			}
-		}
-	
-	if( currentToken == '}' )
-		{
-		continue;
-		}
-		
-	if( currentToken == 'c' && hasNext )
-		{
-		continue;
-		}
-	else if( hasNext
-		&& ( currentToken == '&' || currentToken == 'o' )
-		&& ( isUnaryOperator( nextValue ) || nextToken == 't' )
-		)
-		{
-		foldedTokenBuf.append( currentToken );
-		foldedValueList.add( currentValue );
-		++i; //skip next unary operator or 't'
-		continue;//1
-		}
-	
-	if( hasNext )
-		{
-			//keyword merge
-		final String _key = currentValue.toUpperCase();
-		final List _keywordList = ( List )keywordMergeMap.get( _key );
-		if( _keywordList != null )
-			{
-			for( int k = 0; k < _keywordList.size(); ++k )
-				{
-				final List eachList = ( List )_keywordList.get( k );
-				final int _eachListSize = eachList.size();
-				if( valueList.size() >= ( i + _eachListSize ) )
-					{
-					if( valueList.subList( i, i + _eachListSize ).toString().toUpperCase().equals( eachList.toString() ) )
-						{
-						p( "--found--" );
-						final String _found = listToString( valueList.subList( i, i + _eachListSize ) );
-						foldedValueList.add( _found );
-						foldedTokenBuf.append( map.get( _found.toUpperCase() ) );
-						i += _eachListSize - 1;
-						continue loop;
-						}
-					}
-				}
-			}
-		if( currentToken == '(' )
-			{
-			if( isUnaryOperator( nextValue ) )
-				{
-				++i; //skip operator
-				foldedTokenBuf.append( currentToken );	// (
-				foldedValueList.add( currentValue );		// (
-				continue;	
-				}
-			else if( nextToken == '(' )
-				{
-				++i; //skip next (
-				foldedTokenBuf.append( currentToken );	// (
-				foldedValueList.add( currentValue );	// (
-				continue;			
-				}
-			}
-		
-		if( currentToken == ')' )
-			{
-			if( nextToken == ')' )
-				{
-				++i; //skip next (
-				foldedTokenBuf.append( currentToken );	// )
-				foldedValueList.add( currentValue );	// )
-				continue;							
-				}
-			}
-		
-		if( ( currentToken == 'n' || currentToken == 'v' )
-		 && nextToken == '('
-		  )
-			{
-			if( keywordOrFunctionSet.contains( currentValue.toUpperCase() ) )
-				{
-				foldedValueList.add( currentValue );
-				foldedTokenBuf.append( 'f' );
-				continue;
-				}
-			}
-		if( currentToken == 't' 
-		 && ( nextToken == 'n'
-		   || nextToken == '1'
-		   || nextToken == 't'
-		   || nextToken == '('
-		   || nextToken == 'f'
-		   || nextToken == 'v'
-		   || nextToken == 's'
-		    )
-		  )
-			{
-			continue;
-			}
-		
-		if( currentToken == 'k'
-		 && ( currentValue.toUpperCase().equals( "IN" ) || currentValue.toUpperCase().equals( "NOT IN" ) )
-		  )
-			{
-			if( nextToken == '(' )
-				{
-				foldedValueList.add( currentValue );
-				foldedTokenBuf.append( 'o' );
-				continue;			
-				}
-			else
-				{
-				foldedValueList.add( currentValue );
-				foldedTokenBuf.append( 'n' );
-				continue;				
-				}
-			}
-		
-		if( currentToken == ';' && nextToken == ';' )
-			{
-			continue;
-			}
-		
-		if( currentToken == ';' && nextValue.equalsIgnoreCase( "IF" ) )
-			{
-			foldedValueList.add( currentValue );
-			foldedTokenBuf.append( ';' );
-			foldedValueList.add( nextValue );
-			foldedTokenBuf.append( 'T' );
-			i += 1;
-			continue;			
-			}
-		
-		if( currentToken == '\\' )
-			{
-			if( isArithmeticOperator( nextValue ) )
-				{
-				foldedValueList.add( currentValue );
-				foldedTokenBuf.append( '1' );	// \\ to number
-				continue;
-				}
-			else
-				{
-				continue;
-				}
-			}
-		
-		if( currentToken == 'A' && nextToken == 'n' )
-			{
-			if( nextValue.indexOf( "_" ) > -1 )
-				{
-				foldedValueList.add( currentValue );
-				foldedTokenBuf.append( currentToken );
-				foldedValueList.add( nextValue );
-				foldedTokenBuf.append( 't' ); // n to t
-				i += 1;
-				continue;
-				}
-			}
-		
-		if( currentToken == 'o'
-		 && ( currentValue.equalsIgnoreCase( "LIKE" ) || currentValue.equalsIgnoreCase( "NOT LIKE" ) )
-		 && nextToken == '('
-		  )
-			{
-			foldedValueList.add( currentValue );
-			foldedTokenBuf.append( 'f' );
-			continue;
-			}
-		
-		if( currentToken == '{' && nextToken == 'n' && nextValue.startsWith( "`" ) )
-			{
-			foldedValueList.add( currentValue );
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( nextValue );
-			foldedTokenBuf.append( "X" );
-			break;
-			}
-		
-		if( ( currentToken == 'o' || currentToken == '&' )
-		 && ( nextToken == 't' || isUnaryOperator( nextValue ) )
-		  )
-			{
-			foldedValueList.add( currentValue );
-			foldedTokenBuf.append( currentToken );
-			i += 1;
-			break;
-			}
-		}
-	
-		//three tokens
-	if( token.length() > i + 2 )
-		{
-		char thirdToken = token.charAt( i + 2 );
-		String thirdValue = ( String )valueList.get( i + 2 );
-		if( currentToken == '1' && nextToken == 'o' && thirdToken == '1' )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			i += 2;
-			continue;
-			}
-		if( ( currentToken == 'n' || currentToken == '1' )
-		      && nextToken == 'o'
-		      && ( thirdToken == '1' || thirdToken == 'n' )
-		       )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			p( "--18--" + foldedValueList );
-			i += 2;
-			continue;
-			}
-		if( currentToken == '&' && thirdToken == '&' )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			i += 2;
-			continue;
-			}
-		if( currentToken == 'n' && nextToken == '.' && thirdToken == 'n' )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			i += 2;
-			continue;
-			}
-		if( isUnaryOperator( currentValue ) && nextToken == 'n' && isUnaryOperator( thirdValue ) )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			i += 2;
-			continue;
-			}
-		if( ( currentToken == 'k' || currentToken == 'E' || currentToken == 'B' )
-		      && isUnaryOperator( nextValue )
-		      && ( thirdToken == '1' || thirdToken == 'n' || thirdToken == 'v' || thirdToken == 's' || thirdToken == 'f' )
-		       )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			i += 1;
-			continue;
-			}
-		if( ( currentToken == 'n' || currentToken == '1' || currentToken == 'v' || currentToken == 's' )
-		      && nextToken == 'o'
-		      && nextValue.equals( "::" )
-		      && thirdToken == 't'
-		       )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			i += 2;
-			continue;
-			}
-		if( ( currentToken == 'n' || currentToken == '1' || currentToken == 's' || currentToken == 'v' )
-		      && nextToken == ','
-		      && ( thirdToken == '1' || thirdToken == 'n' || thirdToken == 's' || thirdToken == 'v' )
-		       )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			p( "--6--" + foldedValueList );
-			i += 2;
-			continue;
-			}
-		if( ( currentToken == 'E' || currentToken == 'B' || currentToken == ',' )
-		      && isUnaryOperator( nextValue )
-		      && thirdToken == '('
-		       )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			i += 1;
-			continue;		
-			}
-		
-		if( currentToken == ','
-		      && isUnaryOperator( nextValue )
-		      && ( thirdToken == '1' || thirdToken == 'n' || thirdToken == 'v' || thirdToken == 's' )
-		       )
-			{
-			i += 2;
-			continue;			
-			}
-		if( currentToken == ','
-		      && isUnaryOperator( nextValue )
-		      && ( thirdToken == 'f' )
-		       )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			i += 1;
-			continue;			
-			}
-		
-		if( currentToken == 'v'
-		 && nextToken == 'o'
-		 && ( thirdToken == 'v' || thirdToken == '1' || thirdToken == 'n' )
-		  )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			i += 2;
-			continue;			
-			}
-		
-		if( currentToken == '{' && nextToken == 'n' )
-			{
-			i += 1;
-			continue;
-			}
-	
-		if( currentToken == 'E' && nextToken == '.' && thirdToken == 'n' )
-			{
-			foldedTokenBuf.append( currentToken );
-			foldedValueList.add( currentValue );
-			i += 1;
-			continue;			
-			}
-/*
-           
-                    */
-		}
-	
-		//ss -> s
-	if( currentToken == 's' )
-		{
-		foldedTokenBuf.append( 's' );
-		foldedValueList.add( currentValue );
-		boolean found;
-		while( true )
-			{
-			found = false;
-			if( token.length() > i + 1 )
-				{
-				if( token.charAt( i + 1 ) == 's' )
-					{
-					++i;
-					found = true;
-					}
-				}
-			if( !found )
-				{
-				break;
-				}
-			}
-		continue;
-		}
-
-	foldedTokenBuf.append( currentToken );
-	foldedValueList.add( currentValue );
-	}
-
-	//some special cases for 5 tokens
-if( foldedValueList.size() >= LIBINJECTION_SQLI_MAX_TOKENS )
-	{
-	String foldedToken = foldedTokenBuf.toString();
-	if( ( foldedToken.startsWith( "1o(1)" ) || foldedToken.startsWith( "1,(1)" ) )
-	 || ( foldedToken.startsWith( "no(n)" ) || foldedToken.startsWith( "no(1)" ) )
-	 || ( foldedToken.startsWith( "1),(1" ) )
-	  )
-		{
-		final String _tmpFoldedToken = foldedToken.substring( 5 );
-		final List _tmpValueList = new ArrayList();
-		_tmpValueList.addAll( foldedValueList.subList( 5, foldedValueList.size() ) );
-		
-		foldedTokenBuf = new StringBuffer();
-		foldedTokenBuf.append( foldedToken.charAt( 0 ) );
-		foldedTokenBuf.append( _tmpFoldedToken );
-		
-		String firstNumber = ( String )foldedValueList.get( 0 );
-		foldedValueList.clear();
-		foldedValueList.add( firstNumber );
-		foldedValueList.addAll( _tmpValueList );		
-		}
-	}	
-
-valueList.clear();
-valueList.addAll( foldedValueList );
-p( valueList );
-
-return foldedTokenBuf.toString();
-}
-//--------------------------------------------------------------------------------
-public static void p( Object o )
-{
-if( debug )
-	{
-	System.out.println( ">>" + o + "<<" );
-	}
-}
-//--------------------------------------------------------------------------------
 public static void initialize()
 {
 if( initialized )
@@ -9784,16 +9293,10 @@ while( inputLength > totalProcessedLength )
 	String[] processed = new String[ 1 ];
 	String[] tokenBuf = new String[ 1 ];
 	tokenizeOne( input, processed, tokenBuf, flags );
-	p( input );
-	p( processed[ 0 ] );
-	p( tokenBuf[ 0 ] );
 	
 	token.append( tokenBuf[ 0 ] );
 	totalProcessedLength += processed[ 0 ].length();
-	p( input.length() + ":" +  processed[ 0 ].length() );
-	p( "processed:" + processed[ 0 ] );
 	input = input.substring( processed[ 0 ].length() );
-	p( "input:" + input );
 	
 	if( !tokenBuf[ 0 ].equals( "w" ) )
 		{
@@ -9845,7 +9348,6 @@ if( input == null || input.length() == 0 )
 	//process white (space)
 char firstChar = input.charAt( 0 );
 int i = ( int )( ( byte )firstChar );
-p( "i:" + i );
 String firstStr = firstChar + "";
 
 	//white space
@@ -9899,7 +9401,6 @@ if( firstChar == '.' || ( 48 <= i && i <= 57 ) )
 				if( input.length() > numberStr.length() + 1 )
 					{
 					final String digitStr = getMatch( "^[-+]?[0-9]*", input.substring( numberStr.length() + 1 ) );
-					p( "digitStr:" + digitStr );
 					if( digitStr.length() > 0 )
 						{
 						buf.append( digitStr );
@@ -10307,7 +9808,6 @@ else if( firstChar == '`' )
 else if( input.startsWith( "X'" ) || input.startsWith( "x'" ) )
 	{
 	String hexMatch = getMatchIgnoreCase( "^X'[0-9a-fA-F]*'", input );
-	p( "hexMatch:" + hexMatch );
 	if( hexMatch.length() >= 3 )
 		{
 		processed[ 0 ] = hexMatch;
@@ -10388,7 +9888,6 @@ else if( firstChar == 'Q'
 				//nq'X123X'
 			if( input.length() > prefix.length() )
 				{
-				p( "prefix:" + prefix );
 				String rest = input.substring( prefix.length() );
 				leftQuote = rest.charAt( 0 ) + "";
 				int _index = rest.indexOf( leftQuote + "'" );
@@ -10529,7 +10028,6 @@ for( int k = 0; k < input.length(); ++k )
 	else if( _char == '`' )
 		{
 		final String key = input.substring( 0, k ).toUpperCase();
-		p( "key:" + key );
 		final Object value = map.get( key );
 		if( value != null )
 			{
@@ -10654,7 +10152,6 @@ public static void parseComment( String input, String[] processed, String[] toke
 int commentLength = parseCStyleComment( input, false, null );
 String processedStr = input.substring( 0, commentLength );
 processed[ 0 ] = processedStr;
-p( "comment:" + processedStr );
 if( processedStr.indexOf( "/*", 1 ) > -1 || processedStr.indexOf( "/*!" ) > -1 )
 	{
 	tokenBuf[ 0 ] = "X"; //PostgreSQL nested comment or MySQL comment
@@ -10800,35 +10297,30 @@ throws Exception
 	// No-Quote no-MySQL
 if( isSqliImpl2( input, "", 0 ) )
 	{
-	p( "No-Quote no-MySQL" );
 	return true;
 	}
 
 	// No-Quote MySQL
 if( isSqliImpl2( input, "", SQL_MYSQL ) )
 	{
-	p( "No-Quote MySQL" );
 	return true;
 	}
 
 	// Single-Quote no-MySQL
 if( isSqliImpl2( input, "'", 0 ) )
 	{
-	p( "Single-Quote no-MySQL" );
 	return true;
 	}
 
 	// Single-Quote MySQL
 if( isSqliImpl2( input, "'", SQL_MYSQL ) )
 	{
-	p( "Single-Quote MySQL" );
 	return true;
 	}
 
 	// Double-Quote MySQL
 if( isSqliImpl2( input, "\"", SQL_MYSQL ) )
 	{
-	p( "Double-Quote MySQL" );
 	return true;
 	}
 
@@ -10845,10 +10337,8 @@ if( foldedToken.indexOf( "X" ) > -1 )
 
 if( smap.containsKey( foldedToken.toUpperCase() ) )
 	{
-	p( foldedToken + " is found." );
 	if( maybeFalsePositive( valueList, foldedToken, valueListSize ) )
 		{
-		p( "false positive:" + valueList );
 		return false;
 		}
 	else
@@ -11032,6 +10522,486 @@ else
 	}
 }
 //--------------------------------------------------------------------------------
+public static boolean isArithmeticOperator( final String s )
+{
+return arithmeticOperatorSet.contains( s );
+}
+//--------------------------------------------------------------------------------
+public static boolean isUnaryOperator( final String s )
+{
+
+if( s.length() > 3 )
+	{
+	return false;
+	}
+else
+	{
+	return unaryOperatorSet.contains( s.toUpperCase() );
+	}
+}
+//--------------------------------------------------------------------------------
+public static String fold( List valueList, final String token )
+{
+String lastToken = token;
+while( true )
+	{
+	String foldedToken = foldImpl( valueList, lastToken );
+	if( foldedToken.equals( lastToken ) )
+		{
+		break;
+		}
+	else
+		{
+		lastToken = foldedToken;
+		}
+	}
+
+if( lastToken.length() > LIBINJECTION_SQLI_MAX_TOKENS )
+	{
+	lastToken =  lastToken.substring( 0, LIBINJECTION_SQLI_MAX_TOKENS );
+	}
+
+	//do some work after folding
+
+	//Check for magic PHP backquote comment
+if( lastToken.length() > 1 )
+	{
+	int lastIndex = lastToken.length() - 1;
+	if( lastToken.charAt( lastIndex ) == 'n'
+	 && valueList.get( lastIndex ).equals( "`" )
+	  )
+		{
+		lastToken = lastToken.substring( 0, lastIndex ) + "c";
+		}
+	}
+
+return lastToken;
+}
+//--------------------------------------------------------------------------------
+public static String foldImpl( List valueList, String token )
+{
+List foldedValueList = new ArrayList();
+StringBuffer foldedTokenBuf = new StringBuffer();
+loop:
+for( int i = 0; i < token.length(); ++i )
+	{
+	char currentToken = token.charAt( i );
+	final String currentValue = ( String )valueList.get( i );
+	String nextValue = "dummy";
+	boolean hasNext = false;
+	char nextToken = ' ';
+	if( token.length() > i + 1 )
+		{
+		hasNext = true;
+		nextToken = token.charAt( i + 1 );
+		nextValue = ( String )valueList.get( i + 1 );
+		}
+	
+	if( foldedValueList.size() == 0 )
+		{
+			//initial unary operator
+		if( currentToken == 'o' )
+			{
+			if( isUnaryOperator( currentValue ) )
+				{
+				continue;
+				}
+			}
+		else if( currentToken == '(' )
+			{
+			continue;
+			}
+		else if( currentToken == 'c' )
+			{
+			continue;
+			}
+		else if( currentToken == 't' )
+			{
+			continue;
+			}
+		}
+	
+	if( currentToken == '}' )
+		{
+		continue;
+		}
+		
+	if( currentToken == 'c' && hasNext )
+		{
+		continue;
+		}
+	else if( hasNext
+		&& ( currentToken == '&' || currentToken == 'o' )
+		&& ( isUnaryOperator( nextValue ) || nextToken == 't' )
+		)
+		{
+		foldedTokenBuf.append( currentToken );
+		foldedValueList.add( currentValue );
+		++i; //skip next unary operator or 't'
+		continue;//1
+		}
+	
+	if( hasNext )
+		{
+			//keyword merge
+		final String _key = currentValue.toUpperCase();
+		final List _keywordList = ( List )keywordMergeMap.get( _key );
+		if( _keywordList != null )
+			{
+			for( int k = 0; k < _keywordList.size(); ++k )
+				{
+				final List eachList = ( List )_keywordList.get( k );
+				final int _eachListSize = eachList.size();
+				if( valueList.size() >= ( i + _eachListSize ) )
+					{
+					if( valueList.subList( i, i + _eachListSize ).toString().toUpperCase().equals( eachList.toString() ) )
+						{
+						final String _found = listToString( valueList.subList( i, i + _eachListSize ) );
+						foldedValueList.add( _found );
+						foldedTokenBuf.append( map.get( _found.toUpperCase() ) );
+						i += _eachListSize - 1;
+						continue loop;
+						}
+					}
+				}
+			}
+		if( currentToken == '(' )
+			{
+			if( isUnaryOperator( nextValue ) )
+				{
+				++i; //skip operator
+				foldedTokenBuf.append( currentToken );	// (
+				foldedValueList.add( currentValue );		// (
+				continue;	
+				}
+			else if( nextToken == '(' )
+				{
+				++i; //skip next (
+				foldedTokenBuf.append( currentToken );	// (
+				foldedValueList.add( currentValue );	// (
+				continue;			
+				}
+			}
+		
+		if( currentToken == ')' )
+			{
+			if( nextToken == ')' )
+				{
+				++i; //skip next (
+				foldedTokenBuf.append( currentToken );	// )
+				foldedValueList.add( currentValue );	// )
+				continue;							
+				}
+			}
+		
+		if( ( currentToken == 'n' || currentToken == 'v' )
+		 && nextToken == '('
+		  )
+			{
+			if( keywordOrFunctionSet.contains( currentValue.toUpperCase() ) )
+				{
+				foldedValueList.add( currentValue );
+				foldedTokenBuf.append( 'f' );
+				continue;
+				}
+			}
+		if( currentToken == 't' 
+		 && ( nextToken == 'n'
+		   || nextToken == '1'
+		   || nextToken == 't'
+		   || nextToken == '('
+		   || nextToken == 'f'
+		   || nextToken == 'v'
+		   || nextToken == 's'
+		    )
+		  )
+			{
+			continue;
+			}
+		
+		if( currentToken == 'k'
+		 && ( currentValue.toUpperCase().equals( "IN" ) || currentValue.toUpperCase().equals( "NOT IN" ) )
+		  )
+			{
+			if( nextToken == '(' )
+				{
+				foldedValueList.add( currentValue );
+				foldedTokenBuf.append( 'o' );
+				continue;			
+				}
+			else
+				{
+				foldedValueList.add( currentValue );
+				foldedTokenBuf.append( 'n' );
+				continue;				
+				}
+			}
+		
+		if( currentToken == ';' && nextToken == ';' )
+			{
+			continue;
+			}
+		
+		if( currentToken == ';' && nextValue.equalsIgnoreCase( "IF" ) )
+			{
+			foldedValueList.add( currentValue );
+			foldedTokenBuf.append( ';' );
+			foldedValueList.add( nextValue );
+			foldedTokenBuf.append( 'T' );
+			i += 1;
+			continue;			
+			}
+		
+		if( currentToken == '\\' )
+			{
+			if( isArithmeticOperator( nextValue ) )
+				{
+				foldedValueList.add( currentValue );
+				foldedTokenBuf.append( '1' );	// \\ to number
+				continue;
+				}
+			else
+				{
+				continue;
+				}
+			}
+		
+		if( currentToken == 'A' && nextToken == 'n' )
+			{
+			if( nextValue.indexOf( "_" ) > -1 )
+				{
+				foldedValueList.add( currentValue );
+				foldedTokenBuf.append( currentToken );
+				foldedValueList.add( nextValue );
+				foldedTokenBuf.append( 't' ); // n to t
+				i += 1;
+				continue;
+				}
+			}
+		
+		if( currentToken == 'o'
+		 && ( currentValue.equalsIgnoreCase( "LIKE" ) || currentValue.equalsIgnoreCase( "NOT LIKE" ) )
+		 && nextToken == '('
+		  )
+			{
+			foldedValueList.add( currentValue );
+			foldedTokenBuf.append( 'f' );
+			continue;
+			}
+		
+		if( currentToken == '{' && nextToken == 'n' && nextValue.startsWith( "`" ) )
+			{
+			foldedValueList.add( currentValue );
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( nextValue );
+			foldedTokenBuf.append( "X" );
+			break;
+			}
+		
+		if( ( currentToken == 'o' || currentToken == '&' )
+		 && ( nextToken == 't' || isUnaryOperator( nextValue ) )
+		  )
+			{
+			foldedValueList.add( currentValue );
+			foldedTokenBuf.append( currentToken );
+			i += 1;
+			break;
+			}
+		}
+	
+		//three tokens
+	if( token.length() > i + 2 )
+		{
+		char thirdToken = token.charAt( i + 2 );
+		String thirdValue = ( String )valueList.get( i + 2 );
+		if( currentToken == '1' && nextToken == 'o' && thirdToken == '1' )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 2;
+			continue;
+			}
+		if( ( currentToken == 'n' || currentToken == '1' )
+		      && nextToken == 'o'
+		      && ( thirdToken == '1' || thirdToken == 'n' )
+		       )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 2;
+			continue;
+			}
+		if( currentToken == '&' && thirdToken == '&' )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 2;
+			continue;
+			}
+		if( currentToken == 'n' && nextToken == '.' && thirdToken == 'n' )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 2;
+			continue;
+			}
+		if( isUnaryOperator( currentValue ) && nextToken == 'n' && isUnaryOperator( thirdValue ) )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 2;
+			continue;
+			}
+		if( ( currentToken == 'k' || currentToken == 'E' || currentToken == 'B' )
+		      && isUnaryOperator( nextValue )
+		      && ( thirdToken == '1' || thirdToken == 'n' || thirdToken == 'v' || thirdToken == 's' || thirdToken == 'f' )
+		       )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 1;
+			continue;
+			}
+		if( ( currentToken == 'n' || currentToken == '1' || currentToken == 'v' || currentToken == 's' )
+		      && nextToken == 'o'
+		      && nextValue.equals( "::" )
+		      && thirdToken == 't'
+		       )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 2;
+			continue;
+			}
+		if( ( currentToken == 'n' || currentToken == '1' || currentToken == 's' || currentToken == 'v' )
+		      && nextToken == ','
+		      && ( thirdToken == '1' || thirdToken == 'n' || thirdToken == 's' || thirdToken == 'v' )
+		       )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 2;
+			continue;
+			}
+		if( ( currentToken == 'E' || currentToken == 'B' || currentToken == ',' )
+		      && isUnaryOperator( nextValue )
+		      && thirdToken == '('
+		       )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 1;
+			continue;		
+			}
+		
+		if( currentToken == ','
+		      && isUnaryOperator( nextValue )
+		      && ( thirdToken == '1' || thirdToken == 'n' || thirdToken == 'v' || thirdToken == 's' )
+		       )
+			{
+			i += 2;
+			continue;			
+			}
+		if( currentToken == ','
+		      && isUnaryOperator( nextValue )
+		      && ( thirdToken == 'f' )
+		       )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 1;
+			continue;			
+			}
+		
+		if( currentToken == 'v'
+		 && nextToken == 'o'
+		 && ( thirdToken == 'v' || thirdToken == '1' || thirdToken == 'n' )
+		  )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 2;
+			continue;			
+			}
+		
+		if( currentToken == '{' && nextToken == 'n' )
+			{
+			i += 1;
+			continue;
+			}
+	
+		if( currentToken == 'E' && nextToken == '.' && thirdToken == 'n' )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 1;
+			continue;			
+			}
+/*
+           
+                    */
+		}
+	
+		//ss -> s
+	if( currentToken == 's' )
+		{
+		foldedTokenBuf.append( 's' );
+		foldedValueList.add( currentValue );
+		boolean found;
+		while( true )
+			{
+			found = false;
+			if( token.length() > i + 1 )
+				{
+				if( token.charAt( i + 1 ) == 's' )
+					{
+					++i;
+					found = true;
+					}
+				}
+			if( !found )
+				{
+				break;
+				}
+			}
+		continue;
+		}
+
+	foldedTokenBuf.append( currentToken );
+	foldedValueList.add( currentValue );
+	}
+
+	//some special cases for 5 tokens
+if( foldedValueList.size() >= LIBINJECTION_SQLI_MAX_TOKENS )
+	{
+	String foldedToken = foldedTokenBuf.toString();
+	if( ( foldedToken.startsWith( "1o(1)" ) || foldedToken.startsWith( "1,(1)" ) )
+	 || ( foldedToken.startsWith( "no(n)" ) || foldedToken.startsWith( "no(1)" ) )
+	 || ( foldedToken.startsWith( "1),(1" ) )
+	  )
+		{
+		final String _tmpFoldedToken = foldedToken.substring( 5 );
+		final List _tmpValueList = new ArrayList();
+		_tmpValueList.addAll( foldedValueList.subList( 5, foldedValueList.size() ) );
+		
+		foldedTokenBuf = new StringBuffer();
+		foldedTokenBuf.append( foldedToken.charAt( 0 ) );
+		foldedTokenBuf.append( _tmpFoldedToken );
+		
+		String firstNumber = ( String )foldedValueList.get( 0 );
+		foldedValueList.clear();
+		foldedValueList.add( firstNumber );
+		foldedValueList.addAll( _tmpValueList );		
+		}
+	}	
+
+valueList.clear();
+valueList.addAll( foldedValueList );
+
+return foldedTokenBuf.toString();
+}
+
+//--------------------------------------------------------------------------------
 }
 
 class MListSizeComparator
@@ -11057,5 +11027,6 @@ else
 	return 1;
 	}
 }
+
 // --------------------------------------------------------------------------------
 }

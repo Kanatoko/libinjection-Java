@@ -15,6 +15,10 @@ debug = true;
 initialize();
 
 bruteForce();
+bruteForce();
+bruteForce();
+bruteForce();
+bruteForce();
 
 /*
 List valueList = new ArrayList();
@@ -99,30 +103,6 @@ String[] processed = new String[ 1 ];
 
 debug = false;
 int count = 50000;
-for( int i = 0; i < count; ++i )
-	{
-	r.nextBytes( buf );
-	String s = new String( buf, "ISO-8859-1" );
-	
-	try
-		{
-		List valueList = new ArrayList();
-		tokenize( s, valueList, processed, 0, true );
-		}
-	catch( Exception e )
-		{
-		FileOutputStream out = new FileOutputStream( "1" );
-		out.write( buf );
-		out.close();
-		e.printStackTrace();
-		throw e;
-		}
-	if( ( i % 1000 ) == 0 )
-		{
-		p( i + ":" + processed[ 0 ] );
-		}
-	}
-
 
 long start = System.currentTimeMillis();
 for( int i = 0; i < count; ++i )
