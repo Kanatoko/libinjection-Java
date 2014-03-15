@@ -1,0 +1,9 @@
+--TEST--
+fold (( to (
+--INPUT--
+2((2
+--EXPECTED--
+1 2
+( (
+1 3
+

@@ -1,0 +1,7 @@
+--TEST--
+initial SQLTYPE removed
+--INPUT--
+ANyARRAY - SELECT
+--EXPECTED--
+E SELECT
+
