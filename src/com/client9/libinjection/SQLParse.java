@@ -9304,7 +9304,7 @@ while( inputLength > totalProcessedLength )
 		}
 	
 		//fold
-	if( withFolding && token.length() >= LIBINJECTION_SQLI_MAX_TOKENS )
+	if( withFolding && token.length() >= LIBINJECTION_SQLI_MAX_TOKENS + 3 )
 		{
 		List _list = new ArrayList();
 		_list.addAll( valueList );
@@ -10282,6 +10282,7 @@ final List valueList = new ArrayList();
 String[] allTokenBuf = new String[ 1 ];
 
 int valueListSize = tokenize( quote + input, valueList, allTokenBuf, flags, true );
+p( valueList );
 String foldedToken = allTokenBuf[ 0 ];
 
 if( valueList.size() == 0 )
@@ -10309,6 +10310,7 @@ else
 private static boolean isSQLiImpl1( final String input )
 throws Exception
 {
+p( input );
 
 	// No-Quote no-MySQL
 if( isSqliImpl2( input, "", 0 ) )
@@ -10359,6 +10361,8 @@ if( smap.containsKey( foldedToken.toUpperCase() ) )
 		}
 	else
 		{
+		p( valueList );
+		p( "found:" + foldedToken );
 		return true;
 		}
 	}
@@ -11016,7 +11020,14 @@ valueList.addAll( foldedValueList );
 
 return foldedTokenBuf.toString();
 }
-
+//--------------------------------------------------------------------------------
+public static void p( Object o )
+{
+if( debug )
+	{
+	System.out.println( "--" + o + "--" );
+	}
+}
 //--------------------------------------------------------------------------------
 }
 

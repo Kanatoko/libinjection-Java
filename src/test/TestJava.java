@@ -17,6 +17,7 @@ try
 	//testIsSqli( "1+1 UNION", true );
 	//if( System.currentTimeMillis() > 0 ){ return; }
 
+	testIsSqli();
 	testTokenizeWithWhite();
 	testFold();
 	testWordIndex();
@@ -25,7 +26,6 @@ try
 	testParseSingleQuoteString();
 	testTokenizeOne();
 	testParseComment();
-	testIsSqli();
 	p( "================ OK ================" );
 	}
 catch( Exception e )
@@ -107,6 +107,12 @@ if(! foldedToken.equals( expectedToken ) )
 public static void testIsSqli()
 throws Exception
 {
+/*
+testFold( "1.1 - (DeleGate/9.9.8-pre20)", "1o(n1" );
+testFold( "1.1 - (DeleGate/9", "1o(n1" );
+*/
+testIsSqli( "1.1 - (DeleGate/9.9.8-pre20)", false );
+
 	//MySQL String
 testIsSqli( "foo\\'bar' or 1=1-- baz", true );
 
