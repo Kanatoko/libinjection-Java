@@ -269,7 +269,6 @@ throws Exception
 //testTokenizeWithWhite( "select 1,'\\\'',2;", "Ew1,s,1;" );
 
 
-testTokenizeWithWhite( "test fail", "n" );
 testTokenizeWithWhite( "1.1.", "1." );
 testTokenizeWithWhite( "1.1.1", "11" );
 testTokenizeWithWhite( "01Xa", "1n" );
