@@ -10841,11 +10841,22 @@ for( int i = 0; i < token.length(); ++i )
 			i += 2;
 			continue;
 			}
+		if( currentToken == 'o'
+		 && nextToken != '('
+		 && thirdToken == 'o'
+		  )
+			{
+			foldedTokenBuf.append( currentToken );
+			foldedValueList.add( currentValue );
+			i += 2;
+			continue;			
+			}
 		if( ( currentToken == 'n' || currentToken == '1' )
 		      && nextToken == 'o'
 		      && ( thirdToken == '1' || thirdToken == 'n' )
 		       )
 			{
+			p( "--18--" );
 			foldedTokenBuf.append( currentToken );
 			foldedValueList.add( currentValue );
 			i += 2;

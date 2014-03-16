@@ -17,9 +17,9 @@ try
 	//testIsSqli( "1+1 UNION", true );
 	//if( System.currentTimeMillis() > 0 ){ return; }
 
+	testFold();
 	testIsSqli();
 	testTokenizeWithWhite();
-	testFold();
 	testWordIndex();
 	testDollar();
 	testParseString();
@@ -61,6 +61,12 @@ if( result!= expected ){ ex(); }
 public static void testFold()
 throws Exception
 {
+testFold( "/foo/", "o" );
+testFold( "- - - foo", "n" );
+testFold( "foo/bar/as/123", "n" );
+testFold( "foo/bar/as/1a", "nn" );
+testFold( "foo/bar", "n" );
+testFold( "foo/bar/as", "nok" );
 testFold( "foo/1.1", "n" );
 testFold( "foo/1.1.1", "n1" );
 testFold( "1.1 - (DeleGate/9.9.8-pre20)", "1o(n1" );
@@ -107,10 +113,6 @@ if(! foldedToken.equals( expectedToken ) )
 public static void testIsSqli()
 throws Exception
 {
-/*
-testFold( "1.1 - (DeleGate/9.9.8-pre20)", "1o(n1" );
-testFold( "1.1 - (DeleGate/9", "1o(n1" );
-*/
 testIsSqli( "1.1 - (DeleGate/9.9.8-pre20)", false );
 
 	//MySQL String
