@@ -9361,7 +9361,15 @@ if( ( 0 <= i &&  i < 33 )  || i == 127 || isWhiteSpaceChar( firstChar ) )
 	//number
 if( firstChar == '.' || ( 48 <= i && i <= 57 ) )
 	{
-	String numberStr = getMatch( "^[0-9\\.]+", input );
+	String numberStr = "";
+	if( firstChar == '.' )
+		{
+		numberStr = getMatch( "^\\.[0-9]*", input );
+		}
+	else
+		{
+		numberStr = getMatch( "^[0-9]+[\\.]{0,1}[0-9]*", input );
+		}
 	if( firstChar == '.' && numberStr.length() == 1 )
 		{
 		processed[ 0 ] = ".";

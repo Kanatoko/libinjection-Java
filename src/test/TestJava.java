@@ -17,8 +17,8 @@ try
 	//testIsSqli( "1+1 UNION", true );
 	//if( System.currentTimeMillis() > 0 ){ return; }
 
-	testFold();
 	testTokenizeWithWhite();
+	testFold();
 	testWordIndex();
 	testDollar();
 	testParseString();
@@ -60,6 +60,9 @@ if( result!= expected ){ ex(); }
 public static void testFold()
 throws Exception
 {
+testFold( "foo/1.1", "n" );
+testFold( "foo/1.1.1", "n1" );
+testFold( "1.1 - (DeleGate/9.9.8-pre20)", "1o(n1" );
 testFold( "image/png, image/svg+xml, image/*;q=0.8, */*;q=0.5", "no;n" );
 testFold( "foo, bar + BZ", "n" );
 testFold( "\"remind\" and not 3=9-- a", "s&1c" );
@@ -90,6 +93,7 @@ String[] allTokenBuf = new String[ 1 ];
 tokenize( input, valueList, allTokenBuf );
 allTokenBuf[ 0 ] = allTokenBuf[ 0 ].replaceAll( "w+", "" );
 String foldedToken = fold( valueList, allTokenBuf[ 0 ] );
+p( valueList );
 
 if(! foldedToken.equals( expectedToken ) )
 	{
@@ -263,6 +267,9 @@ throws Exception
 
 //testTokenizeWithWhite( "select 1,'\\\'',2;", "Ew1,s,1;" );
 
+
+testTokenizeWithWhite( "1.1.", "1." );
+testTokenizeWithWhite( "1.1.1", "11" );
 testTokenizeWithWhite( "01Xa", "1n" );
 testTokenizeWithWhite( "foo" + '\u00a0' + "bar", "nwn" );
 testTokenizeWithWhite( "foo\tbar", "nwn" );
