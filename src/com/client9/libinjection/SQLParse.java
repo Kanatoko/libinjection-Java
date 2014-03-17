@@ -9288,6 +9288,10 @@ public static int tokenize( String input, List valueList, String[] allTokenBuf, 
 StringBuffer token = new StringBuffer();
 final int inputLength = input.length();
 int totalProcessedLength = 0;
+
+int sameFoldedTokenCount = 0;
+String lastFoldedToken = "dummy";
+
 while( inputLength > totalProcessedLength )
 	{
 	String[] processed = new String[ 1 ];
@@ -9304,23 +9308,34 @@ while( inputLength > totalProcessedLength )
 		}
 	
 		//fold
-	if( withFolding && token.length() >= LIBINJECTION_SQLI_MAX_TOKENS + 3 )
+	if( withFolding && token.length() >= LIBINJECTION_SQLI_MAX_TOKENS )
 		{
 		List _list = new ArrayList();
 		_list.addAll( valueList );
 		final String foldedToken = fold( _list, token.toString().replaceAll( "w+", "" ) );
 		if( foldedToken.length() >= LIBINJECTION_SQLI_MAX_TOKENS )
 			{
-			int valueListSize = valueList.size();
-			valueList.clear();
-			valueList.addAll( _list );
-			allTokenBuf[ 0 ] = foldedToken;
-			return valueListSize;
+			if( foldedToken.equals( lastFoldedToken ) )
+				{
+				++ sameFoldedTokenCount;
+				if( sameFoldedTokenCount > 2 )
+					{
+					int valueListSize = valueList.size();
+					valueList.clear();
+					valueList.addAll( _list );
+					allTokenBuf[ 0 ] = foldedToken;
+					return valueListSize;
+					}
+				}
+			else
+				{
+				sameFoldedTokenCount = 0;
+				}
+			lastFoldedToken = foldedToken;
 			}
 		}
 	}
 allTokenBuf[ 0 ] = token.toString();
-
 
 if( withFolding )
 	{
@@ -10282,7 +10297,7 @@ final List valueList = new ArrayList();
 String[] allTokenBuf = new String[ 1 ];
 
 int valueListSize = tokenize( quote + input, valueList, allTokenBuf, flags, true );
-p( valueList );
+//debugPrint( valueList );
 String foldedToken = allTokenBuf[ 0 ];
 
 if( valueList.size() == 0 )
@@ -10310,35 +10325,40 @@ else
 private static boolean isSQLiImpl1( final String input )
 throws Exception
 {
-p( input );
+//debugPrint( input );
 
 	// No-Quote no-MySQL
 if( isSqliImpl2( input, "", 0 ) )
 	{
+	//debugPrint( "No-Quote no-MySQL" );
 	return true;
 	}
 
 	// No-Quote MySQL
 if( isSqliImpl2( input, "", SQL_MYSQL ) )
 	{
+	//debugPrint( "No-Quote MySQL" );
 	return true;
 	}
 
 	// Single-Quote no-MySQL
 if( isSqliImpl2( input, "'", 0 ) )
 	{
+	//debugPrint( "Single-Quote no-MySQL" );
 	return true;
 	}
 
 	// Single-Quote MySQL
 if( isSqliImpl2( input, "'", SQL_MYSQL ) )
 	{
+	//debugPrint( "Single-Quote MySQL" );
 	return true;
 	}
 
 	// Double-Quote MySQL
 if( isSqliImpl2( input, "\"", SQL_MYSQL ) )
 	{
+	//debugPrint( "Double-Quote MySQL" );
 	return true;
 	}
 
@@ -10361,8 +10381,8 @@ if( smap.containsKey( foldedToken.toUpperCase() ) )
 		}
 	else
 		{
-		p( valueList );
-		p( "found:" + foldedToken );
+		//debugPrint( valueList );
+		//debugPrint( "found:" + foldedToken );
 		return true;
 		}
 	}
@@ -10856,7 +10876,7 @@ for( int i = 0; i < token.length(); ++i )
 		      && ( thirdToken == '1' || thirdToken == 'n' )
 		       )
 			{
-			p( "--18--" );
+			//debugPrint( "--18--" );
 			foldedTokenBuf.append( currentToken );
 			foldedValueList.add( currentValue );
 			i += 2;
@@ -11032,7 +11052,7 @@ valueList.addAll( foldedValueList );
 return foldedTokenBuf.toString();
 }
 //--------------------------------------------------------------------------------
-public static void p( Object o )
+public static void debugPrint( Object o )
 {
 if( debug )
 	{

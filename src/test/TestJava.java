@@ -61,6 +61,7 @@ if( result!= expected ){ ex(); }
 public static void testFold()
 throws Exception
 {
+testFold( "curl/7.15+ (x64-criteo) libcurl/7.15+ OpenSSL zlib libidn", "nnnn" );
 testFold( "/foo/", "o" );
 testFold( "- - - foo", "n" );
 testFold( "foo/bar/as/123", "n" );
@@ -113,6 +114,8 @@ if(! foldedToken.equals( expectedToken ) )
 public static void testIsSqli()
 throws Exception
 {
+testIsSqli( "foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo", false );
+testIsSqli( "curl/7.15+ (x64-criteo) libcurl/7.15+ OpenSSL zlib libidn", false );
 testIsSqli( "1.1 - (DeleGate/9.9.8-pre20)", false );
 
 	//MySQL String
