@@ -9308,6 +9308,7 @@ while( inputLength > totalProcessedLength )
 		}
 	
 		//fold
+	/*
 	if( withFolding && token.length() >= LIBINJECTION_SQLI_MAX_TOKENS )
 		{
 		List _list = new ArrayList();
@@ -9334,6 +9335,7 @@ while( inputLength > totalProcessedLength )
 			lastFoldedToken = foldedToken;
 			}
 		}
+	*/
 	}
 allTokenBuf[ 0 ] = token.toString();
 

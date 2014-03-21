@@ -61,6 +61,7 @@ if( result!= expected ){ ex(); }
 public static void testFold()
 throws Exception
 {
+testFold( "F331802,F375984,F191692,F247942,F413537", "n" );
 testFold( "curl/7.15+ (x64-criteo) libcurl/7.15+ OpenSSL zlib libidn", "nnnn" );
 testFold( "/foo/", "o" );
 testFold( "- - - foo", "n" );
