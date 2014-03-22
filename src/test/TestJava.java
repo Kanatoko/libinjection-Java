@@ -115,6 +115,7 @@ if(! foldedToken.equals( expectedToken ) )
 public static void testIsSqli()
 throws Exception
 {
+testIsSqli( "1+1 UNION", true );
 testIsSqli( "+/zXWqkSECEqv+2l/VBqizw0iLx/j29GoQJqKhgD8m0Ri6jYsrEAJ0xy3Vnl8WGu/S8YFcz2uYpwbtjb8c5UH9JTzw0e6kOEQcjtgp54OUIUXUBbv5xHEy6XziawyB6kC6lWTzVoPXVBhcg2bhfvtseD63YVjc8rlV2dYk6LlY0yQeDS9Sq2Qk21Vp1vmQnejnE9D+YLCRhJgZqGlhekaLyXPzpEPnOpQlPKKG6mkkU8BhEzjX1UPUVz1FhS+hsdWKhopkAhd3tg8XjET8obfp8y+OG9QtcgsgB7HS62XKQ8zgW0ItBLBSubX4ctna7nTqZLL3Al2XRunnxi6v1/+GhGoBtJ7AyKpIeH9N/1ys7iVPuc3IQIH4XnaTPnSKWstBZurkFDxO7BIJXjuaNnfd//UfYSsb+4n8Nyh9x243cJ9BeoYuWr4gNLM+LENRT85/isPPqPUo=", false );
 testIsSqli( "\"+/zXWqkSECEqv+2l/VBqizw0iLx/j29GoQJqKhgD8m0Ri6jYsrEAJ0xy3Vnl8WGu/S8YFcz2uYpwbtjb8c5UH9JTzw0e6kOEQcjtgp54OUIUXUBbv5xHEy6XziawyB6kC6lWTzVoPXVBhcg2bhfvtseD63YVjc8rlV2dYk6LlY0yQeDS9Sq2Qk21Vp1vmQnejnE9D+YLCRhJgZqGlhekaLyXPzpEPnOpQlPKKG6mkkU8BhEzjX1UPUVz1FhS+hsdWKhopkAhd3tg8XjET8obfp8y+OG9QtcgsgB7HS62XKQ8zgW0ItBLBSubX4ctna7nTqZLL3Al2XRunnxi6v1/+GhGoBtJ7AyKpIeH9N/1ys7iVPuc3IQIH4XnaTPnSKWstBZurkFDxO7BIJXjuaNnfd//UfYSsb+4n8Nyh9x243cJ9BeoYuWr4gNLM+LENRT85/isPPqPUo=\"", false );
 testIsSqli( "foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo", false );
@@ -124,7 +125,6 @@ testIsSqli( "1.1 - (DeleGate/9.9.8-pre20)", false );
 	//MySQL String
 testIsSqli( "foo\\'bar' or 1=1-- baz", true );
 
-testIsSqli( "1+1 UNION", true );
 testIsSqli( "1 UNION", false );
 testIsSqli( "1 INTO OUTFILE'foo'", true );
 testIsSqli( "1 INTO 'foo'", true );

@@ -9280,40 +9280,49 @@ public static void tokenize( String input, List valueList, String[] allTokenBuf 
 tokenize( input, valueList, allTokenBuf, 0, false );
 }
 //--------------------------------------------------------------------------------
-/*
- * return value: size of valueList before folding
- */
-public static int tokenize( String input, List valueList, String[] allTokenBuf, int flags, final boolean withFolding )
+public static List tokenize( String input, List valueList, String[] allTokenBuf, int flags, final boolean withFolding )
 {
-StringBuffer token = new StringBuffer();
+String token = "";
 final int inputLength = input.length();
 int totalProcessedLength = 0;
+final List processedValueList = new ArrayList(); // no folding
 
 int sameFoldedTokenCount = 0;
 String lastFoldedToken = "dummy";
+boolean folded = false;
 
 while( inputLength > totalProcessedLength )
 	{
 	String[] processed = new String[ 1 ];
 	String[] tokenBuf = new String[ 1 ];
 	tokenizeOne( input, processed, tokenBuf, flags );
-	
-	token.append( tokenBuf[ 0 ] );
+	folded = false;
+
+	if( tokenBuf[ 0 ].equals( "w" ) )
+		{
+		if( withFolding )
+			{	
+			}
+		else
+			{
+			token = token + tokenBuf[ 0 ];
+			}
+		}
+	else
+		{
+		token = token + tokenBuf[ 0 ];
+		valueList.add( processed[ 0 ] );
+		processedValueList.add( processed[ 0 ] );
+		}
+
 	totalProcessedLength += processed[ 0 ].length();
 	input = input.substring( processed[ 0 ].length() );
 	
-	if( !tokenBuf[ 0 ].equals( "w" ) )
-		{
-		valueList.add( processed[ 0 ] );
-		}
-	
 		//fold
-	/*
 	if( withFolding && token.length() >= LIBINJECTION_SQLI_MAX_TOKENS )
 		{
-		List _list = new ArrayList();
-		_list.addAll( valueList );
-		final String foldedToken = fold( _list, token.toString().replaceAll( "w+", "" ) );
+		final String foldedToken = fold( valueList, token );
+		folded = true;
 		if( foldedToken.length() >= LIBINJECTION_SQLI_MAX_TOKENS )
 			{
 			if( foldedToken.equals( lastFoldedToken ) )
@@ -9321,11 +9330,8 @@ while( inputLength > totalProcessedLength )
 				++ sameFoldedTokenCount;
 				if( sameFoldedTokenCount > 2 )
 					{
-					int valueListSize = valueList.size();
-					valueList.clear();
-					valueList.addAll( _list );
 					allTokenBuf[ 0 ] = foldedToken;
-					return valueListSize;
+					return processedValueList;
 					}
 				}
 			else
@@ -9334,23 +9340,22 @@ while( inputLength > totalProcessedLength )
 				}
 			lastFoldedToken = foldedToken;
 			}
+		token = foldedToken;
 		}
-	*/
+	
 	}
 allTokenBuf[ 0 ] = token.toString();
 
-if( withFolding )
+if( withFolding && !folded )
 	{
-	int valueListSize = valueList.size();
-	final String foldedToken = fold( valueList, token.toString().replaceAll( "w+", "" ) );
+	final String foldedToken = fold( valueList, token );
 	allTokenBuf[ 0 ] = foldedToken;
-	return valueListSize;
+	return processedValueList;
 	}
 else
 	{
-	return valueList.size();
+	return processedValueList;
 	}
-
 }
 //--------------------------------------------------------------------------------
 public static void tokenizeOne( final String input, String[] processed, String[] tokenBuf, int flags )
@@ -10298,7 +10303,7 @@ throws Exception
 final List valueList = new ArrayList();
 String[] allTokenBuf = new String[ 1 ];
 
-int valueListSize = tokenize( quote + input, valueList, allTokenBuf, flags, true );
+List processedValueList = tokenize( quote + input, valueList, allTokenBuf, flags, true );
 //debugPrint( valueList );
 String foldedToken = allTokenBuf[ 0 ];
 
@@ -10314,7 +10319,7 @@ if( quote.length() > 0 && firstValue.charAt( 0 ) == quote.charAt( 0 ) )
 	valueList.set( 0, firstValue.substring( 1 ) );
 	}
 
-if( isSQLiImpl3( valueList, foldedToken, valueListSize ) )
+if( isSQLiImpl3( valueList, foldedToken, processedValueList.size() ) )
 	{
 	return true;
 	}

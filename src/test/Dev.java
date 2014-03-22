@@ -19,6 +19,7 @@ for( int i = 0; i < 20000; ++i )
 	{
 	buf.append( "FOOOOO," );
 	}
+p( "Start" );
 isSQLi( buf.toString() );
 p( "OK" );
 
