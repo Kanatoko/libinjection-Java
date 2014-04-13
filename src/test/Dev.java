@@ -20,9 +20,12 @@ for( int i = 0; i < 20000; ++i )
 	buf.append( "FOOOOO," );
 	}
 p( "Start" );
+long start = System.currentTimeMillis();
 isSQLi( buf.toString() );
 p( "OK" );
+p( ( System.currentTimeMillis() - start ) );
 
+/*
 bruteForce();
 bruteForce();
 bruteForce();
