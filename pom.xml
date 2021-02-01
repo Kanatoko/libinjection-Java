@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.client9</groupId>
     <artifactId>libinjection</artifactId>
-    <version>1.0</version>
+    <version>0.9.1</version>
     <packaging>jar</packaging>
     
     <properties>
