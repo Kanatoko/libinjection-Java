@@ -5,27 +5,25 @@ import java.io.*;
 import com.client9.libinjection.*;
 
 public class Dev
-extends SQLParse
-{
+        extends SQLParse {
 //--------------------------------------------------------------------------------
-public static void main( String[] args )
-throws Exception
-{
-debug = true;
-initialize();
 
-StringBuffer buf = new StringBuffer();
-for( int i = 0; i < 20000; ++i )
-	{
-	buf.append( "FOOOOO," );
-	}
-p( "Start" );
-long start = System.currentTimeMillis();
-isSQLi( buf.toString() );
-p( "OK" );
-p( ( System.currentTimeMillis() - start ) );
+    public static void main(String[] args)
+            throws Exception {
+        debug = true;
+        initialize();
 
-/*
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < 20000; ++i) {
+            buf.append("FOOOOO,");
+        }
+        p("Start");
+        long start = System.currentTimeMillis();
+        isSQLi(buf.toString());
+        p("OK");
+        p((System.currentTimeMillis() - start));
+
+        /*
 bruteForce();
 bruteForce();
 bruteForce();
@@ -56,8 +54,7 @@ while( p.hasNext() )
 		p( key );
 		}
 	}
-*/
-
+         */
 //bruteForce();
 /*
 int i = parseString( "'ho''e'", '\'', true );
@@ -102,67 +99,62 @@ while( p.hasNext() )
 		p( s );
 		}
 	}
-*/
-}
+         */
+    }
 //--------------------------------------------------------------------------------
-public static void bruteForce()
-throws Exception
-{
-Random r = new Random();
-byte[] buf = new byte[ 1024 ];
 
-String[] processed = new String[ 1 ];
+    public static void bruteForce()
+            throws Exception {
+        Random r = new Random();
+        byte[] buf = new byte[1024];
 
-debug = false;
-int count = 50000;
+        String[] processed = new String[1];
 
-long start = System.currentTimeMillis();
-for( int i = 0; i < count; ++i )
-	{
-	r.nextBytes( buf );
-	String s = new String( buf, "ISO-8859-1" );
-	
-	try
-		{
-		List valueList = new ArrayList();
-		tokenize( s, valueList, processed, 0, true );
-		}
-	catch( Exception e )
-		{
-		FileOutputStream out = new FileOutputStream( "1" );
-		out.write( buf );
-		out.close();
-		e.printStackTrace();
-		throw e;
-		}
-	if( ( i % 1000 ) == 0 )
-		{
-		p( i + ":" + processed[ 0 ] );
-		}
-	}
+        debug = false;
+        int count = 50000;
 
-long took = System.currentTimeMillis() - start;
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < count; ++i) {
+            r.nextBytes(buf);
+            String s = new String(buf, "ISO-8859-1");
 
-double average = ( double )took / ( double )count;
-p( "average: " + average + " ms" );
+            try {
+                List valueList = new ArrayList();
+                tokenize(s, valueList, processed, 0, true);
+            } catch (Exception e) {
+                FileOutputStream out = new FileOutputStream("1");
+                out.write(buf);
+                out.close();
+                e.printStackTrace();
+                throw e;
+            }
+            if ((i % 1000) == 0) {
+                p(i + ":" + processed[0]);
+            }
+        }
 
-}
+        long took = System.currentTimeMillis() - start;
+
+        double average = (double) took / (double) count;
+        p("average: " + average + " ms");
+
+    }
 //--------------------------------------------------------------------------------
-public static void p( Object o )
-{
-System.out.println( "--" + o + "--" );
-}
+
+    public static void p(Object o) {
+        System.out.println("--" + o + "--");
+    }
 //--------------------------------------------------------------------------------
-public static void ex()
-throws Exception
-{
-throw new Exception();
-}
+
+    public static void ex()
+            throws Exception {
+        throw new Exception();
+    }
 //--------------------------------------------------------------------------------
-public static void ex( Object o )
-throws Exception
-{
-throw new Exception( o + "" );
-}
+
+    public static void ex(Object o)
+            throws Exception {
+        throw new Exception(o + "");
+    }
 //--------------------------------------------------------------------------------
 }

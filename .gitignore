@@ -2,3 +2,4 @@
 *.sh
 bin/*
 *.class
+/target/
