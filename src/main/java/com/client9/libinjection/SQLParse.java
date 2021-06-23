@@ -8686,6 +8686,7 @@ for( int i = 0; i < 26; ++i )
         map.put("IS_USED_LOCK", "f");
         map.put("ITERATE", "k");
         map.put("JOIN", "k");
+        map.put("JSON_KEYS", "f");
         map.put("JULIANDAY", "f");
         map.put("JUSTIFY_DAYS", "f");
         map.put("JUSTIFY_HOURS", "f");
@@ -10413,7 +10414,7 @@ else if( firstChar == ':' )
                         continue;
                     }
                 } else if (currentToken == 'o'
-                        && (currentValue.equalsIgnoreCase("LIKE") || currentValue.equalsIgnoreCase("NOT LIKE"))
+                        && (currentValue.equalsIgnoreCase("LIKE") || currentValue.equalsIgnoreCase("NOT LIKE") || currentValue.equalsIgnoreCase("RLIKE"))
                         && nextToken == '(') {
                     foldedValueList.add(currentValue);
                     foldedTokenBuf.append('f');
