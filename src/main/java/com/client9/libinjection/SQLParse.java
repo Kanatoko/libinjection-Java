@@ -8603,6 +8603,7 @@ for( int i = 0; i < 26; ++i )
         map.put("GROUPING", "f");
         map.put("GROUPING_ID", "f");
         map.put("GROUP_CONCAT", "f");
+        map.put("GTID_SUBSET", "f");
         map.put("HANDLER", "T");
         map.put("HASHBYTES", "f");
         map.put("HAS_PERMS_BY_NAME", "f");
