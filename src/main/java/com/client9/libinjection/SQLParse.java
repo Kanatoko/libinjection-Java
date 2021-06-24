@@ -9267,7 +9267,7 @@ for( int i = 0; i < 26; ++i )
 //--------------------------------------------------------------------------------
 
     public static List tokenize(String input, List valueList, String[] allTokenBuf, int flags, final boolean withFolding) {
-        String token = "";
+        String token;
         final int inputLength = input.length();
         int totalProcessedLength = 0;
         final List processedValueList = new ArrayList(); // no folding
@@ -9276,6 +9276,7 @@ for( int i = 0; i < 26; ++i )
         String lastFoldedToken = "dummy";
         boolean folded = false;
 
+        StringBuilder tokenBuilder = new StringBuilder();
         while (inputLength > totalProcessedLength) {
             String[] processed = new String[1];
             String[] tokenBuf = new String[1];
@@ -9283,12 +9284,11 @@ for( int i = 0; i < 26; ++i )
             folded = false;
 
             if (tokenBuf[0].equals("w")) {
-                if (withFolding) {
-                } else {
-                    token = token + tokenBuf[0];
+                if (!withFolding) {
+                    tokenBuilder.append(tokenBuf[0]);
                 }
             } else {
-                token = token + tokenBuf[0];
+                tokenBuilder.append(tokenBuf[0]);
                 valueList.add(processed[0]);
                 processedValueList.add(processed[0]);
             }
@@ -9297,8 +9297,8 @@ for( int i = 0; i < 26; ++i )
             input = input.substring(processed[0].length());
 
             //fold
-            if (withFolding && token.length() >= LIBINJECTION_SQLI_MAX_TOKENS) {
-                final String foldedToken = fold(valueList, token);
+            if (withFolding && tokenBuilder.length() >= LIBINJECTION_SQLI_MAX_TOKENS) {
+                final String foldedToken = fold(valueList, tokenBuilder.toString());
                 folded = true;
                 if (foldedToken.length() >= LIBINJECTION_SQLI_MAX_TOKENS) {
                     if (foldedToken.equals(lastFoldedToken)) {
@@ -9312,10 +9312,11 @@ for( int i = 0; i < 26; ++i )
                     }
                     lastFoldedToken = foldedToken;
                 }
-                token = foldedToken;
+                tokenBuilder = new StringBuilder(foldedToken);
             }
 
         }
+        token = tokenBuilder.toString();
         allTokenBuf[0] = token;
 
         if (withFolding && !folded) {
@@ -9358,7 +9359,7 @@ for( int i = 0; i < 26; ++i )
                 tokenBuf[0] = ".";
                 return;
             } else {
-                final StringBuffer buf = new StringBuffer();
+                final StringBuilder buf = new StringBuilder();
                 buf.append(numberStr);
                 boolean moreCharacter = input.length() > numberStr.length();
                 boolean haveExp = false;
@@ -9995,7 +9996,7 @@ else if( firstChar == ':' )
 //--------------------------------------------------------------------------------
 
     private static String listToString(final List l) {
-        StringBuffer buf = new StringBuffer(180);
+        StringBuilder buf = new StringBuilder(180);
         for (int i = 0; i < l.size(); ++i) {
             if (i > 0) {
                 buf.append(" ");
@@ -10067,8 +10068,7 @@ else if( firstChar == ':' )
     }
 //--------------------------------------------------------------------------------
 
-    protected static boolean isSQLiImpl3(final List valueList, final String foldedToken, final int valueListSize)
-            throws Exception {
+    protected static boolean isSQLiImpl3(final List valueList, final String foldedToken, final int valueListSize) {
         if (foldedToken.contains("X")) {
             return true;
         }
@@ -10356,7 +10356,7 @@ else if( firstChar == ':' )
                         || nextToken == 's')) {
                     continue;
                 } else if (currentToken == 'k'
-                        && (currentValue.toUpperCase().equals("IN") || currentValue.toUpperCase().equals("NOT IN"))) {
+                        && (currentValue.equalsIgnoreCase("IN") || currentValue.equalsIgnoreCase("NOT IN"))) {
                     if (nextToken == '(') {
                         foldedValueList.add(currentValue);
                         foldedTokenBuf.append('o');
@@ -10404,11 +10404,9 @@ else if( firstChar == ':' )
                     foldedValueList.add(nextValue);
                     foldedTokenBuf.append("X");
                     break;
-                } else if ((currentToken == 'o' || currentToken == '&')
-                        && (nextToken == 't' || isUnaryOperator(nextValue))) {
+                } else if ((currentToken == 'o' || currentToken == '&') && isUnaryOperator(nextValue)) {
                     foldedValueList.add(currentValue);
                     foldedTokenBuf.append(currentToken);
-                    i += 1;
                     break;
                 }
             }
