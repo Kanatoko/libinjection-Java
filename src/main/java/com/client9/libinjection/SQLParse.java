@@ -9429,7 +9429,7 @@ for( int i = 0; i < 26; ++i )
                 boolean havDot = _processedNumberStr.contains(".");
                 processed[0] = _processedNumberStr;
 
-                if (havDot && haveE && haveExp == false) {
+                if (havDot && haveE && !haveExp) {
                     tokenBuf[0] = "n";
                 } else {
                     tokenBuf[0] = "1";
@@ -10324,8 +10324,8 @@ else if( firstChar == ':' )
                 final String _key = currentValue.toUpperCase();
                 final List _keywordList = (List) keywordMergeMap.get(_key);
                 if (_keywordList != null) {
-                    for (int k = 0; k < _keywordList.size(); ++k) {
-                        final List eachList = (List) _keywordList.get(k);
+                    for (Object o : _keywordList) {
+                        final List eachList = (List) o;
                         final int _eachListSize = eachList.size();
                         if (valueList.size() >= (i + _eachListSize)) {
                             if (valueList.subList(i, i + _eachListSize).toString().toUpperCase().equals(eachList.toString())) {
@@ -10555,7 +10555,7 @@ else if( firstChar == ':' )
                 foldedTokenBuf.append('s');
                 foldedValueList.add(currentValue);
                 boolean found;
-                while (true) {
+                do {
                     found = false;
                     if (token.length() > i + 1) {
                         if (token.charAt(i + 1) == 's') {
@@ -10563,10 +10563,7 @@ else if( firstChar == ':' )
                             found = true;
                         }
                     }
-                    if (!found) {
-                        break;
-                    }
-                }
+                } while (found);
                 continue;
             }
 
@@ -10581,8 +10578,7 @@ else if( firstChar == ':' )
                     || (foldedToken.startsWith("no(n)") || foldedToken.startsWith("no(1)"))
                     || (foldedToken.startsWith("1),(1"))) {
                 final String _tmpFoldedToken = foldedToken.substring(5);
-                final List _tmpValueList = new ArrayList();
-                _tmpValueList.addAll(foldedValueList.subList(5, foldedValueList.size()));
+                final List _tmpValueList = new ArrayList(foldedValueList.subList(5, foldedValueList.size()));
 
                 foldedTokenBuf = new StringBuffer();
                 foldedTokenBuf.append(foldedToken.charAt(0));
@@ -10610,6 +10606,7 @@ else if( firstChar == ':' )
 //--------------------------------------------------------------------------------
 }
 
+@SuppressWarnings( { "rawtypes"} )
 class MListSizeComparator implements Comparator {
 // --------------------------------------------------------------------------------
 
