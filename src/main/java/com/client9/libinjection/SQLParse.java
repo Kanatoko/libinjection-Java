@@ -10613,10 +10613,7 @@ else if( firstChar == ':' )
 //--------------------------------------------------------------------------------
 }
 
-class MListSizeComparator
-        implements Comparator, java.io.Serializable {
-
-    private static final long serialVersionUID = 5795625486351629911L;
+class MListSizeComparator implements Comparator {
 // --------------------------------------------------------------------------------
 
     public int compare(Object o1, Object o2) {
