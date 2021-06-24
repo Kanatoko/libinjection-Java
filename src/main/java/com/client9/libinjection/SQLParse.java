@@ -3218,7 +3218,7 @@ for( int i = 0; i < 26; ++i )
     private static void initKeywordMergeMap() {
         Iterator p = map.keySet().iterator();
         while (p.hasNext()) {
-            final String key = (String) p.next();
+            final String key = p.next().toString();
             if (key.indexOf(' ') > -1) {
                 final String[] array = key.split("\\s+");
                 final String firstKeyword = array[0];
@@ -9480,7 +9480,7 @@ else if( firstChar == ':' )
                 } else if (map.containsKey(firstTwoStr.toUpperCase())) {
                     // && ||
                     processed[0] = firstTwoStr;
-                    tokenBuf[0] = (String) map.get(firstTwoStr.toUpperCase());
+                    tokenBuf[0] = map.get(firstTwoStr.toUpperCase()).toString();
                     return;
                 }
             }
@@ -9663,7 +9663,7 @@ else if( firstChar == ':' )
         } else if (firstChar == '`') {
             int index = parseString(input, '`', false);
             String str = input.substring(0, index);
-            String value = (String) map.get((replaceAll(str, "`", "")).toUpperCase());
+            String value = map.get((replaceAll(str, "`", "")).toUpperCase()).toString();
             if (value != null && value.equals("f")) {
                 processed[0] = str;
                 tokenBuf[0] = "f";
@@ -9773,7 +9773,7 @@ else if( firstChar == ':' )
         Object value = map.get(word.toUpperCase());
         if (value != null) {
             processed[0] = word;
-            tokenBuf[0] = (String) value;
+            tokenBuf[0] = value.toString();
         } else if (word.length() > 0) {
             processed[0] = word;
             tokenBuf[0] = "n";
@@ -10036,7 +10036,7 @@ else if( firstChar == ':' )
         }
 
         //remove quote from head
-        String firstValue = (String) valueList.get(0);
+        String firstValue = valueList.get(0).toString();
         if (quote.length() > 0 && firstValue.charAt(0) == quote.charAt(0)) {
             valueList.set(0, firstValue.substring(1));
         }
@@ -10109,11 +10109,11 @@ else if( firstChar == ':' )
 
     public static boolean maybeFalsePositive(final List valueList, final String token, final int valueListSize) {
         if (token.length() == 2) {
-            if (((String) valueList.get(1)).charAt(0) == '#') {
+            if (valueList.get(1).toString().charAt(0) == '#') {
                 return true;
             }
             if (token.equals("nc")) {
-                if (((String) valueList.get(1)).startsWith("/") == false) {
+                if (!valueList.get(1).toString().startsWith("/")) {
                     // "foo --"
                     return true;
                 }
@@ -10123,8 +10123,8 @@ else if( firstChar == ':' )
             }
         } else if (token.length() == 3) {
             if (token.equals("s&s") || token.equals("sos")) {
-                final String firstString = (String) valueList.get(0);
-                final String secondString = (String) valueList.get(2);
+                final String firstString = valueList.get(0).toString();
+                final String secondString = valueList.get(2).toString();
                 boolean firstStringHasOpenQuote;
                 boolean secondStringHasCloseQuote;
                 char c1open = 'a';
@@ -10175,7 +10175,7 @@ else if( firstChar == ':' )
                     return true;
                 }
             } else if (token.charAt(1) == 'k') {
-                if (!((String) valueList.get(1)).toUpperCase().startsWith("INTO")) {
+                if (!(valueList.get(1).toString()).toUpperCase().startsWith("INTO")) {
                     return true;
                 }
             }
@@ -10281,14 +10281,14 @@ else if( firstChar == ':' )
         loop:
         for (int i = 0; i < token.length(); ++i) {
             char currentToken = token.charAt(i);
-            final String currentValue = (String) valueList.get(i);
+            final String currentValue = valueList.get(i).toString();
             String nextValue = "dummy";
             boolean hasNext = false;
             char nextToken = ' ';
             if (token.length() > i + 1) {
                 hasNext = true;
                 nextToken = token.charAt(i + 1);
-                nextValue = (String) valueList.get(i + 1);
+                nextValue = valueList.get(i + 1).toString();
             }
 
             if (foldedValueList.size() == 0) {
@@ -10436,7 +10436,7 @@ else if( firstChar == ':' )
             //three tokens
             if (token.length() > i + 2) {
                 char thirdToken = token.charAt(i + 2);
-                String thirdValue = (String) valueList.get(i + 2);
+                String thirdValue = valueList.get(i + 2).toString();
                 if (currentToken == '1' && nextToken == 'o' && thirdToken == '1') {
                     foldedTokenBuf.append(currentToken);
                     foldedValueList.add(currentValue);
@@ -10590,7 +10590,7 @@ else if( firstChar == ':' )
                 foldedTokenBuf.append(foldedToken.charAt(0));
                 foldedTokenBuf.append(_tmpFoldedToken);
 
-                String firstNumber = (String) foldedValueList.get(0);
+                String firstNumber = foldedValueList.get(0).toString();
                 foldedValueList.clear();
                 foldedValueList.add(firstNumber);
                 foldedValueList.addAll(_tmpValueList);
