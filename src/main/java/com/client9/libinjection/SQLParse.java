@@ -9317,7 +9317,7 @@ for( int i = 0; i < 26; ++i )
             }
 
         }
-        allTokenBuf[0] = token.toString();
+        allTokenBuf[0] = token;
 
         if (withFolding && !folded) {
             final String foldedToken = fold(valueList, token);
@@ -9774,11 +9774,9 @@ else if( firstChar == ':' )
         if (value != null) {
             processed[0] = word;
             tokenBuf[0] = (String) value;
-            return;
         } else if (word.length() > 0) {
             processed[0] = word;
             tokenBuf[0] = "n";
-            return;
         }
     }
 //--------------------------------------------------------------------------------
@@ -9796,7 +9794,6 @@ else if( firstChar == ':' )
         final String str = input.substring(0, strLength);
         processed[0] = str;
         tokenBuf[0] = "s";
-        return;
     }
 //--------------------------------------------------------------------------------
 
