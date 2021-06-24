@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//@SuppressWarnings( { "rawtypes", "unchecked" } )
+@SuppressWarnings( { "rawtypes", "unchecked" } )
 public class SQLParse {
 
     public static boolean debug = false;
