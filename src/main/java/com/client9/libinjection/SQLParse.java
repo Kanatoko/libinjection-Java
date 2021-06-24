@@ -9600,9 +9600,7 @@ else if( firstChar == ':' )
             }
             String match = getMatch("^\\$[0-9\\.,]+", input);
             if (match.length() > 0) {
-                if (match.equals("$.")) {
-
-                } else {
+                if (!match.equals("$.")) {
                     processed[0] = match;
                     tokenBuf[0] = "1";
                     return;
@@ -9704,14 +9702,19 @@ else if( firstChar == ':' )
                 String rightQuote = null;
                 if (leftQuote.length() == 1) {
                     //Oracle
-                    if (leftQuote.equals("(")) {
-                        rightQuote = ")";
-                    } else if (leftQuote.equals("[")) {
-                        rightQuote = "]";
-                    } else if (leftQuote.equals("{")) {
-                        rightQuote = "}";
-                    } else if (leftQuote.equals("<")) {
-                        rightQuote = ">";
+                    switch (leftQuote) {
+                        case "(":
+                            rightQuote = ")";
+                            break;
+                        case "[":
+                            rightQuote = "]";
+                            break;
+                        case "{":
+                            rightQuote = "}";
+                            break;
+                        case "<":
+                            rightQuote = ">";
+                            break;
                     }
 
                     int index = input.indexOf(rightQuote + "'", 2);
@@ -9810,55 +9813,55 @@ else if( firstChar == ':' )
             boolean found = false;
             char _char = input.charAt(k);
             String _str = _char + "";
-            if (((int) _char < 33)
-                    || (int) _char == 127
-                    || isWhiteSpaceChar(_char)
-                    || _char == ':'
-                    || _char == ';'
-                    || setOfOperator.contains(_str)
-                    || _char == '-'
-                    || _char == '/'
-                    || _char == '\''
-                    || _char == '"'
-                    || _char == '\\'
-                    || _char == '@'
-                    || _char == '#'
-                    || _char == '?'
-                    || _char == '('
-                    || _char == ')'
-                    || _char == '{'
-                    || _char == '}'
-                    || _char == ',') {
-            } else if (_char == '[' || _char == ']') {
-                if (_char == '[' && k == 0) {
-                    found = true;
-                }
-            } else if (_char == '.') {
-                //keyword?
-                final Object value = map.get(input.substring(0, k).toUpperCase());
-                if (value != null && value.equals("E")) {
-                    return k;
-                } else {
-                    found = true;
-                }
-            } else if (_char == '`') {
-                final String key = input.substring(0, k).toUpperCase();
-                final Object value = map.get(key);
-                if (value != null) {
-                    return k;
-                }
+            if (((int) _char >= 33)
+                    && (int) _char != 127
+                    && !isWhiteSpaceChar(_char)
+                    && _char != ':'
+                    && _char != ';'
+                    && !setOfOperator.contains(_str)
+                    && _char != '-'
+                    && _char != '/'
+                    && _char != '\''
+                    && _char != '"'
+                    && _char != '\\'
+                    && _char != '@'
+                    && _char != '#'
+                    && _char != '?'
+                    && _char != '('
+                    && _char != ')'
+                    && _char != '{'
+                    && _char != '}'
+                    && _char != ',') {
+                if (_char == '[' || _char == ']') {
+                    if (_char == '[' && k == 0) {
+                        found = true;
+                    }
+                } else if (_char == '.') {
+                    //keyword?
+                    final Object value = map.get(input.substring(0, k).toUpperCase());
+                    if (value != null && value.equals("E")) {
+                        return k;
+                    } else {
+                        found = true;
+                    }
+                } else if (_char == '`') {
+                    final String key = input.substring(0, k).toUpperCase();
+                    final Object value = map.get(key);
+                    if (value != null) {
+                        return k;
+                    }
 
-                if (stopOnTick) {
-                    return k;
+                    if (stopOnTick) {
+                        return k;
+                    } else {
+                        found = true;
+                    }
                 } else {
                     found = true;
                 }
-            } else {
-                found = true;
             }
 
-            if (found) {
-            } else {
+            if (!found) {
                 return k;
             }
         }
@@ -9966,8 +9969,7 @@ else if( firstChar == ':' )
                 }
             } else if (mode == MODE_C_STYLE_COMMENT) {
                 if (c == '*') {
-                    if (isLastChar) {
-                    } else {
+                    if (!isLastChar) {
                         if (input.charAt(i + 1) == '/') {
                             --commentDepth;
                             if (!allowNestedComments || commentDepth == 0) {
@@ -9982,9 +9984,7 @@ else if( firstChar == ':' )
                         && !isLastChar
                         && input.charAt(i + 1) == '*') {
                     ++commentDepth;
-                    if (containsNestedComment != null) {
-                        containsNestedComment[0] = true;
-                    }
+                    containsNestedComment[0] = true;
                     ++i;
                 }
             }
@@ -10025,11 +10025,7 @@ else if( firstChar == ':' )
             valueList.set(0, firstValue.substring(1));
         }
 
-        if (isSQLiImpl3(valueList, foldedToken, processedValueList.size())) {
-            return true;
-        } else {
-            return false;
-        }
+        return isSQLiImpl3(valueList, foldedToken, processedValueList.size());
     }
 //--------------------------------------------------------------------------------
 
@@ -10141,8 +10137,8 @@ else if( firstChar == ':' )
                     }
                 }
 
-                if (firstStringHasOpenQuote == false
-                        && secondStringHasCloseQuote == false
+                if (!firstStringHasOpenQuote
+                        && !secondStringHasCloseQuote
                         && c1close == c2open) {
                     //not false positive
                     return false;
