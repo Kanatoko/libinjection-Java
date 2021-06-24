@@ -9236,7 +9236,7 @@ for( int i = 0; i < 26; ++i )
         if (len == 0) {
             return target;
         }
-        StringBuffer buf = new StringBuffer(target.length());
+        StringBuilder buf = new StringBuilder(target.length());
         while (true) {
             int pos = target.indexOf(from);
             if (pos == -1) {
@@ -9348,7 +9348,7 @@ for( int i = 0; i < 26; ++i )
 
         //number
         if (firstChar == '.' || (48 <= (int) firstChar && (int) firstChar <= 57)) {
-            String numberStr = "";
+            String numberStr;
             if (firstChar == '.') {
                 numberStr = getMatch("^\\.[0-9]*", input);
             } else {
@@ -9776,7 +9776,7 @@ else if( firstChar == ':' )
 //--------------------------------------------------------------------------------
 
     public static void parseQuoteString(String input, String[] processed, String[] tokenBuf, char delimiter, int flags) {
-        int strLength = 0;
+        int strLength;
 
         if (delimiter == '"' || (flags & SQL_MYSQL) != 0) // if MySQL, then allow backslash escape
         {
@@ -10007,8 +10007,7 @@ else if( firstChar == ':' )
     }
 //--------------------------------------------------------------------------------
 
-    private static boolean isSqliImpl2(final String input, final String quote, final int flags)
-            throws Exception {
+    private static boolean isSqliImpl2(final String input, final String quote, final int flags) {
         final List valueList = new ArrayList();
         String[] allTokenBuf = new String[1];
 
