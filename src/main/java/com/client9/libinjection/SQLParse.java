@@ -9818,9 +9818,8 @@ else if( firstChar == ':' )
             boolean found = false;
             char _char = input.charAt(k);
             String _str = _char + "";
-            int c = (int) _char;
-            if ((0 <= c && c < 33)
-                    || c == 127
+            if (((int) _char < 33)
+                    || (int) _char == 127
                     || isWhiteSpaceChar(_char)
                     || _char == ':'
                     || _char == ';'
@@ -9894,7 +9893,6 @@ else if( firstChar == ':' )
             if (mode == MODE_DEFAULT) {
                 if (c == delimiter) {
                     mode = MODE_SQL_STRING;
-                } else {
                 }
             } else if (mode == MODE_SQL_STRING) {
                 if (c == delimiter) {
@@ -9927,8 +9925,7 @@ else if( firstChar == ':' )
                     }
                 }
             }
-            if (notUpdateLastChar == true) {
-            } else {
+            if (!notUpdateLastChar) {
                 lastChar = c;
             }
         }
@@ -9967,16 +9964,13 @@ else if( firstChar == ':' )
             char c = input.charAt(i);
             if (mode == MODE_DEFAULT) {
                 if (c == '/') {
-                    if (isLastChar) {
-                    } else {
+                    if (!isLastChar) {
                         if (input.charAt(i + 1) == '*') {
                             mode = MODE_C_STYLE_COMMENT;
                             ++commentDepth;
                             ++i;
-                        } else {
                         }
                     }
-                } else {
                 }
             } else if (mode == MODE_C_STYLE_COMMENT) {
                 if (c == '*') {
