@@ -3216,9 +3216,8 @@ for( int i = 0; i < 26; ++i )
      * UNION=[[UNION, ALL, DISTINCT], [UNION, DISTINCT, ALL], [UNION, ALL], [UNION, DISTINCT]], ...
      */
     private static void initKeywordMergeMap() {
-        Iterator p = map.keySet().iterator();
-        while (p.hasNext()) {
-            final String key = p.next().toString();
+        for (Object o : map.keySet()) {
+            final String key = o.toString();
             if (key.indexOf(' ') > -1) {
                 final String[] array = key.split("\\s+");
                 final String firstKeyword = array[0];
@@ -3230,7 +3229,7 @@ for( int i = 0; i < 26; ++i )
                     list = new ArrayList();
                 }
                 list.add(new ArrayList(Arrays.asList(array)));
-                Collections.sort(list, new MListSizeComparator());
+                list.sort(new MListSizeComparator());
                 keywordMergeMap.put(firstKeyword, list);
             }
         }
@@ -9337,11 +9336,11 @@ for( int i = 0; i < 26; ++i )
 //String input = orig.toUpperCase();
         //process white (space)
         char firstChar = input.charAt(0);
-        int i = (int) ((byte) firstChar);
-        String firstStr = firstChar + "";
+        int i = firstChar;
+        String firstStr = String.valueOf(firstChar);
 
         //white space
-        if ((0 <= i && i < 33) || i == 127 || isWhiteSpaceChar(firstChar)) {
+        if (i < 33 || i == 127 || isWhiteSpaceChar(firstChar)) {
             processed[0] = firstStr;
             tokenBuf[0] = "w";
             return;
