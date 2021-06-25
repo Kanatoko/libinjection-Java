@@ -10422,7 +10422,6 @@ else if( firstChar == ':' )
                         && (nextToken == 't' || isUnaryOperator(nextValue))) {
                     foldedValueList.add(currentValue);
                     foldedTokenBuf.append(currentToken);
-                    i += 1;
                     break;
                 }
             }
