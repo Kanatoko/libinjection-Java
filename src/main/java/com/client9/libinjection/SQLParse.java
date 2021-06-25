@@ -9986,9 +9986,7 @@ else if( firstChar == ':' )
                         && !isLastChar
                         && input.charAt(i + 1) == '*') {
                     ++commentDepth;
-                    if (containsNestedComment != null) {
-                        containsNestedComment[0] = true;
-                    }
+                    containsNestedComment[0] = true;
                     ++i;
                 }
             }
