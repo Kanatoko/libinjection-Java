@@ -9282,8 +9282,7 @@ for( int i = 0; i < 26; ++i )
             folded = false;
 
             if (tokenBuf[0].equals("w")) {
-                if (withFolding) {
-                } else {
+                if (!withFolding) {
                     token = token + tokenBuf[0];
                 }
             } else {
@@ -9315,7 +9314,7 @@ for( int i = 0; i < 26; ++i )
             }
 
         }
-        allTokenBuf[0] = token.toString();
+        allTokenBuf[0] = token;
 
         if (withFolding && !folded) {
             final String foldedToken = fold(valueList, token);
@@ -9712,14 +9711,19 @@ else if( firstChar == ':' )
                 String rightQuote = null;
                 if (leftQuote.length() == 1) {
                     //Oracle
-                    if (leftQuote.equals("(")) {
-                        rightQuote = ")";
-                    } else if (leftQuote.equals("[")) {
-                        rightQuote = "]";
-                    } else if (leftQuote.equals("{")) {
-                        rightQuote = "}";
-                    } else if (leftQuote.equals("<")) {
-                        rightQuote = ">";
+                    switch (leftQuote) {
+                        case "(":
+                            rightQuote = ")";
+                            break;
+                        case "[":
+                            rightQuote = "]";
+                            break;
+                        case "{":
+                            rightQuote = "}";
+                            break;
+                        case "<":
+                            rightQuote = ">";
+                            break;
                     }
 
                     int index = input.indexOf(rightQuote + "'", 2);
@@ -9772,11 +9776,9 @@ else if( firstChar == ':' )
         if (value != null) {
             processed[0] = word;
             tokenBuf[0] = (String) value;
-            return;
         } else if (word.length() > 0) {
             processed[0] = word;
             tokenBuf[0] = "n";
-            return;
         }
     }
 //--------------------------------------------------------------------------------
@@ -9794,7 +9796,6 @@ else if( firstChar == ':' )
         final String str = input.substring(0, strLength);
         processed[0] = str;
         tokenBuf[0] = "s";
-        return;
     }
 //--------------------------------------------------------------------------------
 
@@ -9869,8 +9870,7 @@ else if( firstChar == ':' )
                 found = true;
             }
 
-            if (found) {
-            } else {
+            if (!found) {
                 return k;
             }
         }
@@ -9897,7 +9897,6 @@ else if( firstChar == ':' )
             if (mode == MODE_DEFAULT) {
                 if (c == delimiter) {
                     mode = MODE_SQL_STRING;
-                } else {
                 }
             } else if (mode == MODE_SQL_STRING) {
                 if (c == delimiter) {
@@ -9944,7 +9943,7 @@ else if( firstChar == ':' )
         int commentLength = parseCStyleComment(input, false, null);
         String processedStr = input.substring(0, commentLength);
         processed[0] = processedStr;
-        if (processedStr.indexOf("/*", 1) > -1 || processedStr.indexOf("/*!") > -1) {
+        if (processedStr.indexOf("/*", 1) > -1 || processedStr.contains("/*!")) {
             tokenBuf[0] = "X"; //PostgreSQL nested comment or MySQL comment
         } else {
             tokenBuf[0] = "c";
@@ -9970,16 +9969,13 @@ else if( firstChar == ':' )
             char c = input.charAt(i);
             if (mode == MODE_DEFAULT) {
                 if (c == '/') {
-                    if (isLastChar) {
-                    } else {
+                    if (!isLastChar) {
                         if (input.charAt(i + 1) == '*') {
                             mode = MODE_C_STYLE_COMMENT;
                             ++commentDepth;
                             ++i;
-                        } else {
                         }
                     }
-                } else {
                 }
             } else if (mode == MODE_C_STYLE_COMMENT) {
                 if (c == '*') {
@@ -10114,7 +10110,7 @@ else if( firstChar == ':' )
                 return true;
             }
             if (token.equals("nc")) {
-                if (((String) valueList.get(1)).startsWith("/") == false) {
+                if (!((String) valueList.get(1)).startsWith("/")) {
                     // "foo --"
                     return true;
                 }
@@ -10158,8 +10154,8 @@ else if( firstChar == ':' )
                     }
                 }
 
-                if (firstStringHasOpenQuote == false
-                        && secondStringHasCloseQuote == false
+                if (!firstStringHasOpenQuote
+                        && !secondStringHasCloseQuote
                         && c1close == c2open) {
                     //not false positive
                     return false;
@@ -10377,7 +10373,7 @@ else if( firstChar == ':' )
                         || nextToken == 's')) {
                     continue;
                 } else if (currentToken == 'k'
-                        && (currentValue.toUpperCase().equals("IN") || currentValue.toUpperCase().equals("NOT IN"))) {
+                        && (currentValue.equalsIgnoreCase("IN") || currentValue.equalsIgnoreCase("NOT IN"))) {
                     if (nextToken == '(') {
                         foldedValueList.add(currentValue);
                         foldedTokenBuf.append('o');
