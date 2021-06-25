@@ -9228,7 +9228,7 @@ for( int i = 0; i < 26; ++i )
         map.put("~*", "o");
     }
 //--------------------------------------------------------------------------------
-
+/*
     public static String replaceAll(String target, String from, String to) {
         int len = from.length();
         if (len == 0) {
@@ -9247,6 +9247,7 @@ for( int i = 0; i < 26; ++i )
         buf.append(target);
         return buf.toString();
     }
+ */
 //--------------------------------------------------------------------------------
 
     public static boolean isSQLi(final String input) {
@@ -9660,7 +9661,7 @@ else if( firstChar == ':' )
         } else if (firstChar == '`') {
             int index = parseString(input, '`', false);
             String str = input.substring(0, index);
-            String value = (String) map.get((replaceAll(str, "`", "")).toUpperCase());
+            String value = (String) map.get(str.replace("`", "").toUpperCase());
             if (value != null && value.equals("f")) {
                 processed[0] = str;
                 tokenBuf[0] = "f";
