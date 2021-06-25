@@ -10005,7 +10005,7 @@ else if( firstChar == ':' )
 //--------------------------------------------------------------------------------
 
     private static String listToString(final List l) {
-        StringBuffer buf = new StringBuffer(180);
+        StringBuilder buf = new StringBuilder(180);
         for (int i = 0; i < l.size(); ++i) {
             if (i > 0) {
                 buf.append(" ");
