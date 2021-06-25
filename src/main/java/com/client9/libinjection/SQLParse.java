@@ -9266,7 +9266,7 @@ for( int i = 0; i < 26; ++i )
 //--------------------------------------------------------------------------------
 
     public static List tokenize(String input, List valueList, String[] allTokenBuf, int flags, final boolean withFolding) {
-        String token = "";
+        StringBuilder token = new StringBuilder();
         final int inputLength = input.length();
         int totalProcessedLength = 0;
         final List processedValueList = new ArrayList(); // no folding
@@ -9283,10 +9283,10 @@ for( int i = 0; i < 26; ++i )
 
             if (tokenBuf[0].equals("w")) {
                 if (!withFolding) {
-                    token = token + tokenBuf[0];
+                    token.append(tokenBuf[0]);
                 }
             } else {
-                token = token + tokenBuf[0];
+                token.append(tokenBuf[0]);
                 valueList.add(processed[0]);
                 processedValueList.add(processed[0]);
             }
@@ -9296,7 +9296,7 @@ for( int i = 0; i < 26; ++i )
 
             //fold
             if (withFolding && token.length() >= LIBINJECTION_SQLI_MAX_TOKENS) {
-                final String foldedToken = fold(valueList, token);
+                final String foldedToken = fold(valueList, token.toString());
                 folded = true;
                 if (foldedToken.length() >= LIBINJECTION_SQLI_MAX_TOKENS) {
                     if (foldedToken.equals(lastFoldedToken)) {
@@ -9310,14 +9310,14 @@ for( int i = 0; i < 26; ++i )
                     }
                     lastFoldedToken = foldedToken;
                 }
-                token = foldedToken;
+                token = new StringBuilder(foldedToken);
             }
 
         }
-        allTokenBuf[0] = token;
+        allTokenBuf[0] = token.toString();
 
         if (withFolding && !folded) {
-            final String foldedToken = fold(valueList, token);
+            final String foldedToken = fold(valueList, token.toString());
             allTokenBuf[0] = foldedToken;
             return processedValueList;
         } else {
@@ -9334,18 +9334,17 @@ for( int i = 0; i < 26; ++i )
 //String input = orig.toUpperCase();
         //process white (space)
         char firstChar = input.charAt(0);
-        int i = (int) ((byte) firstChar);
         String firstStr = firstChar + "";
 
         //white space
-        if ((0 <= i && i < 33) || i == 127 || isWhiteSpaceChar(firstChar)) {
+        if ((int) firstChar < 33 || (int) firstChar == 127 || isWhiteSpaceChar(firstChar)) {
             processed[0] = firstStr;
             tokenBuf[0] = "w";
             return;
         }
 
         //number
-        if (firstChar == '.' || (48 <= i && i <= 57)) {
+        if (firstChar == '.' || (48 <= (int) firstChar && (int) firstChar <= 57)) {
             String numberStr = "";
             if (firstChar == '.') {
                 numberStr = getMatch("^\\.[0-9]*", input);
@@ -9357,7 +9356,7 @@ for( int i = 0; i < 26; ++i )
                 tokenBuf[0] = ".";
                 return;
             } else {
-                final StringBuffer buf = new StringBuffer();
+                final StringBuilder buf = new StringBuilder();
                 buf.append(numberStr);
                 boolean moreCharacter = input.length() > numberStr.length();
                 boolean haveExp = false;
@@ -9425,10 +9424,10 @@ for( int i = 0; i < 26; ++i )
                 }
 
                 final String _processedNumberStr = buf.toString();
-                boolean havDot = _processedNumberStr.indexOf(".") > -1;
+                boolean havDot = _processedNumberStr.contains(".");
                 processed[0] = _processedNumberStr;
 
-                if (havDot && haveE && haveExp == false) {
+                if (havDot && haveE && !haveExp) {
                     tokenBuf[0] = "n";
                 } else {
                     tokenBuf[0] = "1";
@@ -9607,9 +9606,7 @@ else if( firstChar == ':' )
             }
             String match = getMatch("^\\$[0-9\\.,]+", input);
             if (match.length() > 0) {
-                if (match.equals("$.")) {
-
-                } else {
+                if (!match.equals("$.")) {
                     processed[0] = match;
                     tokenBuf[0] = "1";
                     return;
@@ -9822,9 +9819,8 @@ else if( firstChar == ':' )
             boolean found = false;
             char _char = input.charAt(k);
             String _str = _char + "";
-            int c = (int) _char;
-            if ((0 <= c && c < 33)
-                    || c == 127
+            if ((int) _char < 33
+                    || (int) _char == 127
                     || isWhiteSpaceChar(_char)
                     || _char == ':'
                     || _char == ';'
@@ -9979,8 +9975,7 @@ else if( firstChar == ':' )
                 }
             } else if (mode == MODE_C_STYLE_COMMENT) {
                 if (c == '*') {
-                    if (isLastChar) {
-                    } else {
+                    if (!isLastChar) {
                         if (input.charAt(i + 1) == '/') {
                             --commentDepth;
                             if (!allowNestedComments || commentDepth == 0) {
@@ -10086,7 +10081,7 @@ else if( firstChar == ':' )
 
     protected static boolean isSQLiImpl3(final List valueList, final String foldedToken, final int valueListSize)
             throws Exception {
-        if (foldedToken.indexOf("X") > -1) {
+        if (foldedToken.contains("X")) {
             return true;
         }
 
@@ -10323,8 +10318,8 @@ else if( firstChar == ':' )
                 final String _key = currentValue.toUpperCase();
                 final List _keywordList = (List) keywordMergeMap.get(_key);
                 if (_keywordList != null) {
-                    for (int k = 0; k < _keywordList.size(); ++k) {
-                        final List eachList = (List) _keywordList.get(k);
+                    for (Object o : _keywordList) {
+                        final List eachList = (List) o;
                         final int _eachListSize = eachList.size();
                         if (valueList.size() >= (i + _eachListSize)) {
                             if (valueList.subList(i, i + _eachListSize).toString().toUpperCase().equals(eachList.toString())) {
@@ -10401,7 +10396,7 @@ else if( firstChar == ':' )
                         continue;
                     }
                 } else if (currentToken == 'A' && nextToken == 'n') {
-                    if (nextValue.indexOf("_") > -1) {
+                    if (nextValue.contains("_")) {
                         foldedValueList.add(currentValue);
                         foldedTokenBuf.append(currentToken);
                         foldedValueList.add(nextValue);
