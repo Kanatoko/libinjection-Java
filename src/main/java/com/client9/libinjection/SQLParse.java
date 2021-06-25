@@ -9493,12 +9493,12 @@ else if( firstChar == ':' )
             return;
         } else if (firstChar == '-') {
             /*
-             * five cases
-             * 1) --[white]  this is always a SQL comment
-             * 2) --[EOF]    this is a comment
-             * 3) --[notwhite] in MySQL this is NOT a comment but two unary operators
-             * 4) --[notwhite] everyone else thinks this is a comment
-             * 5) -[not dash]  '-' is a unary operator
+             * 5种可能性
+             * 1) --[空白]      这是一种sql注释
+             * 2) --[结尾符]    这是一种sql注释
+             * 3) --[不空白] 在MySQL这是一元运算符
+             * 4) --[不空白] 其他数据库中认为是注释
+             * 5) -[不是破折号]  '-' 这是一元运算符
              */
             if (input.startsWith("--")) {
                 if (input.length() == 2) {
@@ -9510,13 +9510,13 @@ else if( firstChar == ':' )
                     char tc = input.charAt(2);
                     if (!isWhiteSpaceChar(tc)) {
                         if ((flags & SQL_MYSQL) != 0) {
-                            //case 3
+                            // 情况3）
                             processed[0] = "-";
                             tokenBuf[0] = "o";
                             return;
                         }
                     }
-                    //case 1 and 2 and 4
+                    //情况 1） 2） 4）
                 }
                 int index = input.indexOf('\n');
                 if (index == -1) {
