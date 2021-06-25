@@ -9782,7 +9782,7 @@ else if( firstChar == ':' )
 //--------------------------------------------------------------------------------
 
     public static void parseQuoteString(String input, String[] processed, String[] tokenBuf, char delimiter, int flags) {
-        int strLength = 0;
+        int strLength;
 
         if (delimiter == '"' || (flags & SQL_MYSQL) != 0) // if MySQL, then allow backslash escape
         {
@@ -9820,51 +9820,52 @@ else if( firstChar == ':' )
             boolean found = false;
             char _char = input.charAt(k);
             String _str = _char + "";
-            if ((int) _char < 33
-                    || (int) _char == 127
-                    || isWhiteSpaceChar(_char)
-                    || _char == ':'
-                    || _char == ';'
-                    || setOfOperator.contains(_str)
-                    || _char == '-'
-                    || _char == '/'
-                    || _char == '\''
-                    || _char == '"'
-                    || _char == '\\'
-                    || _char == '@'
-                    || _char == '#'
-                    || _char == '?'
-                    || _char == '('
-                    || _char == ')'
-                    || _char == '{'
-                    || _char == '}'
-                    || _char == ',') {
-            } else if (_char == '[' || _char == ']') {
-                if (_char == '[' && k == 0) {
-                    found = true;
-                }
-            } else if (_char == '.') {
-                //keyword?
-                final Object value = map.get(input.substring(0, k).toUpperCase());
-                if (value != null && value.equals("E")) {
-                    return k;
-                } else {
-                    found = true;
-                }
-            } else if (_char == '`') {
-                final String key = input.substring(0, k).toUpperCase();
-                final Object value = map.get(key);
-                if (value != null) {
-                    return k;
-                }
+            if ((int) _char >= 33
+                    && (int) _char != 127
+                    && !isWhiteSpaceChar(_char)
+                    && _char != ':'
+                    && _char != ';'
+                    && !setOfOperator.contains(_str)
+                    && _char != '-'
+                    && _char != '/'
+                    && _char != '\''
+                    && _char != '"'
+                    && _char != '\\'
+                    && _char != '@'
+                    && _char != '#'
+                    && _char != '?'
+                    && _char != '('
+                    && _char != ')'
+                    && _char != '{'
+                    && _char != '}'
+                    && _char != ',') {
+                if (_char == '[' || _char == ']') {
+                    if (_char == '[' && k == 0) {
+                        found = true;
+                    }
+                } else if (_char == '.') {
+                    //keyword?
+                    final Object value = map.get(input.substring(0, k).toUpperCase());
+                    if (value != null && value.equals("E")) {
+                        return k;
+                    } else {
+                        found = true;
+                    }
+                } else if (_char == '`') {
+                    final String key = input.substring(0, k).toUpperCase();
+                    final Object value = map.get(key);
+                    if (value != null) {
+                        return k;
+                    }
 
-                if (stopOnTick) {
-                    return k;
+                    if (stopOnTick) {
+                        return k;
+                    } else {
+                        found = true;
+                    }
                 } else {
                     found = true;
                 }
-            } else {
-                found = true;
             }
 
             if (!found) {
