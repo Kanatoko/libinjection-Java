@@ -3,7 +3,7 @@ package com.client9.libinjection;
 import java.util.*;
 import java.util.regex.*;
 
-//@SuppressWarnings( { "rawtypes", "unchecked" } )
+@SuppressWarnings( { "rawtypes", "unchecked" } )
 public class SQLParse {
 
     public static boolean debug = false;
@@ -3214,9 +3214,8 @@ for( int i = 0; i < 26; ++i )
  * UNION=[[UNION, ALL, DISTINCT], [UNION, DISTINCT, ALL], [UNION, ALL], [UNION, DISTINCT]], ...
      */
     private static void initKeywordMergeMap() {
-        Iterator p = map.keySet().iterator();
-        while (p.hasNext()) {
-            final String key = (String) p.next();
+        for (Object o : map.keySet()) {
+            final String key = (String) o;
             if (key.indexOf(' ') > -1) {
                 final String[] array = key.split("\\s+");
                 final String firstKeyword = array[0];
@@ -3228,7 +3227,7 @@ for( int i = 0; i < 26; ++i )
                     list = new ArrayList();
                 }
                 list.add(new ArrayList(Arrays.asList(array)));
-                Collections.sort(list, new MListSizeComparator());
+                list.sort(new MListSizeComparator());
                 keywordMergeMap.put(firstKeyword, list);
             }
         }
@@ -10613,6 +10612,7 @@ else if( firstChar == ':' )
 //--------------------------------------------------------------------------------
 }
 
+@SuppressWarnings( { "rawtypes"} )
 class MListSizeComparator implements Comparator {
 // --------------------------------------------------------------------------------
 
