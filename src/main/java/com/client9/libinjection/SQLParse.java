@@ -9345,7 +9345,7 @@ for( int i = 0; i < 26; ++i )
 
         //number
         if (firstChar == '.' || (48 <= (int) firstChar && (int) firstChar <= 57)) {
-            String numberStr = "";
+            String numberStr;
             if (firstChar == '.') {
                 numberStr = getMatch("^\\.[0-9]*", input);
             } else {
