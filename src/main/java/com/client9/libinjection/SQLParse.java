@@ -9516,7 +9516,7 @@ else if( firstChar == ':' )
                             return;
                         }
                     }
-                    //case 1 and 4
+                    //case 1 and 2 and 4
                 }
                 int index = input.indexOf('\n');
                 if (index == -1) {
