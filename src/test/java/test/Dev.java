@@ -16,7 +16,7 @@ public class Dev
         debug = true;
         initialize();
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < 20000; ++i) {
             buf.append("FOOOOO,");
         }
