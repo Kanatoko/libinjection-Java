@@ -9507,8 +9507,7 @@ else if( firstChar == ':' )
                     processed[0] = input;
                     tokenBuf[0] = "c";
                     return;
-                } else //input length > 2
-                {
+                } else {    //input length > 2
                     char tc = input.charAt(2);
                     if (isWhiteSpaceChar(tc)) {
                         commentUntilEndOfLine = true;
