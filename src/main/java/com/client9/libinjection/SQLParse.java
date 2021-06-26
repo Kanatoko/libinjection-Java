@@ -9426,7 +9426,7 @@ for( int i = 0; i < 26; ++i )
                 }
 
                 final String _processedNumberStr = buf.toString();
-                boolean havDot = _processedNumberStr.indexOf(".") > -1;
+                boolean havDot = _processedNumberStr.contains(".");
                 processed[0] = _processedNumberStr;
 
                 if (havDot && haveE && haveExp == false) {
@@ -9772,11 +9772,9 @@ else if( firstChar == ':' )
         if (value != null) {
             processed[0] = word;
             tokenBuf[0] = (String) value;
-            return;
         } else if (word.length() > 0) {
             processed[0] = word;
             tokenBuf[0] = "n";
-            return;
         }
     }
 //--------------------------------------------------------------------------------
@@ -9794,7 +9792,6 @@ else if( firstChar == ':' )
         final String str = input.substring(0, strLength);
         processed[0] = str;
         tokenBuf[0] = "s";
-        return;
     }
 //--------------------------------------------------------------------------------
 
@@ -9944,7 +9941,7 @@ else if( firstChar == ':' )
         int commentLength = parseCStyleComment(input, false, null);
         String processedStr = input.substring(0, commentLength);
         processed[0] = processedStr;
-        if (processedStr.indexOf("/*", 1) > -1 || processedStr.indexOf("/*!") > -1) {
+        if (processedStr.indexOf("/*", 1) > -1 || processedStr.contains("/*!")) {
             tokenBuf[0] = "X"; //PostgreSQL nested comment or MySQL comment
         } else {
             tokenBuf[0] = "c";
@@ -10090,7 +10087,7 @@ else if( firstChar == ':' )
 
     protected static boolean isSQLiImpl3(final List valueList, final String foldedToken, final int valueListSize)
             throws Exception {
-        if (foldedToken.indexOf("X") > -1) {
+        if (foldedToken.contains("X")) {
             return true;
         }
 
@@ -10405,7 +10402,7 @@ else if( firstChar == ':' )
                         continue;
                     }
                 } else if (currentToken == 'A' && nextToken == 'n') {
-                    if (nextValue.indexOf("_") > -1) {
+                    if (nextValue.contains("_")) {
                         foldedValueList.add(currentValue);
                         foldedTokenBuf.append(currentToken);
                         foldedValueList.add(nextValue);
