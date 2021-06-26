@@ -3,3 +3,5 @@
 bin/*
 *.class
 /target/
+.idea/
+libinjection.iml
