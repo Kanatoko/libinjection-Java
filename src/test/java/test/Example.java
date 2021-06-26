@@ -10,6 +10,11 @@ public class Example {
         if (isSQLi) {
             System.out.println("SQLi found : " + s);
         }
+
+        s = "'foo'/**/or/**/1=1--";
+        if (isSQLi) {
+            System.out.println("SQLi found : " + s);
+        }
     }
 //--------------------------------------------------------------------------------
 }
