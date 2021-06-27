@@ -9317,7 +9317,7 @@ for( int i = 0; i < 26; ++i )
             }
 
         }
-        allTokenBuf[0] = token.toString();
+        allTokenBuf[0] = token;
 
         if (withFolding && !folded) {
             final String foldedToken = fold(valueList, token);
