@@ -29,5 +29,5 @@ jobs:
       - name: build and test
         run: |
           ant
-	  java -cp bin/ test.TestJava
+          java -cp bin/ test.TestJava
 
