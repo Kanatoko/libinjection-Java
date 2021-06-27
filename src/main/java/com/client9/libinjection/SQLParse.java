@@ -1,9 +1,10 @@
 package com.client9.libinjection;
 
 import java.util.*;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-@SuppressWarnings( { "rawtypes", "unchecked" } )
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class SQLParse {
 
     public static boolean debug = false;
@@ -3209,9 +3210,10 @@ for( int i = 0; i < 26; ++i )
 
         initKeywordMergeMap();
     }
-//--------------------------------------------------------------------------------
-/* initialize map as
- * UNION=[[UNION, ALL, DISTINCT], [UNION, DISTINCT, ALL], [UNION, ALL], [UNION, DISTINCT]], ...
+
+    //--------------------------------------------------------------------------------
+    /* initialize map as
+     * UNION=[[UNION, ALL, DISTINCT], [UNION, DISTINCT, ALL], [UNION, ALL], [UNION, DISTINCT]], ...
      */
     private static void initKeywordMergeMap() {
         Iterator p = map.keySet().iterator();
@@ -9493,12 +9495,12 @@ else if( firstChar == ':' )
             return;
         } else if (firstChar == '-') {
             /*
-     * five cases
-     * 1) --[white]  this is always a SQL comment
-     * 2) --[EOF]    this is a comment
-     * 3) --[notwhite] in MySQL this is NOT a comment but two unary operators
-     * 4) --[notwhite] everyone else thinks this is a comment
-     * 5) -[not dash]  '-' is a unary operator
+             * five cases
+             * 1) --[white]  this is always a SQL comment
+             * 2) --[EOF]    this is a comment
+             * 3) --[notwhite] in MySQL this is NOT a comment but two unary operators
+             * 4) --[notwhite] everyone else thinks this is a comment
+             * 5) -[not dash]  '-' is a unary operator
              */
             if (input.startsWith("--")) {
                 boolean commentUntilEndOfLine = false;
@@ -9905,7 +9907,7 @@ else if( firstChar == ':' )
                         //delimiter is escaped. continue...
                     } else if (nextChar == delimiter) {
                         //delimiter is escaped.
-                        ++i;	//move cursor to next delimiter
+                        ++i;    //move cursor to next delimiter
                     } else {
                         if (isLastChar) {
                             //end of parse
@@ -9913,7 +9915,7 @@ else if( firstChar == ':' )
                         } else {
                             if (input.charAt(i + 1) == delimiter) {
                                 // ''
-                                ++i;	//skip ''
+                                ++i;    //skip ''
                             } else {
                                 //end of string
                                 mode = MODE_DEFAULT;
@@ -10344,20 +10346,20 @@ else if( firstChar == ':' )
                 if (currentToken == '(') {
                     if (isUnaryOperator(nextValue)) {
                         ++i; //skip operator
-                        foldedTokenBuf.append(currentToken);	// (
-                        foldedValueList.add(currentValue);		// (
+                        foldedTokenBuf.append(currentToken);    // (
+                        foldedValueList.add(currentValue);        // (
                         continue;
                     } else if (nextToken == '(') {
                         ++i; //skip next (
-                        foldedTokenBuf.append(currentToken);	// (
-                        foldedValueList.add(currentValue);	// (
+                        foldedTokenBuf.append(currentToken);    // (
+                        foldedValueList.add(currentValue);    // (
                         continue;
                     }
                 } else if (currentToken == ')') {
                     if (nextToken == ')') {
                         ++i; //skip next (
-                        foldedTokenBuf.append(currentToken);	// )
-                        foldedValueList.add(currentValue);	// )
+                        foldedTokenBuf.append(currentToken);    // )
+                        foldedValueList.add(currentValue);    // )
                         continue;
                     }
                 } else if ((currentToken == 'n' || currentToken == 'v')
@@ -10399,7 +10401,7 @@ else if( firstChar == ':' )
                 } else if (currentToken == '\\') {
                     if (isArithmeticOperator(nextValue)) {
                         foldedValueList.add(currentValue);
-                        foldedTokenBuf.append('1');	// \\ to number
+                        foldedTokenBuf.append('1');    // \\ to number
                         continue;
                     } else {
                         continue;
@@ -10549,7 +10551,7 @@ else if( firstChar == ':' )
                     continue;
                 }
                 /*
-           
+
                  */
             }
 
@@ -10613,7 +10615,7 @@ else if( firstChar == ':' )
 //--------------------------------------------------------------------------------
 }
 
-@SuppressWarnings( { "rawtypes"} )
+@SuppressWarnings({"rawtypes"})
 class MListSizeComparator implements Comparator {
 // --------------------------------------------------------------------------------
 
