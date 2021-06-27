@@ -9503,41 +9503,35 @@ else if( firstChar == ':' )
              * 5) -[not dash]  '-' is a unary operator
              */
             if (input.startsWith("--")) {
-                boolean commentUntilEndOfLine = false;
                 if (input.length() == 2) {
                     //input is "--"  case 2
                     processed[0] = input;
                     tokenBuf[0] = "c";
                     return;
-                } else //input length > 2
-                {
+                } else {    //input length > 2
                     char tc = input.charAt(2);
                     if (isWhiteSpaceChar(tc)) {
-                        commentUntilEndOfLine = true;
                     } else {
                         if ((flags & SQL_MYSQL) != 0) {
                             //case 3
                             processed[0] = "-";
                             tokenBuf[0] = "o";
                             return;
-                        } else {
-                            commentUntilEndOfLine = true;
                         }
                     }
                 }
-                if (commentUntilEndOfLine) {
-                    int index = input.indexOf('\n');
-                    if (index == -1) {
-                        processed[0] = input;
-                        tokenBuf[0] = "c";
-                        return;
-                    } else {
-                        processed[0] = input.substring(0, index + 1);
-                        tokenBuf[0] = "c";
-                        return;
-                    }
+                //case 1 and 4
+                int index = input.indexOf('\n');
+                if (index == -1) {
+                    processed[0] = input;
+                    tokenBuf[0] = "c";
+                    return;
+                } else {
+                    processed[0] = input.substring(0, index + 1);
+                    tokenBuf[0] = "c";
+                    return;
                 }
-            } else {
+            } else {    //case 5
                 processed[0] = "-";
                 tokenBuf[0] = "o";
                 return;
