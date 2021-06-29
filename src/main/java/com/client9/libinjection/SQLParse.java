@@ -3216,9 +3216,8 @@ for( int i = 0; i < 26; ++i )
      * UNION=[[UNION, ALL, DISTINCT], [UNION, DISTINCT, ALL], [UNION, ALL], [UNION, DISTINCT]], ...
      */
     private static void initKeywordMergeMap() {
-        Iterator p = map.keySet().iterator();
-        while (p.hasNext()) {
-            final String key = (String) p.next();
+        for (Object o : map.keySet()) {
+            final String key = (String) o;
             if (key.indexOf(' ') > -1) {
                 final String[] array = key.split("\\s+");
                 final String firstKeyword = array[0];
@@ -3230,7 +3229,7 @@ for( int i = 0; i < 26; ++i )
                     list = new ArrayList();
                 }
                 list.add(new ArrayList(Arrays.asList(array)));
-                Collections.sort(list, new MListSizeComparator());
+                list.sort(new MListSizeComparator());
                 keywordMergeMap.put(firstKeyword, list);
             }
         }
@@ -9243,7 +9242,7 @@ for( int i = 0; i < 26; ++i )
             if (pos == -1) {
                 break;
             }
-            buf.append(target.substring(0, pos));
+            buf.append(target, 0, pos);
             buf.append(to);
             target = target.substring(pos + len);
         }
@@ -9790,7 +9789,6 @@ else if( firstChar == ':' )
         final String str = input.substring(0, strLength);
         processed[0] = str;
         tokenBuf[0] = "s";
-        return;
     }
 //--------------------------------------------------------------------------------
 
@@ -9995,9 +9993,7 @@ else if( firstChar == ':' )
                         && !isLastChar
                         && input.charAt(i + 1) == '*') {
                     ++commentDepth;
-                    if (containsNestedComment != null) {
-                        containsNestedComment[0] = true;
-                    }
+                    containsNestedComment[0] = true;
                     ++i;
                 }
             }
@@ -10323,8 +10319,8 @@ else if( firstChar == ':' )
                 final String _key = currentValue.toUpperCase();
                 final List _keywordList = (List) keywordMergeMap.get(_key);
                 if (_keywordList != null) {
-                    for (int k = 0; k < _keywordList.size(); ++k) {
-                        final List eachList = (List) _keywordList.get(k);
+                    for (Object o : _keywordList) {
+                        final List eachList = (List) o;
                         final int _eachListSize = eachList.size();
                         if (valueList.size() >= (i + _eachListSize)) {
                             if (valueList.subList(i, i + _eachListSize).toString().toUpperCase().equals(eachList.toString())) {
@@ -10373,7 +10369,7 @@ else if( firstChar == ':' )
                         || nextToken == 's')) {
                     continue;
                 } else if (currentToken == 'k'
-                        && (currentValue.toUpperCase().equals("IN") || currentValue.toUpperCase().equals("NOT IN"))) {
+                        && (currentValue.equalsIgnoreCase("IN") || currentValue.equalsIgnoreCase("NOT IN"))) {
                     if (nextToken == '(') {
                         foldedValueList.add(currentValue);
                         foldedTokenBuf.append('o');
