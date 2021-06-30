@@ -9333,7 +9333,7 @@ for( int i = 0; i < 26; ++i )
             return;
         }
 
-//String input = orig.toUpperCase();
+        //String input = orig.toUpperCase();
         //process white (space)
         char firstChar = input.charAt(0);
         int i = (int) ((byte) firstChar);
@@ -9815,9 +9815,8 @@ else if( firstChar == ':' )
             boolean found = false;
             char _char = input.charAt(k);
             String _str = _char + "";
-            int c = (int) _char;
-            if ((0 <= c && c < 33)
-                    || c == 127
+            if (((int) _char < 33)
+                    || (int) _char == 127
                     || isWhiteSpaceChar(_char)
                     || _char == ':'
                     || _char == ';'
@@ -10021,7 +10020,7 @@ else if( firstChar == ':' )
         String[] allTokenBuf = new String[1];
 
         List processedValueList = tokenize(quote + input, valueList, allTokenBuf, flags, true);
-//debugPrint( valueList );
+        //debugPrint( valueList );
         String foldedToken = allTokenBuf[0];
 
         if (valueList.size() == 0) {
@@ -10044,7 +10043,7 @@ else if( firstChar == ':' )
 
     private static boolean isSQLiImpl1(final String input)
             throws Exception {
-//debugPrint( input );
+        //debugPrint( input );
 
         // No-Quote no-MySQL
         if (isSqliImpl2(input, "", 0)) {
