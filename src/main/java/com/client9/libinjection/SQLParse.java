@@ -9336,18 +9336,17 @@ for( int i = 0; i < 26; ++i )
         //String input = orig.toUpperCase();
         //process white (space)
         char firstChar = input.charAt(0);
-        int i = (int) ((byte) firstChar);
         String firstStr = firstChar + "";
 
         //white space
-        if ((0 <= i && i < 33) || i == 127 || isWhiteSpaceChar(firstChar)) {
+        if (((int) firstChar < 33) || (int) firstChar == 127 || isWhiteSpaceChar(firstChar)) {
             processed[0] = firstStr;
             tokenBuf[0] = "w";
             return;
         }
 
         //number
-        if (firstChar == '.' || (48 <= i && i <= 57)) {
+        if (firstChar == '.' || (48 <= (int) firstChar && (int) firstChar <= 57)) {
             String numberStr = "";
             if (firstChar == '.') {
                 numberStr = getMatch("^\\.[0-9]*", input);
@@ -10575,8 +10574,7 @@ else if( firstChar == ':' )
                     || (foldedToken.startsWith("no(n)") || foldedToken.startsWith("no(1)"))
                     || (foldedToken.startsWith("1),(1"))) {
                 final String _tmpFoldedToken = foldedToken.substring(5);
-                final List _tmpValueList = new ArrayList();
-                _tmpValueList.addAll(foldedValueList.subList(5, foldedValueList.size()));
+                final List _tmpValueList = new ArrayList(foldedValueList.subList(5, foldedValueList.size()));
 
                 foldedTokenBuf = new StringBuffer();
                 foldedTokenBuf.append(foldedToken.charAt(0));
