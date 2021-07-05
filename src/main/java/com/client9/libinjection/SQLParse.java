@@ -10404,7 +10404,7 @@ else if( firstChar == ':' )
                         continue;
                     }
                 } else if (currentToken == 'o'
-                        && (currentValue.equalsIgnoreCase("LIKE") || currentValue.equalsIgnoreCase("NOT LIKE") || currentValue.equalsIgnoreCase("RLIKE"))
+                        && (currentValue.equalsIgnoreCase("LIKE") || currentValue.equalsIgnoreCase("NOT LIKE") || currentValue.equalsIgnoreCase("RLIKE") || currentValue.equalsIgnoreCase("NOT RLIKE"))
                         && nextToken == '(') {
                     foldedValueList.add(currentValue);
                     foldedTokenBuf.append('f');
