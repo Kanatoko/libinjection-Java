@@ -2970,6 +2970,7 @@ for( int i = 0; i < 26; ++i )
         smap.put("F(EN)", "F");
         smap.put("F(ENK", "F");
         smap.put("F(ENO", "F");
+        smap.put("F(EOK", "F");
         smap.put("F(ES&", "F");
         smap.put("F(ES)", "F");
         smap.put("F(ESK", "F");
