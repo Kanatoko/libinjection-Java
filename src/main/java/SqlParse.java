@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class SqlParse {
 
-    public static boolean debug = false;
+    public static boolean debug = true;
     public static final Set charSet1 = new HashSet();
     public static final Set charSet2 = new HashSet();
     public static final Map map = new HashMap(500);
@@ -689,7 +689,7 @@ else if( firstChar == ':' )
     public static void parseQuoteString(String input, String[] processed, String[] tokenBuf, char delimiter, int flags) {
         int strLength;
         // if MySQL, then allow backslash escape
-        if (delimiter == '"' || (flags & SQL_MYSQL) != 0){
+        if (delimiter == '"' || (flags & SQL_MYSQL) != 0) {
             strLength = parseString(input, delimiter, true);
         } else {
             strLength = parseString(input, delimiter, false);
@@ -780,7 +780,7 @@ else if( firstChar == ':' )
 
 
     public static int parseString(String input, char delimiter, boolean allowBackslashEscape) {
-    //allowBackslashEscape = true;
+        //allowBackslashEscape = true;
         final int MODE_SQL_STRING = 2;
         final int MODE_DEFAULT = 3;
         int mode = MODE_DEFAULT;
@@ -933,6 +933,8 @@ else if( firstChar == ':' )
             valueList.set(0, firstValue.substring(1));
         }
 
+        debugPrint("sql: " + valueList + "   token: " + foldedToken);
+
         if (isSQLiImpl3(valueList, foldedToken, processedValueList.size())) {
             return true;
         } else {
@@ -988,8 +990,6 @@ else if( firstChar == ':' )
             if (maybeFalsePositive(valueList, foldedToken, valueListSize)) {
                 return false;
             } else {
-                //debugPrint( valueList );
-                //debugPrint( "found:" + foldedToken );
                 return true;
             }
         } else {
@@ -1489,7 +1489,7 @@ else if( firstChar == ':' )
 
     public static void debugPrint(Object o) {
         if (debug) {
-            System.out.println("--" + o + "--");
+            System.out.println(o);
         }
     }
 
@@ -10581,13 +10581,10 @@ else if( firstChar == ':' )
 
 @SuppressWarnings({"rawtypes"})
 class MListSizeComparator implements Comparator {
-// --------------------------------------------------------------------------------
-
     public int compare(Object o1, Object o2) {
         List l1 = (List) o1;
         List l2 = (List) o2;
 
         return Integer.compare(l2.size(), l1.size());
     }
-// --------------------------------------------------------------------------------
 }
